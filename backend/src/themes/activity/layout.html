@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{title}}</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="../css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" href="./min.css" />
+    <script type="text/javascript" src="../js/jquery-1.10.1.min.js"></script>
+</head>
+<body>
+    <div class="contentWrapper" style="{{style | styleFn}}">
+        {% for item in components %}
+            {% set itemKey = item.name +'_'+ loop.index0 %}
+            {% include "activity/components/"+item.name+"/"+item.name+".html" ignore missing %}
+        {% endfor %}
+    </div>
+
+    <script type="text/javascript" src="../js/flexible.js"></script>
+    <script type="text/javascript" src="../js/base.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript">
+        Global.actCode = '{{activityCode}}';
+        Global.code = '{{code}}';
+        Global.actData = JSON.parse('{{ components | comFilter | safe }}');
+        Global.downUrls = '{{download_urls}}';
+    </script>
+    <script type="text/javascript" src="./min.js"></script>
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?{{baidu_code}}";
+            var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</body>
+</html>

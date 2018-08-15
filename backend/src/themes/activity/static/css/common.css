@@ -1,0 +1,25 @@
+.contentWrapper{max-width: 540px;min-width: 320px;margin: 0 auto;min-height: 100%;overflow: hidden;background-size: contain;}
+
+.flex{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;
+-webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;}
+
+.flex-center-v {display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;display: flex; flex-direction: column; 
+-webkit-box-pack:justify;-ms-flex-pack:justify;-webkit-justify-content:center;justify-content:center;justify-content: center; }
+
+.toast{display: none;padding: 5px 5%;left: 50%;top: 50%;
+  -webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.6);position: fixed;max-width: 80%;border-radius: 6px;color: #fff;box-sizing: border-box;text-align: center;z-index: 1000;line-height: .6rem;word-wrap:break-word;}
+.toast span{font-size: .35rem;display:block;text-align: center;}
+
+.indicator{-webkit-transition: opacity .2s linear;transition: opacity .2s linear;display: none;}
+.indicator-wrapper{top: 50%;left: 50%;position: fixed;-webkit-transform: translate(-50%,-50%);transform: translate(-50%,-50%);border-radius: 5px;background: rgba(0,0,0,.7);color: #fff;box-sizing: border-box;text-align: center;padding: 15px;line-height: 18px;}
+.indicator-mask {top: 0;left: 0;position: fixed;width: 100%;height: 100%;opacity: 0;background: transparent;}
+.indicator-spin {text-align: center;display: inline-block;}
+.spinner-snake {-webkit-animation: spinner-rotate .8s infinite linear;animation: spinner-rotate .8s infinite linear;border: 4px solid transparent;border-radius: 50%;width: 32px;height: 32px;border-top-color: #ccc; border-left-color: #ccc; border-bottom-color: #ccc;}
+.indicator-text {display: none;color: #fff;text-align: center;margin-top: 10px;font-size: 14px;}
+@keyframes spinner-rotate{
+	0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}
+	to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}
+}
+
+.dl-mask{position: absolute;top: 0;right: 0;left: 0;bottom: 0;background: rgba(0, 0, 0, 0.6)}
+.dl-tip{position: absolute;top: 0;right: 0;	width: 90%;}

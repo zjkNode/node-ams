@@ -1,0 +1,30 @@
+{
+  "apps" : [{
+    "name": "ams-backend",
+    "script": "./server.js",
+    "instances": 1,
+    "watch": true,
+    // "ignore_watch":["node_modules", "logs", "public" ],// 忽略监控列表
+    // "watch_options": { "followSymlinks": false }, 
+    "cwd":"", // 当前工作目录
+    "env": { 
+      "NODE_ENV": "production" // 环境参数，当前指定为生产环境 
+    },
+    "env_dev": {
+      "NODE_ENV": "development",
+      "DEBUG": "app:*,api:*,proxy:*"
+    },
+    "env_production" : {
+      "NODE_ENV": "production"
+    },
+    "env_production_with_log" : {
+      "NODE_ENV": "production",
+      "DEBUG": "app:*,api:*"
+    },
+    "autorestart": true,
+    "max_memory_restart": "800M",
+    "error_file": "./logs/ams-backend-error.log", //default to $HOME/.pm2/logs/XXXerr.log
+    "out_file": "./logs/ams-backend-out.log",   //default to $HOME/.pm2/logs/XXXout.log
+    // "pid_file": "./logs/push-web.pid"
+  }]
+}

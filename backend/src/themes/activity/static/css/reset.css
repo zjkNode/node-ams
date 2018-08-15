@@ -1,0 +1,280 @@
+hr {
+	box-sizing: content-box; /* 1 */
+	height: 0; /* 1 */
+	overflow: visible; /* 2 */
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+pre {
+	font-family: monospace, monospace; /* 1 */
+	font-size: 1em; /* 2 */
+}
+*{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-family: "Microsoft YaHei",Arial,Helvetica,sans-serif;
+}
+html
+{
+	height: 100%;
+	/*-webkit-user-select: none; */  /* 禁止选中文本（如无文本选中需求，此为必选项） */
+	/*user-select: none;*/
+	line-height: 1.15; /* 2 */
+	-ms-text-size-adjust: 100%; /* 3 */
+	-webkit-text-size-adjust: 100%; /* 3 */
+}
+body
+{
+	height: 100%;
+	font-size-adjust: none;
+	position: relative;
+	min-width: 320px;
+	color: #444;
+	-webkit-text-size-adjust: none;
+	/*-webkit-user-select: none; */  /* 禁止选中文本（如无文本选中需求，此为必选项） */
+	/*user-select: none;*/
+	-webkit-font-smoothing: antialiased;
+	font: normal 1em/1.5 'Microsoft Yahei', 微软雅黑, 'HanHei SC', 'Helvetica Neue', Helvetica, 'Lantinghei SC', 'Hiragino Sans GB', STXihei, 华文细黑, 'Microsoft Sans Serif', 'WenQuanYi Micro Hei', SimSun, 宋体, sans;
+	background: #fff;
+}
+h1,
+h2,
+h3,
+h4
+{
+	font-weight: normal;
+}
+i
+{
+	font-style: normal;
+}
+
+/* ==========================================================================
+Links
+========================================================================== */
+/* *
+* Address `outline` inconsistency between Chrome and other browsers. */
+a
+{
+	color: #002be5;
+	outline:none;
+}
+a:focus
+{
+	outline:none;
+}
+a img{
+	border:0;
+}
+/**
+ * 1. Remove the bottom border in Firefox 39-.
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+ */
+
+abbr[title] {
+	border-bottom: none; /* 1 */
+	text-decoration: underline; /* 2 */
+	text-decoration: underline dotted; /* 2 */
+}
+
+/**
+ * Prevent the duplicate application of `bolder` by the next rule in Safari 6.
+ */
+
+b,
+strong {
+	font-weight: inherit;
+}
+code,
+kbd,
+samp {
+	font-family: monospace, monospace; /* 1 */
+	font-size: 1em; /* 2 */
+}
+/* *
+* Improve readability when focused and also mouse hovered in all browsers. */
+a:active,
+a:hover
+{
+	outline: 0;
+}
+a:link,
+a:visited
+{
+	text-decoration: none;
+}
+textarea
+{
+	vertical-align: top;
+}
+em
+{
+	font-style: normal;
+}
+ul,
+ol,
+li
+{
+	list-style: none;
+}
+
+/* *
+* Remove inner padding and search cancel button in Safari 5 and Chrome
+* on OS X. */
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-decoration
+{
+	-webkit-appearance: none;
+}
+
+/* *
+* 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
+* 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
+*    (include `-moz` to future-proof). */
+input[type='search']
+{
+	-webkit-box-sizing: content-box; /* 2 */
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+
+	-webkit-appearance: textfield; /* 1 */
+}
+div,ul,li,a{
+	-webkit-box-sizing: border-box; /* 2 */
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+/* *
+* 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+*    and `video` controls.
+* 2. Correct inability to style clickable `input` types in iOS. */
+button,
+html input[type='button'],
+input[type='reset'],
+input[type='submit']
+{
+	-webkit-appearance: button; /* 2 */
+}
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder
+{
+	/* WebKit browsers */
+	color: #ccc;
+}
+input::-webkit-inner-spin-button
+{
+	-webkit-appearance: none;
+}
+input::-webkit-outer-spin-button
+{
+	-webkit-appearance: none;
+}
+input
+{
+	border: none;
+	outline: none;
+}
+
+/* *
+* Address inconsistent `text-transform` inheritance for `button` and `select`.
+* All other form control elements do not inherit `text-transform` values.
+* Correct `button` style inheritance in Chrome,
+Safari 5+,
+and IE 8+.
+* Correct `select` style inheritance in Firefox 4+ and Opera. */
+button,
+select
+{
+	text-transform: none;
+	border:none;
+}
+
+/* *
+* 1. Correct font family not being inherited in all browsers.
+* 2. Correct font size not being inherited in all browsers.
+* 3. Address margins set differently in Firefox 4+,
+Safari 5,
+and Chrome. */
+button,
+input,
+select,
+textarea
+{
+	font-family: inherit; /* 1 */
+	font-size: 100%; /* 2 */
+
+	margin: 0; /* 3 */
+}
+
+/* *
+* Address Firefox 4+ setting `line-height` on `input` using ` !important` in
+* the UA stylesheet. */
+button,
+input
+{
+	line-height: normal;
+}
+
+textarea.fixAndroidKeyboard:focus, input.fixAKeyboard:focus {
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+	-webkit-user-modify: read-write-plaintext-only;
+}
+
+input:-webkit-autofill {
+	-webkit-box-shadow: 0 0 0px 1000px white inset !important;
+}
+a,button,input,optgroup,select,textarea,label,span,p{//禁止黑背景
+-webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+a, img {/*禁止弹出菜单*/
+	-webkit-touch-callout: none!important;
+}
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+	outline: 1px dotted ButtonText;
+}
+
+/**
+ * Change the border, margin, and padding in all browsers (opinionated).
+ */
+
+fieldset {
+	border: 1px solid #c0c0c0;
+	margin: 0 2px;
+	padding: 0.35em 0.625em 0.75em;
+}
+
+/**
+ * 1. Correct the text wrapping in Edge and IE.
+ * 2. Correct the color inheritance from `fieldset` elements in IE.
+ * 3. Remove the padding so developers are not caught out when they zero out
+ *    `fieldset` elements in all browsers.
+ */
+
+legend {
+	box-sizing: border-box; /* 1 */
+	color: inherit; /* 2 */
+	display: table; /* 1 */
+	max-width: 100%; /* 1 */
+	padding: 0; /* 3 */
+	white-space: normal; /* 1 */
+}
+a,button,input,div{-webkit-tap-highlight-color:rgba(255,0,0,0);}/* 1.去除android a/button/input标签被点击时产生的边框 2.去除ios a标签被点击时产生的半透明灰色背景 */
+.clearfix{
+	zoom:1;
+	_zoom:1;
+}
+.clearfix:after{
+	content: " ";
+	display: block;
+	clear: both;
+	height: 0;
+}
