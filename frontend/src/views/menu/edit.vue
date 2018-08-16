@@ -136,6 +136,7 @@
                     this.$http.put(apiUrl,data).then((res)=>{
                         this.isLoading = false;
                         this.hide();
+                        this.$store.dispatch('refreshMenuTree');
                         this.$emit('afterSubmit');
                     }).catch(() => {
                         this.isLoading = false;

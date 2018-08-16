@@ -78,7 +78,7 @@
             addFormVisible(val){
                 this.$emit('onAddVisibleChange',val);
             },
-            menuData(val, oldVal){
+            menuData(val){
                 let tmp = [{ name:'顶级菜单', id: 0, pid: 0 }];
                 if(val){
                     tmp = tmp.concat(val);
@@ -103,7 +103,7 @@
                     var pids = data.pid;
                     var _pid = pids.slice(-1)[0];
                     data.pid = _pid >0 ? _pid : 0;
-                    this.$http.post('/api/menu', data).then((res)=>{
+                    this.$http.post('/api/menu', data).then(()=>{
                         this.hide();
                         this.$store.dispatch('refreshMenuTree');
                         this.$emit('afterSubmit');
@@ -113,7 +113,7 @@
             pidChange(val){
                 if(!val[0]){
                     this.formData.pid = [0];
-                };
+                }
                 this.formData.pids = this.formData.pid.join(",");
             }
         }

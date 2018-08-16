@@ -148,7 +148,7 @@ exports.delete = function(req,res){
   });
 }
 
-exports.lists = function(req,res) {
+exports.list = function(req,res) {
   let curUser = req.session.user;
   var where = {};
   let searchKey = req.query.keys;
@@ -168,7 +168,7 @@ exports.lists = function(req,res) {
     async.waterfall([
       depService.allLists,
       function(depList, callback){
-        roleService.lists(where, page, function(error, resRoles){
+        roleService.list(where, page, function(error, resRoles){
           if(error){
             return callback(error);
           }
@@ -205,7 +205,7 @@ exports.lists = function(req,res) {
       function(depList, callback){
         let depIds = _.map(depList,'id');
         where.depid = ['in', depIds];
-        roleService.lists(where, page, function(error, resRoles) {
+        roleService.list(where, page, function(error, resRoles) {
           if(error){
             return callback(error);
           }
@@ -235,11 +235,22 @@ exports.lists = function(req,res) {
 };
 
 //根据部门ID获取该部门下所有的角色
-exports.getListsByDepId = function(req, res){
+exports.getListByDepId = function(req, res){
+  req.checkQuery({
+    'depId': {
+      isNotEmpty: { errorMessage: '部门id 不能为空'}
+    }
+  });
+  let vErrors = req.validationErrors();
+  if(vErrors) {
+      logger.error(__filename, '参数验证失败', vErrors);
+      return res.status(ValidationError.status).json(vErrors);
+  }
+  
   let where = {
-    depid: parseInt(req.body.depId)
+    depid: parseInt(req.query.depId)
   };
-  roleService.getRoleLists(where, function(err, roles){
+  roleService.getRoleList(where, function(err, roles){
     if(err){
       logService.log(req, '服务器出错，获取部门角色失败，部门id:'+ depId);
       let status = err.constructor.status;

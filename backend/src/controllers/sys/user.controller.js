@@ -123,7 +123,7 @@ exports.add = function (req,res) {
 
 exports.update = function(req,res) {
 	req.checkParams({
-	    'id': { notEmpty: { options: [true], errorMessage: '用户id 不能为空' }
+	    'id': { isNotEmpty: { options: [true], errorMessage: '用户id 不能为空' }
 	    }
 	  });
 	req.checkBody(userModel.validation);
@@ -160,7 +160,7 @@ exports.update = function(req,res) {
 
 exports.delete = function(req,res){
 	req.checkParams({
-		'id': { notEmpty: { options: [true], errorMessage: '用户id 不能为空'}
+		'id': { isNotEmpty: { errorMessage: '用户id 不能为空'}
 	    }
 	});
 
@@ -182,7 +182,7 @@ exports.delete = function(req,res){
 	});
 }
 
-exports.lists = function(req,res) {
+exports.list = function(req,res) {
 	let where = {};
 	let searchKey = req.query.keys;
 	let page = {

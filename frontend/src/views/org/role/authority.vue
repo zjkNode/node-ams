@@ -40,7 +40,7 @@
                 let me = this;
                 let url = '/api/rule/rulelists';
                 let data = '';
-                me.$http.get(url, {params:data}, {credentials: true})
+                me.$http.get(url, { params: data })
                         .then((res)=> {
                             if (res.body.code =='SUCCESS') {
                                 me.list=res.body.data;

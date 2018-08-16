@@ -91,18 +91,19 @@
         this.bindRoles(depId);
       },
       bindRoles(depId){
-        let url = '/api/roles/listsByDepId';
+        let url = '/api/role/byDepId';
+        let params = {
+          depId: depId
+        };
         this.isRoleLoading = true;
-        this.$http.post(url,{ depId: depId }).then((res)=>{
+        this.$http.get(url, { params: params }).then((res)=>{
             this.isRoleLoading = false;
-            if(res.body.code === 'SUCCESS'){
-                let roleList = res.body.data;
-                roleList = roleList || [];
-                this.roleOptions = roleList;
+            if(res.code !== 'SUCCESS'){
+              this.$message(res.msg);
                 return;
             } 
-            this.$message(res.body.msg);
-            
+            let roleList = res.body.data || [];
+            this.roleOptions = roleList;
         }).catch(() => {
           this.isRoleLoading = false;
         });

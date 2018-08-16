@@ -45,7 +45,7 @@ exports.update = function (data, where, callback) {
     });
 };
 
-exports.lists = function(where, page, callback){
+exports.list = function(where, page, callback){
     // 并行无关联
     async.parallel({
         total:function(callback){

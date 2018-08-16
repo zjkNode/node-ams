@@ -7,7 +7,7 @@
                 <el-input v-model="keys" placeholder="请输入角色名称/描述" @input="searchName"></el-input>
             </el-col>
             <el-col :span="10">
-                <el-button type="primary" @click="getAllRoles" icon="el-icon-search"> 查询</el-button>
+                <el-button type="primary" @click="bindRoles" icon="el-icon-search"> 查询</el-button>
                 <el-button type="primary" @click="addFormVisible = true" icon="el-icon-plus" pull="6">新增</el-button>
             </el-col>
         </el-row>
@@ -25,7 +25,7 @@
                 </el-table-column>
                 <el-table-column label="操作" width="140" fixed="right">
                     <template scope="scope">
-                        <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button type="text" size="small" @click="showEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button type="text" size="small" @click="handleJobs(scope.$index, scope.row)">权限</el-button>
                         <el-button type="text" size="small" @click="handleDel(scope.$index, scope.row)" style="color: #ff4949;">删除</el-button>
                     </template>
@@ -33,34 +33,33 @@
             </el-table>
         </template>
         <!--工具条-->
-        <div class="block pagbar">
-            <el-pagination
-                    @size-change="onSizeChange"
-                    @current-change="handleCurrentChange"
-                    :current-page="page"
-                    :page-sizes="[15, 30, 50, 100]"
-                    :page-size="pageSize"
-                    layout="total, sizes, prev, pager, next, jumper"
-                    :total="total">
-            </el-pagination>
-        </div>
+        <el-pagination
+                @size-change="onSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="page"
+                :page-sizes="[15, 30, 50, 100]"
+                :page-size="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total">
+        </el-pagination>
+        
         <!--新增界面-->
         <el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
-            <el-form :model="ruleForm" :rules="addFormRules" ref="ruleForm" label-width="80px">
+            <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="80px">
                 <el-form-item label="部门选择" prop="depid">
-                    <el-cascader change-on-select :options="depOptions"  :props="propss" v-model="ruleForm.depid">
+                    <el-cascader change-on-select :options="depOptions"  :props="propss" v-model="addForm.depid">
                     </el-cascader>
                 </el-form-item>
                 <el-form-item label="角色名称" prop="name">
-                    <el-input v-model="ruleForm.name"></el-input>
+                    <el-input v-model="addForm.name"></el-input>
                 </el-form-item>
                 <el-form-item label="角色描述" prop="desc">
-                    <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+                    <el-input type="textarea" v-model="addForm.desc"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click.native="addFormVisible = false">取消</el-button>
-                <el-button type="primary" @click.native="addSubmit('ruleForm')" :loading="addLoading">提交</el-button>
+                <el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
             </div>
         </el-dialog>
         <!--编辑界面-->
@@ -79,15 +78,13 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click.native="editFormVisible = false">取消</el-button>
-                <el-button type="primary" @click.native="editSubmit('editForm')" :loading="editLoading">提交</el-button>
+                <el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
             </div>
         </el-dialog>
 
     </el-row>
 </template>
 <script>
-    // import Tree from './tree.vue';
-    //import NProgress from 'nprogress'
     export default {
         data() {
             return {
@@ -95,12 +92,11 @@
                 roles:[],
                 loading: false,
                 editLoading: false,
-                listLoading:false,
                 addFormVisible: false,//新增界面是否显示
                 editFormVisible: false,//编辑界面是否显示
                 editJobsVisible:false,//编辑分配权限
                 //新增界面数据
-                ruleForm: {
+                addForm: {
                     name: '',
                     desc: '',
                     depid:[]
@@ -110,7 +106,6 @@
                     name: '',
                     desc:'',
                 },
-                tree:'',
                 addFormRules: {
                     depid:[{type: "array",required: true, message: '请选择部门', trigger: 'change'}],
                     name: [
@@ -146,201 +141,142 @@
                 propss:{ value:'id', label:'name' },
             }
         },
-        // components:{Tree},
         mounted() {
-            this.init()
+            this.bindRoles();
+            this.bindDevTree();
         },
         methods: {
-           init(){
-            this.getAllRoles();
-            this.getDepids();
-           },
-            //获取全部角色数据
-            getAllRoles(){
-                let me = this;
-                let url = '/api/roles/lists';
-                let data = {keys:this.keys,pageIndex:this.page,pageSize:this.pageSize};
-                me.loading=true;
-                me.$http.get(url, {params:data}, {credentials: true})
-                        .then((res)=> {
-                            me.loading = false;
-                            if (res.body.code =='SUCCESS') {
-                                var data = res.body.data;
-                                me.roles = data.lists;
-                                me.total = data.total;
-                            } else {
-                                me.$alert(res.body.msg,'友情提示', {
-                                    confirmButtonText: '确定',
-                                });
-                            }
-                        },(err) => {
-                            me.loading = false;
-                        });
-                // me.getJobsData();
-                // me.getDepids()
+            bindRoles(){
+                let url = '/api/role';
+                let data = {
+                    keys: this.keys,
+                    pageIndex: this.page,
+                    pageSize: this.pageSize
+                };
+                this.loading = true;
+                this.$http.get(url, { params:data }).then((res)=> {
+                    this.loading = false;
+                    if (res.code !=='SUCCESS') {
+                        this.$message(res.msg);
+                        return;
+                    } 
+
+                    var data = res.data;
+                    this.roles = data.lists;
+                    this.total = data.total;
+                }).catch(() => {
+                    this.loading = false;
+                });
             },
             //获取部门列表
-            getDepids(){
-                let url = '/api/dep/treeList';
+            bindDevTree(){
+                let url = '/api/dep/tree';
                 this.$http.get(url,null).then((res)=>{
-                    if(res.body.code === 'SUCCESS'){
-                        let depTree = res.body.data || [];
-                        if(depTree[0].id == -1){
-                            depTree.splice(0, 1); // 删除第一个 顶级 元素
-                        }
-                        this.depOptions = depTree;
+                    if(res.code !== 'SUCCESS'){
+                        this.$message(res.msg);
                         return;
                     }
-                    this.$message(res.body.msg);
 
-                },(err) => {
-                    console.log(err);
+                    let depTree = res.data || [];
+                    if(depTree[0].id == -1){
+                        depTree.splice(0, 1); // 删除第一个 顶级 元素
+                    }
+                    this.depOptions = depTree;
                 });
             },
             //新增
-            addSubmit(formName){
-                var me = this;
-                me.$refs[formName].validate((valid)=> {
-                    if (valid) {
-                        var data = Object.assign({},me.ruleForm);
-                        data.depid=data.depid.pop();
-                        var url = '/api/roles/add';
-                        me.addLoading = true;
-                        me.$http.post(url, data, {credentials: true})
-                                .then((res)=> {
-                                    me.addLoading = false;
-                                    if (res.body.code === 'SUCCESS') {
-                                        me.$message({
-                                            message: '提交成功',
-                                            type: 'success'
-                                        });
-                                        me.$refs['ruleForm'].resetFields();
-                                        me.addFormVisible = false;
-                                        me.getAllRoles()
-                                    } else {
-                                        me.$alert(res.body.msg,'友情提示', {
-                                            confirmButtonText: '确定'
-                                        });
-                                    }
-                                },(err) => {
-                                    me.addLoading = false;
-                                });
-
+            addSubmit(){
+                this.$refs.addForm.validate((valid)=> {
+                    if(!valid){
+                        return;
                     }
-                })
+                    var data = Object.assign({},this.addForm);
+                    data.depid = data.depid.pop();
+                    var url = '/api/role';
+                    this.addLoading = true;
+                    this.$http.post(url, data).then((res)=> {
+                        this.addLoading = false;
+                        if (res.code !== 'SUCCESS') {
+                            this.$message(res.msg);
+                            return;
+                        } 
+
+                        this.$refs.addForm.resetFields();
+                        this.addFormVisible = false;
+                        this.bindRoles();
+                    }).catch(() => {
+                        this.addLoading = false;
+                    });
+                });
             },
             //编辑
-            editSubmit(formName){
-                var me = this;
-                this.$refs[formName].validate((valid)=> {
-                    if (valid) {
-                        var data = Object.assign({},me.editForm);
-                        data.depid=data.depid.pop();
-                        var url = '/api/roles/'+data.id;
-                        me.editLoading = true;
-                        me.$http.put(url, data, {credentials: true})
-                                .then((res)=> {
-                                    me.editLoading = false;
-                                    if (res.body.code =='SUCCESS') {
-                                        me.$message({
-                                            message: '提交成功',
-                                            type: 'success'
-                                        });
-                                        me.$refs['editForm'].resetFields();
-                                        me.editFormVisible = false;
-                                        me.getAllRoles()
-                                    } else {
-                                        me.$alert(res.body.msg,'友情提示', {
-                                            confirmButtonText: '确定'
-                                        });
-                                    }
-                                },(err) => {
-                                    me.editLoading = false;
-                                });
+            editSubmit(){
+                this.$refs.editForm.validate((valid)=> {
+                    if(!valid){
+                        return;
                     }
-                })
+                    var data = Object.assign({},this.editForm);
+                    data.depid = data.depid.pop();
+                    var url = '/api/role/'+data.id;
+                    this.editLoading = true;
+                    this.$http.put(url, data).then((res)=> {
+                        this.editLoading = false;
+                        if (res.code !=='SUCCESS') {
+                            this.$message(res.msg);
+                            return;
+                        }
+
+                        this.$refs.editForm.resetFields();
+                        this.editFormVisible = false;
+                        this.bindRoles();
+                    }).catch(() => {
+                        this.editLoading = false;
+                    });
+                });
             },
             //删除
             handleDel(index,row){
-                let me = this;
                 let id = row.id;
-                me.$confirm('确认删除该记录吗?', '提示', {
-                    type: 'warning'
-                }).then(() => {
-                    let url = '/api/roles/' + id;
+                this.$confirm('确认删除该记录吗?', '提示', { type: 'warning' }).then(() => {
+                    let url = '/api/role/' + id;
                     let data ='';
-                    me.listLoading = true;
-                    me.$http.delete(url, data, {credentials: true})
-                            .then((res)=> {
-                                me.listLoading = false;
-                                if (res.body.code =='SUCCESS') {
-                                    me.$message({
-                                        message: '删除成功',
-                                        type: 'success'
-                                    });
-                                    me.getAllRoles()
-                                } else {
-                                    me.$alert(res.body.msg,'友情提示', {
-                                        confirmButtonText: '确定'
-                                    });
-                                }
-                            },(err) => {
-                                me.editLoading = false;
-                            });
-                }).catch(_ => {
-                    this.$message('已取消删除');
-                });
+                    this.$http.delete(url, data).then((res)=> {
+                        if (res.code !=='SUCCESS') {
+                            this.$message(res.msg);
+                            return;
+                        } 
+                        this.roles.splice(index,1);
+                    });
+                }).catch(() => {});
             },
             //显示编辑页面
-            handleEdit(index,row){
-                this.editForm=Object.assign({}, row);
-                this.editForm.depid=row.dep.pids != 0 ? row.dep.pids.split(',').map((item)=>{return parseInt(item)}) : [row.dep.id]
+            showEdit(index,row){
+                this.editForm = Object.assign({}, row);
+                this.editForm.depid = row.dep.pids != 0 ? 
+                                    row.dep.pids.split(',').map((item)=>{return parseInt(item)}) : 
+                                    [row.dep.id];
+
                 this.editFormVisible = true;
             },
             //显示分配权限页面
             handleJobs(index,row){
                 this.$router.push({
                     path:'/sys/org/role/authority',
-                    query:{id:parseInt(row.id)}
-                })
+                    query:{ id:row.id }
+                });
             },
             //跳转分页
             handleCurrentChange(val) {
                 this.page = val;
-                this.getAllRoles()
+                this.bindRoles();
             },
             onSizeChange(val){
                 this.pageSize = val;
-                this.getAllRoles()
+                this.bindRoles();
             },
             searchName(){
-                if(!this.keys){
-                    this.getAllRoles()
-                }
+                !this.keys && this.bindRoles();
             }
-
         }
     }
-
 </script>
-<style lang="scss">
-    .ul1{
-        position: relative;
-    }
-    .ul2{
-        margin-left:70px;
-    }
-    .li2 ul{
-        margin-left:70px;
-    }
-    .li5,.t2{
-        margin-top:-36px!important;
-    }
-    .t1 input{
-        -webkit-appearance: checkbox;
-    }
-    .transfer-footer {
-        margin-left: 20px;
-        padding: 6px 5px;
-    }
-</style>

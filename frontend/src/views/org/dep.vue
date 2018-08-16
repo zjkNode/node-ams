@@ -13,7 +13,7 @@
             
         </el-row>
         <el-row>
-            <el-table :data="depList" stripe v-loading="isLoading" style="width: 100%">
+            <el-table :data="depList" stripe v-loading="isLoading" >
                 <el-table-column type="index" width="60"></el-table-column>
                 <el-table-column prop="name" label="部门名称" show-overflow-tooltip :formatter="formatTree" class-name='flat-tree'></el-table-column>
                 <el-table-column prop="status" label="状态" width="100">
@@ -74,9 +74,7 @@
     </el-row>
 </template>
 <script>
-    var moment = require('moment');
-
-    export default {
+export default {
     data() {
       return {
             depList: null,
@@ -122,49 +120,42 @@
     },
     methods:{
         dateFormat(row,column,cellvalue){
-            if (!cellvalue) {  
-             return "";  
-            }  
-            return moment(cellvalue).format("YYYY-MM-DD HH:mm:ss");  
+            return this.$options.filters.formatDate(cellvalue);
         },
         formatTree(row, column,value){
-            let flatTree = this.$options.filters.flatTree;
-            return flatTree(row, value);
+            return this.$options.filters.flatTree(row, value);
         },
         refreshData(){
             this.bindDepList();
             this.bindDepTree();
         },
         bindDepList(){
-            let url = '/api/dep/lists';
+            let url = '/api/dep';
             let params = {
                 keys: this.keys
             };
             this.isLoading = true;
             this.$http.get(url,{ params: params}).then((res)=>{
                 this.isLoading = false;
-                if(res.body.code === 'SUCCESS'){
-                    this.depList = res.body.data;
+                if(res.code !== 'SUCCESS'){
+                    this.$message(res.msg);
                     return;
                 } 
-                this.$message(res.body.msg);
-                
-            },(err) => {
+
+                this.depList = res.data;
+            }).catch(() => {
                 this.isLoading = false;
             });
         },
         bindDepTree(){
-            let url = '/api/dep/treeList';
+            let url = '/api/dep/tree';
             this.$http.get(url,null).then((res)=>{
-                if(res.body.code === 'SUCCESS'){
-                    this.depOptions = res.body.data || [];
+                if(res.code !== 'SUCCESS'){
+                    this.$message(res.msg);
                     return;
                 } 
-                this.$message(res.body.msg);
-                
-            },(err) => {
-                console.log(err);
-            });
+                this.depOptions = res.data || [];
+            }).catch(() => {});
         },
         onEditClick(row){
             this.editFormData = Object.assign({}, row);
@@ -173,23 +164,16 @@
             this.isEditVisible = true;
         },
         onRemoveClick(index,row){
-            this.$confirm('确认删除该部门吗?', '友情提示', { type: 'warning'})
-            .then((res) => {
+            this.$confirm('确认删除该部门吗?', '友情提示', { type: 'warning'}).then(() => {
                 let url = '/api/dep/'+ row.id;
                 this.$http.delete(url).then((res)=>{
-                    if(res.body.code == 'SUCCESS'){
-                        this.refreshData();
+                    if(res.code !== 'SUCCESS'){
+                        this.$message(res.msg);
                         return;
                     }
-
-                    this.$message(res.body.msg);
-                    console.log(res.body.data);
-                },(err)=>{
-                    this.$message.error('删除部门时出错');
+                    this.refreshData();
                 });
-            }).catch(()=>{
-                this.$message('已取消删除');
-            });
+            }).catch(()=>{});
             
         },
         onAddSubmit(formName){
@@ -197,26 +181,20 @@
               if (!valid) {
                 return false;
               }
-              var apiUrl = "/api/dep/add";
+              var apiUrl = "/api/dep";
               this.isAddLoading = true;
               this.$http.post(apiUrl,this.addFormData).then((res)=>{
                 this.isAddLoading = false;
                 this.$refs[formName].resetFields();
-                if(res.body.code == 'SUCCESS'){
-                    this.isAddVisible = false;
-                    this.refreshData();
+                if(res.code !== 'SUCCESS'){
+                    this.$message(res.msg);
                     return;
                 } 
-                this.$message({
-                  showClose: true,
-                  duration: 0,
-                  message: res.body.msg,
-                  type: 'warning'
-                });
-              },(error)=>{
+                this.isAddVisible = false;
+                this.refreshData();
+              }).catch(() => {
                 this.isAddLoading = false;
               });
-
             });
         },
         onEditSubmit(formName){
@@ -229,31 +207,21 @@
               this.$http.put(apiUrl,this.editFormData).then((res)=>{
                 this.isEditLoading = false;
                 this.$refs[formName].resetFields();
-                if(res.body.code == 'SUCCESS'){
-                    this.isEditVisible = false;
-                    this.refreshData();
+                if(res.code !== 'SUCCESS'){
+                    this.$message(res.msg);
                     return;
                 } 
-                this.$message({
-                  showClose: true,
-                  duration: 0,
-                  message: res.body.msg,
-                  type: 'warning'
-                });
-                
-              },(error)=>{
+                this.isEditVisible = false;
+                this.refreshData();
+              }).catch(() => {
                 this.isEditLoading = false;
               });
-
             });
-        },
-        filterTag(value,row){
-            return row.status == value;
         },
         resetForm(formName) {
             this.$refs[formName].resetFields();
             this.isAddVisible = this.isEditVisible = false;
         }
     }
-  };
+}
 </script>

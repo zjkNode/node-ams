@@ -22,9 +22,20 @@ module.exports = {
                 get:'sys.dep.tree'
             }
         },
+        '/role':{
+            get:'sys.role.list',
+            post:'sys.role.add',
+            '/:id':{
+                put:'sys.role.update',
+                delete:'sys.role.delete'
+            },
+            '/byDepId':{
+                get:'sys.role.getListByDepId'
+            }
+        },
         '/user':{
         	post: 'sys.user.add',
-        	get: 'sys.user.lists',
+        	get: 'sys.user.list',
             '/signin': {
                 post: 'sys.user.signIn'
             },
@@ -32,6 +43,14 @@ module.exports = {
                 post: 'sys.user.signOut'
             }
         },
+        '/config':{
+            get:'sys.config.list',
+            post:'sys.config.add',
+            '/:id':{
+                put: 'sys.config.update',
+                delete: 'sys.config.delete'
+            }
+        }
     }
     
 }

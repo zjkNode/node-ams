@@ -8,9 +8,8 @@ export function formatDate(value, format){
 export function isNormal(value){
   if(/[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/im.test(value)){
     return false;
-  }else{
-    return true;
   }
+  return true;
 }
 
 
@@ -31,6 +30,6 @@ export function disableItem(datas,id){
       item.disabled = item.id === id;
       if( !item.disabled && item.children){
           disableItem(item.children,id)
-      };
+      }
   })
 }

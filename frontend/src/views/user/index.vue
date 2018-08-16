@@ -125,7 +125,7 @@ export default {
         },
         onEditClick(row){
             this.rowData = Object.assign({}, row);
-            this.refs.editForm.show();
+            this.$refs.editForm.show();
         },
         onRemoveClick(index,row){
             this.$confirm('确认删除该用户吗?', '友情提示', { type: 'warning'})

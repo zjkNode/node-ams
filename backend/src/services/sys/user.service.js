@@ -75,7 +75,7 @@ exports.lists = function(where, page, callback){
 		}],
 		roleList: ['lists', function(results, callback){
 			let roleIds = _.union(_.map(results.lists, 'roleid'));
-			roleService.getRoleLists({ id: ['in', roleIds] }, function(error, roles){
+			roleService.getRoleList({ id: ['in', roleIds] }, function(error, roles){
 				return callback(error, roles);
 			});
 		}]

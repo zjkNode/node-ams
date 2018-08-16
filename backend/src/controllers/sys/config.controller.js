@@ -28,7 +28,7 @@ exports.add = function (req,res) {
             let status = err.constructor.status;
             return res.status(status).json(err);
         }
-        return res.status(200).json({ code: 200, msg:'新增成功'});
+        return res.status(200).json({ code: 'SUCCESS', msg:'新增成功'});
     });
 }
 
@@ -52,7 +52,7 @@ exports.delete = function(req,res){
             let status = err.constructor.status;
             return res.status(status).json(err);
         }
-        return res.status(200).json({code: 200,msg:'删除成功'});
+        return res.status(200).json({code: 'SUCCESS',msg:'删除成功'});
     });
 }
 
@@ -74,6 +74,7 @@ exports.update = function(req,res) {
     var configs = {
         id: req.params.id,
         name:req.body.name,
+        desc: req.body.desc,
         key:req.body.key,
         value:req.body.value,
         status:req.body.status
@@ -85,11 +86,11 @@ exports.update = function(req,res) {
             let status = err.constructor.status;
             return res.status(status).json(err);
         }
-        return res.status(200).json({code: 200,msg:'更新成功'});
+        return res.status(200).json({code: 'SUCCESS', msg:'更新成功'});
     });
 }
 
-exports.lists = function(req,res) {
+exports.list = function(req,res) {
     var where = {
     };
     let searchKey = req.query.keys;
@@ -106,14 +107,14 @@ exports.lists = function(req,res) {
         value:['like',searchKey]
     }
     }
-    configService.lists(where, page, function(err, result){
+    configService.list(where, page, function(err, result){
         if(err){
             logService.log(req, '服务器出错，查询配置出错');
             let status = err.constructor.status;
             return res.status(status).json(err);
         }
         return res.status(200).json({
-            code: 200,
+            code: 'SUCCESS',
             data:result,
             msg:'success'
         });

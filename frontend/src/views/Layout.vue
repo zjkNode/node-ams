@@ -132,8 +132,11 @@
         border:none;
     }
 }
-.el-cascader{
+.el-cascader, .el-select{
     width:100%;
+}
+.el-pagination{
+    margin-top:10px;
 }
   
 .main {

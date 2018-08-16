@@ -92,7 +92,6 @@
     </el-row>
 </template>
 <script type="text/ecmascript-6">
-    //import NProgress from 'nprogress'
     export default {
         data() {
             return {
@@ -165,51 +164,47 @@
                 this.getAllRules()
             },
             getOptions(){
-                let me = this;
                 let url = '/api/rule/alllists';
                 let data = '';
-                me.options=[{name:'顶级',id:-1,pid:0}];
-                me.$http.get(url, {params:data}, {credentials: true})
-                        .then((res)=> {
-                            me.loading = false;
+                this.options=[{name:'顶级',id:-1,pid:0}];
+                this.$http.get(url, {params:data}).then((res)=> {
+                            this.loading = false;
                             if (res.body.code =='SUCCESS') {
                                 var lists = res.body.data;
-                                me.options=!!lists ? [...me.options,...lists] : me.options;
+                                this.options=!!lists ? [...this.options,...lists] : this.options;
                             } else {
-                                me.$alert(res.body.msg,'友情提示', {
+                                this.$alert(res.body.msg,'友情提示', {
                                     confirmButtonText: '确定',
                                 });
                             }
                         },(err) => {
-                            me.loading = false;
+                            this.loading = false;
                         });
             },
             //获取全部数据
             getAllRules(){
-                let me = this;
                 let url = '/api/rule/lists';
                 let data = {keys:this.keys};
-                me.loading=true;
-                me.$http.get(url, {params:data}, {credentials: true})
-                        .then((res)=> {
-                            me.loading = false;
+                this.loading=true;
+                this.$http.get(url, {params:data}).then((res)=> {
+                            this.loading = false;
                             if (res.body.code =='SUCCESS') {
-                                me.rules = res.body.data;
+                                this.rules = res.body.data;
                             } else {
-                                me.$alert(res.body.msg,'友情提示', {
+                                this.$alert(res.body.msg,'友情提示', {
                                     confirmButtonText: '确定',
                                 });
                             }
                         },(err) => {
-                            me.loading = false;
+                            this.loading = false;
                         });
             },
             //新增
             addSubmit(formName){
                 var me = this;
-                me.$refs[formName].validate((valid)=> {
+                this.$refs[formName].validate((valid)=> {
                     if (valid) {
-                        var data = Object.assign({},me.ruleForm);
+                        var data = Object.assign({},this.ruleForm);
                         var pids = data.pid;
                         data.pids=(pids.length === 1 && pids[0] <0) ? 0 : pids.join(',');
                         var _pid = pids.pop();
@@ -217,26 +212,25 @@
                         data.status = 1;
                         data.path = data.path.replace(/(^\s*)|(\s*$)/g,"");
                         var url = '/api/rule/add';
-                        me.addLoading = true;
-                        me.$http.post(url, data, {credentials: true})
-                                .then((res)=> {
-                                    me.addLoading = false;
+                        this.addLoading = true;
+                        this.$http.post(url, data).then((res)=> {
+                                    this.addLoading = false;
                                     if (res.body.code === 'SUCCESS') {
-                                        me.$message({
+                                        this.$message({
                                             message: '提交成功',
                                             type: 'success'
                                         });
-                                        me.$refs['ruleForm'].resetFields();
-                                        me.addFormVisible = false;
-                                        me.getAllRules();
+                                        this.$refs['ruleForm'].resetFields();
+                                        this.addFormVisible = false;
+                                        this.getAllRules();
                                         this.getOptions()
                                     } else {
-                                        me.$alert(res.body.msg,'友情提示', {
+                                        this.$alert(res.body.msg,'友情提示', {
                                             confirmButtonText: '确定'
                                         });
                                     }
                                 },(err) => {
-                                    me.addLoading = false;
+                                    this.addLoading = false;
                                 });
 
                     }
@@ -251,8 +245,8 @@
                         var pids = data.pid;
                         data.pids=(pids.length === 1 && pids[0] <0) ? 0 : pids.join(',');
                         var _pid = pids.pop();
-                        if(_pid == me.editValue){
-                            me.$alert('不能选择自己作为父集', '父级功能选择错误', {
+                        if(_pid == this.editValue){
+                            this.$alert('不能选择自己作为父集', '父级功能选择错误', {
                                 confirmButtonText: '确定',
                                 callback: action => {
                                     this.$message({
@@ -266,69 +260,60 @@
                         data.pid = _pid >0 ? _pid : 0;
                         data.path = data.path.replace(/(^\s*)|(\s*$)/g, "");
                         var url = '/api/rule/'+data.id;
-                        me.editLoading = true;
-                        me.$http.put(url, data, {credentials: true})
-                                .then((res)=> {
-                                    me.editLoading = false;
+                        this.editLoading = true;
+                        this.$http.put(url, data).then((res)=> {
+                                    this.editLoading = false;
                                     if (res.body.code =='SUCCESS') {
-                                        me.$message({
+                                        this.$message({
                                             message: '提交成功',
                                             type: 'success'
                                         });
-                                        me.$refs['editForm'].resetFields();
-                                        me.editFormVisible = false;
-                                        me.getAllRules();
+                                        this.$refs['editForm'].resetFields();
+                                        this.editFormVisible = false;
+                                        this.getAllRules();
                                         this.getOptions()
                                     } else {
-                                        me.$alert(res.body.msg,'友情提示', {
+                                        this.$alert(res.body.msg,'友情提示', {
                                             confirmButtonText: '确定'
                                         });
                                     }
                                 },(err) => {
-                                    me.editLoading = false;
+                                    this.editLoading = false;
                                 });
                     }
                 })
             },
             //删除
             handleDel(index,row){
-                let me = this;
                 let id = row.id;
-                me.$confirm('确认删除该功能吗?如若有子功能,将一并删除', '提示', {
-                    type: 'warning'
-                }).then(() => {
+                this.$confirm('确认删除该功能吗?如若有子功能,将一并删除', '提示', { type: 'warning' }).then(() => {
                     let url = '/api/rule/' + id;
-                    let data ='';
-                    me.listLoading = true;
-                    me.$http.delete(url, data, {credentials: true})
-                            .then((res)=> {
-                                me.listLoading = false;
-                                if (res.body.code =='SUCCESS') {
-                                    me.$message({
-                                        message: '删除成功',
-                                        type: 'success'
-                                    });
-                                    me.getAllRules();
-                                    this.getOptions()
-                                } else {
-                                    me.$alert(res.body.msg,'友情提示', {
-                                        confirmButtonText: '确定'
-                                    });
-                                }
-                            },(err) => {
-                                me.editLoading = false;
+                    this.listLoading = true;
+                    this.$http.delete(url).then((res) => {
+                        this.listLoading = false;
+                        if (res.body.code =='SUCCESS') {
+                            this.$message({
+                                message: '删除成功',
+                                type: 'success'
                             });
-                }).catch( _ => {
-                    this.$message('已取消删除');
-                });
+                            this.getAllRules();
+                            this.getOptions()
+                        } else {
+                            this.$alert(res.body.msg,'友情提示', {
+                                confirmButtonText: '确定'
+                            });
+                        }
+                    }).catch(() => {
+                        this.editLoading = false;
+                    });
+                }).catch( () => {});
             },
             //显示编辑页面
             handleEdit(index,row){
                 this.editFormVisible = true;
                 var editForm = Object.assign({}, row);
-                editForm.pid==0 ? editForm.pid=[-1] : editForm.pid=editForm.pids.split(',');editForm.pid=editForm.pid.map((item)=>{
-                    return item-0
-                });
+                editForm.pid == 0 ? editForm.pid=[-1] : editForm.pid=editForm.pids.split(',');
+                editForm.pid = editForm.pid.map((item)=> parseInt(item));
                 this.editForm = editForm;
                 this.editValue = row.id;
             },

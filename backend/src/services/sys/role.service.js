@@ -62,7 +62,7 @@ exports.delete = function(where, callback){
 /**
  * 总数据
  */
- exports.lists = function(where, page, callback){
+ exports.list = function(where, page, callback){
   async.auto({
     total: function(callback){
       mysql.where(where).count(roleModel.tbname,function(err,res){
@@ -92,7 +92,7 @@ exports.delete = function(where, callback){
   });
 }
 
-exports.getRoleLists = function(where,callback){
+exports.getRoleList = function(where,callback){
   mysql.where(where)
        .select(roleModel.tbname, function(err, rows){
         if(err){
