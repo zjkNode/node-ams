@@ -28,17 +28,6 @@
             menuData:'getMenuTree',
         }),
         data() {
-            let handleInput = (rule,val,callback) =>{
-                if( rule.field == "sort"){
-                    if(val>99 || val<1){
-                        callback(new Error('请输入1-99之间的数字'));
-                    }else{
-                        callback();
-                    }
-                }else{
-                    callback();
-                }
-            };
             return {
                 menuTree:[],
                 isVisible:false,
@@ -61,10 +50,10 @@
                         { required: true, message: '请输入菜单访问地址', trigger: 'blur' }
                     ],
                     pid: [
-                        { required: true, validator:handleInput, trigger: 'change'}
+                        { required: true, min: 1, type:'array', trigger: 'change'}
                     ],
                     sort: [
-                        { validator:handleInput,required: false,trigger: 'change', type:'number' }
+                        { required: false, min:1, message:'请输入菜单排序编号', type:'number', trigger: 'change' }
                     ]
                 }
             };
@@ -72,12 +61,6 @@
         mounted() {
         },
         watch: {
-            isAddVisible(val){
-                this.addFormVisible = val;
-            },
-            addFormVisible(val){
-                this.$emit('onAddVisibleChange',val);
-            },
             menuData(val){
                 let tmp = [{ name:'顶级菜单', id: 0, pid: 0 }];
                 if(val){
@@ -111,10 +94,11 @@
                 });
             },
             pidChange(val){
-                if(!val[0]){
-                    this.formData.pid = [0];
-                }
-                this.formData.pids = this.formData.pid.join(",");
+                console.log(val)
+                // if(!val[0]){
+                //     this.formData.pid = [0];
+                // }
+                // this.formData.pids = this.formData.pid.join(",");
             }
         }
     }
