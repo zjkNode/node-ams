@@ -3,7 +3,7 @@ node_modules/
 dist/
 npm-debug.log
 .idea/
-logs/*
+backend/logs/*
 www/
 temp
-src/themes/activity/components
+backend/src/themes/activity/components
