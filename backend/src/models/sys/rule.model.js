@@ -7,15 +7,15 @@ var moment = require('moment'),
 
 let validation = {
   'name': {
-    notEmpty: { options: [true], errorMessage: '类别名称不能为空' },
-    isLength: { options: [0,100], errorMessage: '类别名称不能超过100个字符'}
+    isNotEmpty: { errorMessage: '类别名称不能为空' },
+    isLength: { options: [1,100], errorMessage: '类别名称不能超过100个字符'}
   },
   'pids': {
-    notEmpty: { options: [true], errorMessage: '类别父集不能为空' }
+    isNotEmpty: { errorMessage: '类别父集不能为空' }
   },
   'path': {
-    notEmpty: { options: [true], errorMessage: '类别唯一代码不能为空' },
-    isLength: { options: [0,100], errorMessage: '类别名称不能超过100个字符'}
+    isNotEmpty: { errorMessage: '类别唯一代码不能为空' },
+    isLength: { options: [1,100], errorMessage: '类别名称不能超过100个字符'}
   }
 };
 let auto = function(news) {

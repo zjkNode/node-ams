@@ -7,16 +7,16 @@ var moment = require('moment'),
 
 let validation = {
     'name': {
-        notEmpty: { options: [true], errorMessage: '配置名称 不能为空' }
+        isNotEmpty: { errorMessage: '配置名称 不能为空' }
     },
     'desc': {
-        notEmpty: { options: [true], errorMessage: '配置描述 不能为空' }
+        isNotEmpty: { errorMessage: '配置描述 不能为空' }
     },
     'key': {
-        notEmpty: { options: [true], errorMessage: '配置关键字 不能为空' }
+        isNotEmpty: { errorMessage: '配置关键字 不能为空' }
     },
     'value': {
-        notEmpty: { options: [true], errorMessage: '配置value 不能为空' }
+        isNotEmpty: { errorMessage: '配置value 不能为空' }
     }
 };
 

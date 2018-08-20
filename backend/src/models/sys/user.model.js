@@ -7,21 +7,20 @@ var moment = require('moment'),
 
 let validation = {
 	'email': {
-		notEmpty: { options: [true], errorMessage: 'email 不能为空' },
-		isEmail: { errorMessage: 'email 格式不正确' }
+		isNotEmpty: { errorMessage: '帐户不能为空' },
 	},
 	'nickname': {
-		notEmpty: { options: [true], errorMessage: '用户别名 不能为空' }
+		isNotEmpty: { errorMessage: '用户别名不能为空' }
 	},
 	'password': {
-		notEmpty: { options: [true], errorMessage: '密码 不能为空' },
-		isLength: { options: [6], errorMessage: '密码 不能小于 6 位'}
+		isNotEmpty: { errorMessage: '密码不能为空' },
+		isLength: { options: [6], errorMessage: '密码不能小于 6 位'}
 	},
 	'depids': {
-		notEmpty: { options: [true], errorMessage: '部门 不能为空' }
+		isNotEmpty: { errorMessage: '部门不能为空' }
 	},
 	'roleid': {
-		notEmpty: { options: [true], errorMessage: '角色 不能为空'}
+		isNotEmpty: { errorMessage: '角色不能为空'}
 	}
 };
 
