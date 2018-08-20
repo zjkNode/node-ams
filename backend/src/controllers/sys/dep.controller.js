@@ -5,7 +5,7 @@ var async = require('async'),
 	CONSTANTS = require('../../config/constants.config'),
 	depModel = require('../../models/sys/dep.model'),
 	depService = require('../../services/sys/dep.service'),
-	logService = require('../../services/sys/logs.service'),
+	logService = require('../../services/sys/log.service'),
 	userService = require('../../services/sys/user.service'),
 	roleService = require('../../services/sys/role.service');
 

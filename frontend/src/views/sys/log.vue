@@ -1,12 +1,12 @@
 <template>
-    <el-row class="logs">
+    <el-row>
         <h2>日志管理</h2>
         <el-row :gutter="20" class="tools">
             <el-col :span="6">
                 <el-input v-model="keys" placeholder="请输入用户名/内容/链接地址"></el-input>
             </el-col>
             <el-col :span="10">
-                <el-button type="primary" icon="el-icon-search" @click="getLogs">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="loadData">查询</el-button>
             </el-col>
         </el-row>
         <el-table :data="logsList" stripe v-loading="isLoading">
@@ -30,9 +30,7 @@
         </div>
     </el-row>
 </template>
-<script type="text/ecmascript-6">
-    var moment = require('moment');
-
+<script>
     export default({
         data() {
             return {
@@ -42,17 +40,15 @@
                 total: 0,
                 keys: "",
                 logsList: [],
-//             新增页面数据;
-                addFormShow: false,
             }
         },
         mounted(){
-            this.getLogsDate();
+            this.loadData();
         },
         methods: {
             //获取日志列表;
-            getLogsDate(){
-                let url = '/api/logs/lists';
+            loadData(){
+                let url = '/api/log';
                 let params = {
                     keys: this.keys,
                     pageSize: this.pageSize,
@@ -61,36 +57,27 @@
                 this.isLoading = true;
                 this.$http.get(url, {params: params}).then((res)=> {
                     this.isLoading = false;
-                    if (res.body.code === 200) {
-                        let resData = res.body.data;
-                        this.logsList = resData.lists;
-                        this.total = resData.total;
+                    if (res.code === 200) {
+                        this.$toast(res.msg);
+                        return;
                     }
-                }, (err) => {
+                    let resData = res.data;
+                    this.logsList = resData.lists;
+                    this.total = resData.total;
+                }).catch(() => {
                     this.isLoading = false;
                 });
             },
-            getLogs(){
-                this.getLogsDate();
-            },
             handleSizeChange(val) {
                 this.pageSize = val;
-                this.getLogs();
+                this.loadData();
             },
             handleCurrentChange(val) {
                 this.pageIndex = val;
-                this.getLogs();
+                this.loadData();
             },
             dateFormat(row, column, cellvalue){
-                var date = row[column.property];
-                if (date == undefined) {
-                    return "";
-                }
-                return moment(date).format("YYYY-MM-DD HH:mm:ss");
-            },
-            resetForm(formName) {
-                this.$refs[formName].resetFields();
-                this.addFormShow = false;
+                this.$options.filters.formatDate(cellvalue);
             }
         }
     })

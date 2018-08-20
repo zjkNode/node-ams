@@ -14,7 +14,7 @@
 
         <!--列表-->
         <template>
-            <el-table :data="rules" highlight-current-row v-loading="loading" style="width: 100%;">
+            <el-table highlight-current-row v-loading="loading">
                 <el-table-column type="index" width="60" >
                 </el-table-column>
                 <el-table-column prop="name" label="功能名称" :formatter="formatTree" show-overflow-tooltip class-name='flat-tree'>
@@ -151,13 +151,16 @@
                 return '未知';
             }
         },
+        mounted() {
+            this.getAllRules();
+            this.getOptions()
+        },
         methods: {
             filterTag(value,row){
                 return row.status == value;
             },
             formatTree(row, column,value){
-                let flatTree = this.$options.filters.flatTree;
-                return flatTree(row, value);
+                return this.$options.filters.flatTree(row, value);
             },
             //查询
             getrules(){
@@ -166,7 +169,7 @@
             getOptions(){
                 let url = '/api/rule/alllists';
                 let data = '';
-                this.options=[{name:'顶级',id:-1,pid:0}];
+                this.options = [{name:'顶级',id:-1,pid:0}];
                 this.$http.get(url, {params:data}).then((res)=> {
                             this.loading = false;
                             if (res.body.code =='SUCCESS') {
@@ -183,21 +186,19 @@
             },
             //获取全部数据
             getAllRules(){
-                let url = '/api/rule/lists';
-                let data = {keys:this.keys};
-                this.loading=true;
-                this.$http.get(url, {params:data}).then((res)=> {
-                            this.loading = false;
-                            if (res.body.code =='SUCCESS') {
-                                this.rules = res.body.data;
-                            } else {
-                                this.$alert(res.body.msg,'友情提示', {
-                                    confirmButtonText: '确定',
-                                });
-                            }
-                        },(err) => {
-                            this.loading = false;
-                        });
+                let url = '/api/rule';
+                let data = { keys: this.keys };
+                this.loading = true;
+                this.$http.get(url, { params: data }).then((res)=> {
+                    this.loading = false;
+                    if(res.code !== 'SUCCESS'){
+                        this.$toast(res.msg);
+                        return;
+                    }
+                    this.rules = res.data;
+                }).catch(() => {
+                    this.loading = false;
+                });
             },
             //新增
             addSubmit(formName){
@@ -330,10 +331,6 @@
                 }
             }
 
-        },
-        mounted() {
-            this.getAllRules();
-            this.getOptions()
         }
     }
 

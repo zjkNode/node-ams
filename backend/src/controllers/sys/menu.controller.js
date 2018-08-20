@@ -5,7 +5,7 @@ var async = require('async'),
 	CONSTANTS = require('../../config/constants.config'),
 	menuModel = require('../../models/sys/menu.model'),
 	menuService = require('../../services/sys/menu.service'),
-	logService = require('../../services/sys/logs.service');
+	logService = require('../../services/sys/log.service');
 
 const { ComError, ValidationError, DBError} = require('../../models/errors.model');
 

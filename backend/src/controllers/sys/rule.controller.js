@@ -8,7 +8,8 @@ var async = require('async'),
   logger = require('../../lib/logger.lib'),
   ruleModel = require('../../models/sys/rule.model'),
   ruleService = require('../../services/sys/rule.service'),
-  logService = require('../../services/sys/logs.service');
+  logService = require('../../services/sys/log.service');
+
 const { ComError, ValidationError, DBError} = require('../../models/errors.model');
 
 exports.add = function(req,res){
@@ -135,7 +136,7 @@ exports.delete = function(req,res){
   });
 };
 
-exports.lists = function(req,res) {
+exports.list = function(req,res) {
   var where = {
   };
   let searchKey = req.query.keys;
@@ -226,7 +227,7 @@ exports.lists = function(req,res) {
       });
     })
   }
-};
+}
 
 exports.allLists = function(req,res){
   ruleService.allLists(function(err,result){
@@ -240,7 +241,7 @@ exports.allLists = function(req,res){
       data:utils.buildTree(result,0)
     })
   })
-};
+}
 
 // 用户权限 在localStorage 里已经存在，没必要再去取
 exports.getUserRules=function(req,res){

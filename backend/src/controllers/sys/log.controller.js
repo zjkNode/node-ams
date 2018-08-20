@@ -1,11 +1,10 @@
 var async = require('async'),
     logger = require('../../lib/logger.lib'),
-    logsModel = require('../../models/sys/logs.model'),
-    logsService = require('../../services/sys/logs.service');
+    logModel = require('../../models/sys/log.model'),
+    logService = require('../../services/sys/log.service');
 
-exports.getAllLogs = function (req, res) {
+exports.list = function (req, res) {
     var where = {
-        // status:1
     };
     let searchKey = req.query.keys;
     let page = {
@@ -20,7 +19,7 @@ exports.getAllLogs = function (req, res) {
             username: ['like', searchKey],
         }
     }
-    logsService.lists(where, page, function (err, result) {
+    logService.list(where, page, function (err, result) {
         if(err){
             logService.log(req, '服务器出错，更新配置失败');
             let status = err.constructor.status;

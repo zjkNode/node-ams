@@ -8,7 +8,7 @@ var async = require('async'),
   logger = require('../../lib/logger.lib'),
   roleModel = require('../../models/sys/role.model'),
   roleService = require('../../services/sys/role.service'),
-  logService = require('../../services/sys/logs.service'),
+  logService = require('../../services/sys/log.service'),
   depService = require('../../services/sys/dep.service');
 const { ComError, ValidationError, DBError} = require('../../models/errors.model');
 

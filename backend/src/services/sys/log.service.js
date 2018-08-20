@@ -2,7 +2,7 @@ var async = require('async'),
     _ = require('lodash'),
     mysql = require('../../lib/mysqldb.lib.js'),
     logger = require('../../lib/logger.lib'),
-    logsModel = require('../../models/sys/logs.model');
+    logModel = require('../../models/sys/log.model');
 
 const { DBError } = require('../../models/errors.model');
 
@@ -15,20 +15,20 @@ exports.log = function (req,content) {
         ip: req.ip.substring(7),
         username: userName ? userName.nickname : ''
     }
-    logsModel.auto(logsInfo);
+    logModel.auto(logsInfo);
     
-    mysql.insert(logsModel.tbname, logsInfo, function (err, resId) {
+    mysql.insert(logModel.tbname, logsInfo, function (err, resId) {
         if (err) {
             logger.errorDB(__filename, err);
         }
     });
-};
+}
 
-exports.lists = function (where, page, callback) {
+exports.list = function (where, page, callback) {
     // 并行无关联
     async.parallel({
         total: function (callback) {
-            mysql.where(where).count(logsModel.tbname, function (err, res) {
+            mysql.where(where).count(logModel.tbname, function (err, res) {
                 callback(err, res); // res 将被赋值 total
             });
         },
@@ -36,7 +36,7 @@ exports.lists = function (where, page, callback) {
             mysql.where(where)
                 .order({id: 'desc'})
                 .limit(page.index, page.size)
-                .select(logsModel.tbname, function (err, rows) {
+                .select(logModel.tbname, function (err, rows) {
                     callback(err, rows);
                 });
         }

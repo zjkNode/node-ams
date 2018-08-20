@@ -4,7 +4,7 @@ let async = require('async'),
 	logger = require('../../lib/logger.lib'),
 	userModel = require('../../models/sys/user.model'),
 	userService = require('../../services/sys/user.service'),
-	logService = require('../../services/sys/logs.service'),
+	logService = require('../../services/sys/log.service'),
 	depService = require('../../services/sys/dep.service'),
 	roleService = require('../../services/sys/role.service');
 

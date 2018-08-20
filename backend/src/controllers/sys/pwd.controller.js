@@ -1,7 +1,7 @@
 var utils = require('../../lib/utils'),
 	pwdModel = require('../../models/sys/pwd.model'),
 	userService = require('../../services/sys/user.service'),
-	logService = require('../../services/sys/logs.service');
+	logService = require('../../services/sys/log.service');
 const { ComError, ValidationError, DBError} = require('../../models/errors.model');
 
 exports.update = function(req,res) {

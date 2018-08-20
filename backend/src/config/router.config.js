@@ -50,6 +50,17 @@ module.exports = {
                 put: 'sys.config.update',
                 delete: 'sys.config.delete'
             }
+        },
+        '/log':{
+            get: 'sys.log.list',
+        },
+        '/rule':{
+            get:'sys.rule.list',
+            post: 'sys.rule.add',
+            '/:id':{
+                put:'sys.rule.update',
+                delete: 'sys.rule.delete'
+            }
         }
     }
     
