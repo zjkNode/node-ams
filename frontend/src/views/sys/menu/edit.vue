@@ -36,7 +36,6 @@
 
     export default {
         props: {
-            isEditVisible: { type: Boolean, default: false },
             rowData:null
         },
         computed: mapGetters({
