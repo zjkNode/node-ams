@@ -5,23 +5,21 @@ var express = require('express');
 // var nunjucks = require('nunjucks');
 // var compression = require('compression');
 //var favicon = require('serve-favicon');
-// var cookieParser = require('cookie-parser');
+var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var validator = require('./src/lib/validator.lib');
 var session = require('./src/lib/session.lib');
 var logger = require('./src/lib/logger.lib');
 var router = require('./src/lib/route-map.lib');
 // var filter = require('./src/lib/filter.lib');
-// var authHandler = require('./src/handlers/auth.handler');
-// var exceptionHandler = require('./src/handlers/exception.handler');
+var authHandler = require('./src/handlers/auth.handler');
+var exceptionHandler = require('./src/handlers/exception.handler');
 // // var scheduleJob = require('./handlers/schedule.handler');
 // var sysHandler = require('./handlers/system.handler');
-// var errors = require('./src/controllers/errors.controller').error;
-
-// var CONSTANTS = require('./src/config/constants.config');
+var errors = require('./src/controllers/errors.controller').error;
 
 var app = express();
-var port = process.env.PORT || '8081';
+var port = process.env.PORT || '8071';
 
 /**
  * 设置模板解析
@@ -46,7 +44,7 @@ app.use(logger.access());
 app.use(bodyParser.json({ limit:'10mb' }));
 app.use(bodyParser.urlencoded({ limit:'10mb', extended: true }));
 app.use(validator());
-// app.use(cookieParser());
+app.use(cookieParser());
 app.use(session.check(), session.init());
 // // app.use(express.static(path.join(__dirname, 'temp')));
 // // app.use('/temp', express.static(path.join(__dirname, 'temp'))); // 活动上传图片临时目录访问路径
@@ -54,10 +52,10 @@ app.use(session.check(), session.init());
 // // app.use('/images', express.static(path.join(__dirname, 'www/nodecms')));
 
 
-// app.use(exceptionHandler); // 异常拦截器
-// app.use(authHandler);// 权限拦截器
+app.use(exceptionHandler); // 异常拦截器
+app.use(authHandler);// 权限拦截器
 app.use(router); // 转给 Roter 处理路由
-// app.use(errors); // 统一错误处理  如 404
+app.use(errors); // 统一错误处理  如 404
 // app.use(sysHandler); // 启动时初始化操作：如：初始化软连接
 // app.use(sysJob); // 统计定时任务
 

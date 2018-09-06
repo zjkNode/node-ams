@@ -1,5 +1,5 @@
 <template>
-    <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="0" class="login-container">
+    <el-form :model="loginForm" :rules="rules" ref="loginForm" @keyup.enter.native="handleSubmit" label-width="0" class="login-container">
         <h3 class="title">系统登录</h3>
         <el-form-item prop="email">
             <el-input type="text" v-model="loginForm.email" auto-complete="off" placeholder="请输入账号"></el-input>
@@ -9,7 +9,7 @@
         </el-form-item>
         <el-checkbox v-model="isRemember"  class="remember">记住密码</el-checkbox>
         <el-form-item style="width:100%;">
-            <el-button type="primary" style="width:100%;" @click.native.prevent="handleSubmit()" :loading="isLoading">登录</el-button>
+            <el-button type="primary" style="width:100%;" @click.native.prevent="handleSubmit" :loading="isLoading">登录</el-button>
         </el-form-item>
     </el-form>
 </template>
@@ -37,19 +37,14 @@
         },
         mounted() {
         },
-        destroyed() {
-            
-        },
         methods:{
-            init(){
-                
-            },
+           
             handleSubmit(){
                 this.$refs.loginForm.validate((valid) => {
                     if (!valid) {
                         return false;
                     }
-                    var url = "/api/user/signIn";
+                    var url = "/api/user/signin";
                     var params = {
                         email: this.loginForm.email,
                         password: this.loginForm.password && util.encrypt(this.loginForm.password)

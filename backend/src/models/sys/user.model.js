@@ -7,21 +7,21 @@ var moment = require('moment'),
 
 let validation = {
 	'email': {
-		notEmpty: { options: [true], errorMessage: 'email 不能为空' },
+		isNotEmpty: { errorMessage: 'email 不能为空' },
 		isEmail: { errorMessage: 'email 格式不正确' }
 	},
 	'nickname': {
-		notEmpty: { options: [true], errorMessage: '用户别名 不能为空' }
+		isNotEmpty: { errorMessage: '用户别名 不能为空' }
 	},
 	'password': {
-		notEmpty: { options: [true], errorMessage: '密码 不能为空' },
+		isNotEmpty: { errorMessage: '密码 不能为空' },
 		isLength: { options: [6], errorMessage: '密码 不能小于 6 位'}
 	},
 	'depids': {
-		notEmpty: { options: [true], errorMessage: '部门 不能为空' }
+		isNotEmpty: { errorMessage: '部门 不能为空' }
 	},
 	'roleid': {
-		notEmpty: { options: [true], errorMessage: '角色 不能为空'}
+		isNotEmpty: { errorMessage: '角色 不能为空'}
 	}
 };
 
@@ -38,7 +38,7 @@ let auto = function(user) {
 };
 
 module.exports = {
-	tbname:'users',
+	tbname:'user',
 	pk: 'id',
 	validation: validation,
 	auto: auto

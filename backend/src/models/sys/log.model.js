@@ -22,7 +22,7 @@ let auto = function(log) {
 
 
 module.exports = {
-    tbname:'logs',
+    tbname:'log',
     validation:validation,
     auto: auto
 

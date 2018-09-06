@@ -7,10 +7,10 @@ var moment = require('moment'),
 
 let validation = {
 	'name': {
-		notEmpty: { options: [true], errorMessage: '部门名称不能为空' }
+		isNotEmpty: { errorMessage: '部门名称不能为空' }
 	},
 	'pids': {
-		notEmpty: { options: [true], errorMessage: '父级部门不能为空' },
+		isNotEmpty: { errorMessage: '父级部门不能为空' },
 		isArray: { errorMessage: 'pids 须为数组类型' }
 	}
 };

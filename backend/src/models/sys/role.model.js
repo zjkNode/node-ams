@@ -7,10 +7,10 @@ var moment = require('moment'),
 
 let validation = {
   'depid':{
-    notEmpty: { options: [true], errorMessage: '部门名称不能为空' },
+    isNotEmpty: { errorMessage: '部门名称不能为空' },
   },
   'name': {
-    notEmpty: { options: [true], errorMessage: '类别名称不能为空' },
+    isNotEmpty: { errorMessage: '类别名称不能为空' },
     isLength: { options: [0,100], errorMessage: '类别名称不能超过100个字符'}
   },
   'desc':{
@@ -28,7 +28,7 @@ let auto = function(news) {
   }
 };
 module.exports = {
-  tbname:'roles',
+  tbname:'role',
   validation:validation,
   auto:auto
 };

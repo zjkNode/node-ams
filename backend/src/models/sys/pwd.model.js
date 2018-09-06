@@ -22,7 +22,7 @@ let auto = function(user) {
 	user.update_time = moment().format('YYYY-MM-DD hh:mm:ss');
 };
 module.exports = {
-	tbname:'users',
+	tbname:'user',
     pk: 'id',
     auto: auto,
 	validation: validation

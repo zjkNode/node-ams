@@ -20,7 +20,7 @@ module.exports = function (req, res, next) {
  	}
 
  	// 请求为登录接口
- 	if(req.url == '/api/signin' || req.url == '/api/signout'){
+ 	if(req.url == '/api/user/signin' || req.url == '/api/user/signout'){
  		next();
  		return;
  	}
