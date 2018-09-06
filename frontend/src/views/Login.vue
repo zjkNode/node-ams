@@ -36,9 +36,10 @@
             };
         },
         mounted() {
+                this.loginForm.email = this.$cookie.get('email') || '';
+                this.loginForm.password = this.$cookie.get('password') || '';
         },
         methods:{
-           
             handleSubmit(){
                 this.$refs.loginForm.validate((valid) => {
                     if (!valid) {
@@ -47,7 +48,7 @@
                     var url = "/api/user/signin";
                     var params = {
                         email: this.loginForm.email,
-                        password: this.loginForm.password && util.encrypt(this.loginForm.password)
+                        password: util.encrypt(this.loginForm.password)
                     };
                     this.isLoading = true;
                     this.$http.post(url, params).then((res)=>{
@@ -68,8 +69,8 @@
 
                         localStorage.setItem('user',JSON.stringify(user));
                         if(this.isRemember){
-                            this.$cookie.set('email', params.email);
-                            this.$cookie.set('password', params.password);
+                            this.$cookie.set('email', this.loginForm.email);
+                            this.$cookie.set('password', this.loginForm.password);
                         } else {
                             this.$cookie.delete('email');
                             this.$cookie.delete('password');
@@ -77,6 +78,7 @@
                         this.$router.push({ path: '/' });
                     },(error)=>{
                         this.isLoading = false;
+                        this.$message.error(error.message);
                         console.log(error);
                     });
                 });

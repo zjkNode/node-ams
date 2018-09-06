@@ -12,8 +12,8 @@ var routes = [
   { title:'部门管理', name:'dep', path:'/sys/org/dep', view:'sys/dep'},
   { title:'角色管理', name:'role', path:'/sys/org/role', view:'sys/role'},
   { title:'系统配置', name:'config', path:'/sys/conf', view:'sys/config'},
-  { title:'操作日志', name:'config', path:'/sys/log', view:'sys/log'},
-  { title:'系统功能', name:'config', path:'/sys/rule', view:'sys/rule'},
+  { title:'操作日志', name:'log', path:'/sys/log', view:'sys/log'},
+  { title:'系统功能', name:'rule', path:'/sys/rule', view:'sys/rule'},
 ];
 
 

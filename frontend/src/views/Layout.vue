@@ -5,8 +5,6 @@
             <img src="@/assets/img/admin.png" alt="" />
         </div>
         <el-menu router
-          @open="handleOpen"
-          @close="handleClose"
           background-color="#324157"
           text-color="#fff"
           active-text-color="#ffd04b">
@@ -76,16 +74,16 @@
             },
             handleCommand(command){
                 if(command=='signout'){
-                    let url = '/api/signout';
-                    this.$http.post(url).then((res)=>{
-                        if(res.body.code == 'SUCCESS'){
-                            localStorage.clear();
-                            this.$cookie.delete('cmsnodessid');
-                            this.$router.push({ path: '/login'});
+                    let url = '/api/user/signout';
+                    this.$http.post(url).then((res) => {
+                        if(res.code !== 'SUCCESS'){
+                            this.$message(res.msg)
+                            return;
                         }
-                    },(err)=>{
-                        console.log(err);
-                    });
+                        localStorage.clear();
+                        this.$cookie.delete('amsnodecookie');
+                        this.$router.push({ path: '/login'});
+                    }).then(() => { }); // todo 成功 也走then 为什么
                     return;
                 }
                 if(command == 'info'){
@@ -94,12 +92,6 @@
             },
             onEditVisibleChange(val){
                 this.editFormVisible = val;
-            },
-            handleOpen(key, keyPath) {
-                // console.log(key, keyPath);
-            },
-            handleClose(key, keyPath) {
-                // console.log(key, keyPath);
             }
         }
     }
