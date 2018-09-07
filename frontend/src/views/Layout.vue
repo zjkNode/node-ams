@@ -1,7 +1,7 @@
 <template>
     <el-container>
       <el-aside width="200px">
-        <div class="logo">
+        <div class="avatar">
             <img src="@/assets/img/admin.png" alt="" />
         </div>
         <el-menu router
@@ -110,7 +110,7 @@
     color: #333;
     text-align: center;
     line-height: 200px;
-    .logo{
+    .avatar{
         height: 150px;
         border-bottom: solid 1px #ccc;
         img{
