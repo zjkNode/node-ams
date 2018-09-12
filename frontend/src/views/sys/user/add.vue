@@ -30,8 +30,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="hide">取 消</el-button>
-        <el-button type="primary" @click="submitForm" :loading="isLoading">确 定</el-button>
+        <el-button size="small" @click="hide">取 消</el-button>
+        <el-button size="small" type="primary" @click="submitForm" :loading="isLoading">确 定</el-button>
       </div>
     </el-dialog>
 </template>

@@ -9,9 +9,6 @@ let validation = {
     'name': {
         isNotEmpty: { errorMessage: '配置名称 不能为空' }
     },
-    'desc': {
-        isNotEmpty: { errorMessage: '配置描述 不能为空' }
-    },
     'key': {
         isNotEmpty: { errorMessage: '配置关键字 不能为空' }
     },

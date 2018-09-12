@@ -1,39 +1,34 @@
 <template>
-    <el-row class="user">
+    <el-row>
         <h2>用户管理</h2>
-        <el-row :gutter="20" class="tools">
-            <el-col :span="6">
-                <el-input v-model="keys" placeholder="请输入用户email/姓名/电话"></el-input>
-            </el-col>
+        <el-row class="tools">
             <el-col :span="10">
-                <el-button type="primary" @click="bindUsers" icon="el-icon-search">查询</el-button>
-                <el-button type="primary" @click="$refs.addForm.show()" icon="el-icon-plus" pull="6">新增</el-button>
+                <el-input size="small" v-model="keys" placeholder="请输入用户email/姓名/电话"></el-input>
             </el-col>
-            
-            
+            <el-col :span="13" :offset="1">
+                <el-button size="small" type="primary" @click="bindUsers" icon="el-icon-search">查询</el-button>
+                <el-button size="small" type="primary" @click="$refs.addForm.show()" icon="el-icon-plus">新增</el-button>
+            </el-col>
         </el-row>
-        <el-row>
-            <el-table :data="userList" stripe v-loading="isLoading" style="width: 100%">
-                <el-table-column type="index" width="60"></el-table-column>
-                <el-table-column prop="email" label="登录名" width="180"></el-table-column>
-                <el-table-column prop="nickname" label="真实姓名" min-width="180"></el-table-column>
-                <el-table-column prop="dep.name" label="所在部门" min-width="180"></el-table-column>
-                <el-table-column prop="role.name" label="角色" min-width="180"></el-table-column>
-                <el-table-column prop="status" label="状态" width="80">
-                    <template scope="scope">
-                        <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{scope.row.status | statusFilter}}</el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="create_time" label="添加时间" :formatter="dateFormat" width="200"></el-table-column>
-                <el-table-column fixed="right" label="操作" width="100">
-                  <template scope="scope">
-                    <el-button @click="onEditClick(scope.row)" type="text" size="small">编辑</el-button>
-                    <el-button @click="onRemoveClick(scope.$index,scope.row)" type="text" size="small" style="color: #ff4949;">删除</el-button>
-                  </template>
-                </el-table-column>
-          </el-table>
-        </el-row>
-        <div class="block pagbar">
+        <el-table :data="userList" stripe v-loading="isLoading" style="width: 100%">
+            <el-table-column type="index" width="60"></el-table-column>
+            <el-table-column prop="email" label="登录名" width="180"></el-table-column>
+            <el-table-column prop="nickname" label="真实姓名" min-width="180"></el-table-column>
+            <el-table-column prop="dep.name" label="所在部门" min-width="180"></el-table-column>
+            <el-table-column prop="role.name" label="角色" min-width="180"></el-table-column>
+            <el-table-column prop="status" label="状态" width="80">
+                <template scope="scope">
+                    <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{scope.row.status | statusFilter}}</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="create_time" label="添加时间" :formatter="dateFormat" width="200"></el-table-column>
+            <el-table-column fixed="right" label="操作" width="100">
+              <template scope="scope">
+                <el-button @click="onEditClick(scope.row)" type="text" size="small">编辑</el-button>
+                <el-button @click="onRemoveClick(scope.$index,scope.row)" type="text" size="small" style="color: #ff4949;">删除</el-button>
+              </template>
+            </el-table-column>
+        </el-table>
         <el-pagination 
               @size-change="onSizeChange"
               @current-change="onCurrentChange"
@@ -42,8 +37,7 @@
               :page-size="pageSize"
               layout="total, sizes, prev, pager, next, jumper"
               :total="total">
-            </el-pagination>
-        </div>
+        </el-pagination>
         <addForm ref="addForm" :depOptions="depOptions" @afterSubmit="bindUsers"></addForm>
         <editForm ref='editForm' :depOptions="depOptions" :rowData="rowData" @afterSubmit="bindUsers"></editForm>
     </el-row>

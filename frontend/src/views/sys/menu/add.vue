@@ -1,8 +1,14 @@
 <template>
     <el-dialog title="新增菜单" :visible.sync="isVisible">
         <el-form label-width="90px" ref="addForm" :model="formData" :rules="rules" :show-message="true">
-            <el-form-item label="菜单级别" prop="pid" >
-                <el-cascader change-on-select :options="menuTree" :props="props" v-model="formData.pid" @change="pidChange"></el-cascader> 
+            <el-form-item label="菜单级别" prop="pids" >
+                <el-cascader 
+                    change-on-select 
+                    :options="menuTree" 
+                    :props="props" 
+                    v-model="formData.pids" 
+                    @change="pidsChange">
+                </el-cascader> 
             </el-form-item> 
             <el-form-item label="菜单名称" prop="name">
                 <el-input v-model="formData.name" placeholder="请输入菜单名称"></el-input>
@@ -11,12 +17,12 @@
                 <el-input v-model="formData.alink" placeholder="请输入菜单访问地址（如 /menus ）"></el-input>
             </el-form-item>
             <el-form-item label="菜单排序" prop="sort">
-                <el-input v-model.number="formData.sort" placeholder="请输入菜单排序（默认为1）"></el-input>
+                <el-input-number v-model="formData.sort" :min="1"></el-input-number>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button @click="hide">取 消</el-button>
-            <el-button type="primary" @click="submitForm">确 定</el-button>
+            <el-button size="small" @click="hide">取 消</el-button>
+            <el-button size="small" type="primary" @click="submitForm">确 定</el-button>
         </div> 
     </el-dialog>
 </template>
@@ -49,7 +55,7 @@
                     alink: [
                         { required: true, message: '请输入菜单访问地址', trigger: 'blur' }
                     ],
-                    pid: [
+                    pids: [
                         { required: true, min: 1, type:'array', trigger: 'change'}
                     ],
                     sort: [
@@ -71,6 +77,7 @@
         },
         methods:{
             show(){
+                this.$options.filters.disableItem(this.menuTree,-1)
                 this.isVisible = true;
             },
             hide(){
@@ -82,23 +89,25 @@
                     if (!valid) {
                         return false;
                     }
-                    var data = Object.assign({},this.formData);
-                    var pids = data.pid;
-                    var _pid = pids.slice(-1)[0];
-                    data.pid = _pid >0 ? _pid : 0;
-                    this.$http.post('/api/menu', data).then(()=>{
+                    this.formData.pid = this.formData.pids.slice(-1)[0] || 0;
+                    this.$http.post('/api/menu', this.formData).then(()=>{
                         this.hide();
                         this.$store.dispatch('refreshMenuTree');
                         this.$emit('afterSubmit');
                     });
                 });
             },
-            pidChange(val){
-                console.log(val)
-                // if(!val[0]){
-                //     this.formData.pid = [0];
-                // }
-                // this.formData.pids = this.formData.pid.join(",");
+            pidsChange(val){
+                if(val[0] === 0){ // 顶级
+                    this.formData.sort = this.menuTree.length;
+                    return;
+                }
+                let tmpMenu = { children: this.menuTree};
+                val.forEach(id => {
+                    tmpMenu = tmpMenu.children.find(menu => menu.id === id);
+                });
+                let sort = tmpMenu.children && tmpMenu.children.slice(-1)[0].sort;
+                this.formData.sort = sort + 1;
             }
         }
     }

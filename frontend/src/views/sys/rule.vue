@@ -1,41 +1,36 @@
 <template>
-    <el-row class="category">
+    <el-row>
         <h2>系统功能管理</h2>
-        <!--工具条-->
-        <el-row :gutter="20" class="tools">
-            <el-col :span="6">
-                <el-input v-model="keys" placeholder="请输入系统功能名称/路径" @input="searchName"></el-input>
-            </el-col>
+        <el-row class="tools">
             <el-col :span="10">
-                <el-button type="primary" @click="getrules" icon="el-icon-search"> 查询</el-button>
-                <el-button type="primary" @click="addFormVisible = true" icon="el-icon-plus" pull="6">新增</el-button>
+                <el-input size="small" v-model="keys" placeholder="请输入系统功能名称/路径" @input="searchName"></el-input>
+            </el-col>
+            <el-col :span="13" :offset="1">
+                <el-button size="small" type="primary" @click="getrules" icon="el-icon-search"> 查询</el-button>
+                <el-button size="small" type="primary" @click="addFormVisible = true" icon="el-icon-plus" pull="6">新增</el-button>
             </el-col>
         </el-row>
 
-        <!--列表-->
-        <template>
-            <el-table highlight-current-row v-loading="loading">
-                <el-table-column type="index" width="60" >
-                </el-table-column>
-                <el-table-column prop="name" label="功能名称" :formatter="formatTree" show-overflow-tooltip class-name='flat-tree'>
-                </el-table-column>
-                <el-table-column prop="path" label="功能路径" >
-                </el-table-column>
-                <el-table-column prop="status" label="状态" width="80">
-                    <template scope="scope">
-                        <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" close-transition>{{scope.row.status | statusFilter}}</el-tag>
-                    </template>
-                </el-table-column>
-                
-                <el-table-column label="操作" width="100" fixed="right">
-                    <template scope="scope">
-                        <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button type="text" size="small" @click="handleDel(scope.$index, scope.row)" style="color: #ff4949;">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </template>
-        <!--新增界面-->
+        <el-table highlight-current-row v-loading="loading">
+            <el-table-column type="index" width="60" >
+            </el-table-column>
+            <el-table-column prop="name" label="功能名称" :formatter="formatTree" show-overflow-tooltip class-name='flat-tree'>
+            </el-table-column>
+            <el-table-column prop="path" label="功能路径" >
+            </el-table-column>
+            <el-table-column prop="status" label="状态" width="80">
+                <template scope="scope">
+                    <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" close-transition>{{scope.row.status | statusFilter}}</el-tag>
+                </template>
+            </el-table-column>
+            
+            <el-table-column label="操作" width="100" fixed="right">
+                <template scope="scope">
+                    <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                    <el-button type="text" size="small" @click="handleDel(scope.$index, scope.row)" style="color: #ff4949;">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
         <el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
             <el-form :model="ruleForm" :rules="addFormRules" ref="ruleForm" label-width="80px">
                 <el-form-item label="父级功能" prop="pid"  ref="selectform">
@@ -55,11 +50,11 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click.native="addFormVisible = false">取消</el-button>
-                <el-button type="primary" @click.native="addSubmit('ruleForm')" :loading="addLoading">提交</el-button>
+                <el-button size="small" @click.native="addFormVisible = false">取消</el-button>
+                <el-button size="small" type="primary" @click.native="addSubmit('ruleForm')" :loading="addLoading">提交</el-button>
             </div>
         </el-dialog>
-        <!--编辑界面-->
+
         <el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
                 <el-form-item label="新闻类别" prop="pid" >
@@ -85,8 +80,8 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click.native="editFormVisible = false">取消</el-button>
-                <el-button type="primary" @click.native="editSubmit('editForm')" :loading="editLoading">提交</el-button>
+                <el-button size="small" @click.native="editFormVisible = false">取消</el-button>
+                <el-button size="small" type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
             </div>
         </el-dialog>
     </el-row>

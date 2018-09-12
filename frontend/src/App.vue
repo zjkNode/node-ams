@@ -32,7 +32,26 @@ html,body{
 .flat-tree > div{ white-space:pre !important; }
 .el-table thead th{ background: #f5f7fa; padding:5px 0;}
 .el-table tbody td{ padding:5px 0; }
+.el-form-item{ margin-bottom:20px; }
 
-.mainContent .pagbar{ text-align:center; margin:10px 0;}
-
+::-webkit-scrollbar{  
+    position: absolute;
+    width:1px;  
+    right: -1px;
+    height:3px;
+}  
+::-webkit-scrollbar-track{  
+    background: #f6f6f6;  
+    border-radius:2px;  
+}  
+::-webkit-scrollbar-thumb{  
+    background: #aaa;  
+    border-radius:2px; 
+}  
+::-webkit-scrollbar-thumb:hover{  
+    background: #747474;  
+}  
+::-webkit-scrollbar-corner{  
+    background: #f6f6f6;  
+}
 </style>

@@ -51,7 +51,6 @@ axios.interceptors.response.use(
                 break;
             case 401:
                 // 401 清除token信息并跳转到登录页面
-                console.log(Vue.prototype)
                 localStorage.clear();
                 Vue.cookie.delete('amsnodecookie');
                 location.href = '/login';

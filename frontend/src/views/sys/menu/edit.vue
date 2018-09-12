@@ -1,12 +1,13 @@
 <template>
     <el-dialog title="修改菜单" :visible.sync="isVisible">
         <el-form label-width="90px" ref="editForm" :model="formData" :rules="rules" >
-            <el-form-item label="菜单级别" prop="pid">
+            <el-form-item label="菜单级别" prop="pids">
                 <el-cascader 
                     change-on-select
                     :options="menuTree" 
-                    :props="props" v-model="formData.pid" 
-                    @change="pidChange"
+                    :props="props" 
+                    v-model="formData.pids" 
+                    @change="pidsChange"
                 ></el-cascader> 
             </el-form-item> 
             <el-form-item label="菜单名称" prop="name">
@@ -22,12 +23,12 @@
                 </el-radio-group>
             </el-form-item> 
             <el-form-item label="菜单排序" prop="sort">
-                <el-input v-model.number="formData.sort" placeholder="排序（默认为1）"></el-input>
+                <el-input-number v-model="formData.sort" :min="1"></el-input-number>
             </el-form-item>
         </el-form>
          <div slot="footer" class="dialog-footer">
-            <el-button @click="hide">取 消</el-button>
-            <el-button type="primary" @click="submitForm">确 定</el-button>
+            <el-button size="small" @click="resetForm">取 消</el-button>
+            <el-button size="small" type="primary" @click="submitForm">确 定</el-button>
         </div> 
     </el-dialog>
 </template>
@@ -35,24 +36,11 @@
     import { mapGetters } from 'vuex';
 
     export default {
-        props: {
-            rowData:null
-        },
+        props: ['rowData'],
         computed: mapGetters({
             menuData:'getMenuTree',
         }),
         data() {
-            let handleInput = (rule,val,callback) =>{
-                if( rule.field == "sort"){
-                    if(val>99 || val<1){
-                        callback(new Error('请输入1-99之间的数字'));
-                    }else{
-                        callback();
-                    }
-                }else{
-                    callback();
-                }
-            };
             return {
                 menuTree:[],
                 isVisible: false,
@@ -61,6 +49,7 @@
                     label:'name'
                 },
                 formData: {
+                    id:'',
                     name: '',
                     alink:'',
                     status: 1,
@@ -75,14 +64,11 @@
                     alink: [
                         { required: true, message: '请输入菜单访问地址', trigger: 'blur' }
                     ],
-                    status: [
-                        { required: true, trigger: 'blur',type:'number'}
-                    ],
-                    pid: [
-                        { required: true, validator:handleInput, trigger: 'change',type:'number' }
+                    pids: [
+                        { required: true, min: 1, type:'array', trigger: 'change'}
                     ],
                     sort: [
-                        { required: false, validator:handleInput, trigger: 'change', type:'number' }
+                        { required: false, min:1, message:'请输入菜单排序编号', type:'number', trigger: 'change' }
                     ]
                 }
             };
@@ -90,22 +76,9 @@
         mounted() {
         },
         watch: {
-            rowData(row){
-                this.formData = row;
-                let pids = row.pids;
-                if(pids.indexOf(",") != -1){
-                    this.formData.pid=pids.split(",");
-                    this.formData.pid = this.formData.pid.map( (i)=>{
-                        return i*1;
-                    });
-                }else{
-                    this.formData.pid=[Number(pids)];
-                }
-                this.$options.filters.disableItem(this.menuTree,row.id)
-            },
-            menuData(val, oldVal){
+            menuData(val){
                 let tmp = [{ name:'顶级菜单', id: 0, pid: 0 }];
-                if(val && val != oldVal){
+                if(val){
                     tmp = tmp.concat(val);
                 }
                 this.menuTree = tmp;
@@ -114,8 +87,12 @@
         methods:{
             show(){
                 this.isVisible = true;
+                this.$nextTick(() => {
+                    this.formData = this.rowData;
+                    this.$options.filters.disableItem(this.menuTree, this.formData.id);
+                });
             },
-            hide(){
+            resetForm(){
                 this.$refs.editForm.resetFields();
                 this.isVisible = false;
             },
@@ -126,15 +103,12 @@
                         return false;
                     }
 
-                    var data = Object.assign({},me.formData);
-                    var pids = data.pid;
-                    var _pid = pids.slice(-1)[0];
-                    data.pid = _pid >0 ? _pid : 0;
+                    this.formData.pid = this.formData.pids.slice(-1)[0] || 0;
                     var apiUrl = "/api/menu/"+ this.formData.id;
                     this.isLoading = true;
-                    this.$http.put(apiUrl,data).then((res)=>{
+                    this.$http.put(apiUrl, this.formData).then((res)=>{
                         this.isLoading = false;
-                        this.hide();
+                        this.resetForm();
                         this.$store.dispatch('refreshMenuTree');
                         this.$emit('afterSubmit');
                     }).catch(() => {
@@ -142,11 +116,17 @@
                     });
                 });
             },
-            pidChange(val){
-                if(!val[0]){
-                    this.formData.pid=[0];
-                };
-                this.formData.pids = this.formData.pid.join(",");
+            pidsChange(val){
+                if(val[0] === 0){ // 顶级
+                    this.formData.sort = this.menuTree.length;
+                    return;
+                }
+                let tmpMenu = { children: this.menuTree};
+                val.forEach(id => {
+                    tmpMenu = tmpMenu.children.find(menu => menu.id === id);
+                });
+                let sort = tmpMenu.children && tmpMenu.children.slice(-1)[0].sort;
+                this.formData.sort = sort + 1;
             }
         }
     };

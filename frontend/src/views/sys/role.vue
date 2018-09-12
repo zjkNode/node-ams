@@ -1,38 +1,32 @@
 <template>
-    <el-row class="category">
+    <el-row>
         <h2>角色管理</h2>
-        <!--工具条-->
-        <el-row :gutter="20" class="tools">
-            <el-col :span="6">
-                <el-input v-model="keys" placeholder="请输入角色名称/描述" @input="searchName"></el-input>
-            </el-col>
+        <el-row class="tools">
             <el-col :span="10">
-                <el-button type="primary" @click="bindRoles" icon="el-icon-search"> 查询</el-button>
-                <el-button type="primary" @click="addFormVisible = true" icon="el-icon-plus" pull="6">新增</el-button>
+                <el-input size="small" v-model="keys" placeholder="请输入角色名称/描述" @input="searchName"></el-input>
+            </el-col>
+            <el-col :span="13" :offset="1">
+                <el-button type="primary" size="small" @click="bindRoles" icon="el-icon-search"> 查询</el-button>
+                <el-button type="primary" size="small" @click="addFormVisible = true" icon="el-icon-plus">新增</el-button>
             </el-col>
         </el-row>
-
-        <!--列表-->
-        <template>
-            <el-table :data="roles" highlight-current-row v-loading="loading" style="width: 100%;">
-                <el-table-column type="index" width="60" >
-                </el-table-column>
-                <el-table-column prop="dep.name" label="所在部门"  >
-                </el-table-column>
-                <el-table-column prop="name" label="角色名称"  >
-                </el-table-column>
-                <el-table-column prop="desc" label="角色描述" show-overflow-tooltip>
-                </el-table-column>
-                <el-table-column label="操作" width="140" fixed="right">
-                    <template scope="scope">
-                        <el-button type="text" size="small" @click="showEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button type="text" size="small" @click="handleJobs(scope.$index, scope.row)">权限</el-button>
-                        <el-button type="text" size="small" @click="handleDel(scope.$index, scope.row)" style="color: #ff4949;">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </template>
-        <!--工具条-->
+        <el-table :data="roles" highlight-current-row v-loading="loading">
+            <el-table-column type="index" width="60" >
+            </el-table-column>
+            <el-table-column prop="dep.name" label="所在部门"  >
+            </el-table-column>
+            <el-table-column prop="name" label="角色名称"  >
+            </el-table-column>
+            <el-table-column prop="desc" label="角色描述" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column label="操作" width="140" fixed="right">
+                <template scope="scope">
+                    <el-button type="text" size="small" @click="showEdit(scope.$index, scope.row)">编辑</el-button>
+                    <el-button type="text" size="small" @click="handleJobs(scope.$index, scope.row)">权限</el-button>
+                    <el-button type="text" size="small" @click="handleDel(scope.$index, scope.row)" style="color: #ff4949;">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
         <el-pagination
                 @size-change="onSizeChange"
                 @current-change="handleCurrentChange"
@@ -43,7 +37,6 @@
                 :total="total">
         </el-pagination>
         
-        <!--新增界面-->
         <el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
             <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="80px">
                 <el-form-item label="部门选择" prop="depid">
@@ -58,11 +51,10 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click.native="addFormVisible = false">取消</el-button>
-                <el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
+                <el-button size="small" @click.native="addFormVisible = false">取消</el-button>
+                <el-button size="small" type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
             </div>
         </el-dialog>
-        <!--编辑界面-->
         <el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
                 <el-form-item label="部门选择" prop="depid">
@@ -77,8 +69,8 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click.native="editFormVisible = false">取消</el-button>
-                <el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
+                <el-button size="small" @click.native="editFormVisible = false">取消</el-button>
+                <el-button size="small" type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
             </div>
         </el-dialog>
 
@@ -253,7 +245,7 @@
             showEdit(index,row){
                 this.editForm = Object.assign({}, row);
                 this.editForm.depid = row.dep.pids != 0 ? 
-                                    row.dep.pids.split(',').map((item)=>{return parseInt(item)}) : 
+                                    row.dep.pids.split(',').map((item)=> parseInt(item)) : 
                                     [row.dep.id];
 
                 this.editFormVisible = true;
