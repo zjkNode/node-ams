@@ -66,15 +66,13 @@ exports.tree = function(callback){
     var where= {
 		status: CONSTANTS.MENUS_STATUS.VALID
 	};
-    mysql.where(where).order({sort:'asc'}).select(menuModel.tbname, function(err,rs){
+    mysql.where(where).order({sort:'asc'}).select(menuModel.tbname, function(err,res){
         if(err){
 			logger.errorDB(__filename, err);
 			return callback(new DBError());
 		}
-        if(where.status == CONSTANTS.MENUS_STATUS.VALID){
-            cache.set('menuTree', rs);
-        };
-        return callback(null,rs);
+        cache.set('menuTree', res);
+        return callback(null,res);
     });
 };
 

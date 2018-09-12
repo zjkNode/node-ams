@@ -78,26 +78,13 @@ exports.list = function(where, page, callback){
     });
 }
 
-exports.getAllConfigs = function(callback){
-    let cacheConfigs = cache.get('cacheConfigs');
-    if(cacheConfigs){
-        return callback(null, _.cloneDeep(cacheConfigs));
-    }
-
-    let where = {
-        status:CONSTANTS.CONFIG_STATUS.VALID
-    };
+exports.getValidList = function(where, callback){
+    where.status:CONSTANTS.CONFIG_STATUS.VALID;
     mysql.where(where).select(configModel.tbname,function(err,rows){
         if(err){
             logger.errorDB(__filename, err);
             return callback(new DBError());
         }
-        var configs = {};
-        _.each(rows,(row) => {
-            configs[row.key] = row.value;
-
-        });
-        cache.set('cacheConfigs', configs);
-        callback(null,configs);
+        return callback(null,rows);
     });
 }

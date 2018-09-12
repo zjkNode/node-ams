@@ -84,7 +84,15 @@ exports.delete = function(where, callback){
 /**
  * 查询数据
  */
-
+exports.list = function(callback){
+  mysql.select(ruleModel.tbname, function(err, res){
+    if(err){
+      logger.errorDB(__filename, err);
+      return callback(new DBError());
+    }
+    return callback(null,res);
+  });
+}
 exports.allLists = function(callback){
   let where ={
     status:CONSTANTS.RULE_STATUS.VALID
@@ -128,35 +136,6 @@ exports.lists = function(where,callback){
   });
 };
 
-// 根据用户角色Id取用户分配的权限
-// exports.getRulesByRoleId = function(roleId, callback){
-
-//   async.waterfall([
-//     function(callback){
-//       roleService.one({id: roleId}, function(error, role){
-//         callback(error, role);
-//       });
-//     },
-//     function(role, callback){
-//       if(!role || !role.authorties){
-//         return callback();
-//       }
-//       let ruleIds = role.authorties.split(',').map((id)=>{ return parseInt(id); });
-//       mysql.where({ id: [ 'in', ruleIds ] })
-//            .select(ruleModel.tbname, function(error,rows){
-//             return callback(error, rows);
-//            });
-
-//     }
-//   ], function(err, result){
-//     if(err){
-//       logger.errorDB(__filename, err);
-//       return callback(err);
-//     }
-//     return callback(null, result);
-
-//   });
-// }
 
 // 根据用户角色获取取用户分配的权限
 exports.getRulesByRole = function(role, callback){

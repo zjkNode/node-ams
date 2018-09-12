@@ -2,10 +2,12 @@ let async = require('async'),
 	_ = require('lodash'),
 	utils = require('../../lib/utils'),
 	logger = require('../../lib/logger.lib'),
+	CONSTANTS = require('../../config/constants.config'),
 	userModel = require('../../models/sys/user.model'),
 	userService = require('../../services/sys/user.service'),
 	logService = require('../../services/sys/log.service'),
 	depService = require('../../services/sys/dep.service'),
+	confService = require('../../services/sys/config.service'),
 	roleService = require('../../services/sys/role.service');
 
 const { ComError, ValidationError, DBError} = require('../../models/errors.model');
@@ -55,36 +57,36 @@ exports.signIn = function (req,res) {
         return callback(error, deps);
       })
     }],
-    rules:['user', 'role', function(results, callback){
+    actions:['user', function(results, callback){
       // 超管 所有权限
       if(utils.isAdmin(results.user.id)){
         return callback(null, ['ALL']);
       }
-      ruleService.getRulesByRole(results.role, function(error, rules){
-        if(error){
-          logService.log(req, '获取用户权限异常: ', results.user);
-          return callback(error);
-        }
-        let rulesArr = _.map(rules, 'path');
-        return callback(error, rulesArr);
+      confService.getValidList({ type: CONSTANTS.CONFIG_TYPES.AUTH_ACTION } function(error, configs){
+      	return callback(error, configs);
       });
+      // ruleService.getRulesByRole(results.role, function(error, rules){
+      //   if(error){
+      //     logService.log(req, '获取用户权限异常: ', results.user);
+      //     return callback(error);
+      //   }
+      //   let rulesArr = _.map(rules, 'path');
+      //   return callback(error, rulesArr);
+      // });
     }]
   }, function(err, results) {
       if(err){
-      	let status = err.constructor.status;
-        return res.status(status).json(err);
+      	logService.log(req,'登录失败:'+ err.msg);
+        return res.status(err.constructor.status).json(err);
       }
       let curUser = results.user;
       curUser.role = results.role;
       curUser.deps = results.deps;
-      curUser.rules = results.rules;
+      curUser.actions = results.actions;
 
       req.session.user = curUser;
       logService.log(req,'登录成功:'+ curUser.nickname);
-      return res.status(200).json({
-        code:'SUCCESS',
-        data: curUser
-      });
+      return res.status(200).json({ code:'SUCCESS', data: curUser });
   });
 }
 

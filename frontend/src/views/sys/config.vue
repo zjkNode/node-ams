@@ -45,19 +45,18 @@
             :total="total">
         </el-pagination>
         
-        <el-dialog title="新增配置" :visible.sync="isAddVisible">
-          <el-form :model="formData" :rules="rules" ref="addForm" label-width="80px">
+        <el-dialog :title='"配置 -- "+ (title || "新增")' :show-close='false' :close-on-click-modal="false" :visible.sync="isAddVisible">
+          <el-form :model="formData" :rules="rules" ref="dialogForm" @keyup.enter.native="onSubmit" label-width="80px">
             <el-form-item label="配置类型" prop="type">
-                <el-radio-group v-model="formData.type">
-                    <el-radio class="radio" label="normal">{{ configType.normal }}</el-radio>
-                    <el-radio class="radio" label="auth">{{ configType.auth }}</el-radio>
+                <el-radio-group v-model="formData.type" size="small">
+                    <el-radio-button v-for="(value, key) in configType" :key="key" :label="key">{{ value }}</el-radio-button>
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="配置名称" prop="name">
               <el-input v-model="formData.name" auto-complete="off" name="name" placeholder="请输入配置名称"></el-input>
             </el-form-item>
             <el-form-item label="配置描述" prop="desc">
-              <el-input v-model="formData.desc" auto-complete="off" name="desc" placeholder="请输入描述内容"></el-input>
+              <el-input v-model="formData.desc" auto-complete="off" name="desc" placeholder="请输入配置描述"></el-input>
             </el-form-item>
             <el-form-item label="关键字" prop="key">
               <el-input v-model="formData.key" auto-complete="off" name="key" placeholder="请输入关键字"></el-input>
@@ -65,34 +64,7 @@
             <el-form-item label="配置值" prop="value">
               <el-input v-model="formData.value" auto-complete="off" name="value" placeholder="请输入配置值"></el-input>
             </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button size="small" @click="resetForm('addForm')">取 消</el-button>
-            <el-button type="primary" size="small" @click="addSubmit" :loading='isAddLoading'>确 定</el-button>
-          </div>
-        </el-dialog>
-
-        <el-dialog title="修改配置" :visible.sync="isEditVisible">
-          <el-form :model="formData" :rules="rules" ref="editForm" label-width="90px">
-          <el-form-item label="配置类型" prop="type">
-                <el-radio-group v-model="formData.type">
-                    <el-radio class="radio" label="normal">{{ configType.normal }}</el-radio>
-                    <el-radio class="radio" label="auth">{{ configType.auth }}</el-radio>
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item label="配置名称" prop="name">
-              <el-input v-model="formData.name" auto-complete="off" name="name" placeholder="请输入配置名称"></el-input>
-            </el-form-item>
-            <el-form-item label="描述内容" prop="desc">
-              <el-input v-model="formData.desc"  auto-complete="off" name="desc" placeholder="请输入描述内容"></el-input>
-            </el-form-item>
-            <el-form-item label="关键字" prop="key">
-              <el-input v-model="formData.key" auto-complete="off" name="key" placeholder="请输入关键字"></el-input>
-            </el-form-item>
-            <el-form-item label="配置值" prop="value">
-              <el-input v-model="formData.value" auto-complete="off" name="value" placeholder="请输入配置值"></el-input>
-            </el-form-item>
-            <el-form-item label="是否有效" >
+            <el-form-item v-if="formData.id" label="是否有效" prop="status">
               <el-radio-group v-model="formData.status">
                 <el-radio class="radio" :label="1">有效</el-radio>
                 <el-radio class="radio" :label="2">无效</el-radio>
@@ -100,8 +72,8 @@
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
-            <el-button size="small" @click="resetForm('editForm')">取 消</el-button>
-            <el-button type="primary" size="small" @click="editSubmit" :loading="isEditLoading">确 定</el-button>
+            <el-button size="small" @click="resetForm">取 消</el-button>
+            <el-button type="primary" size="small" @click="onSubmit" :loading='isAddLoading'>确 定</el-button>
           </div>
         </el-dialog>
     </el-row>
@@ -110,6 +82,7 @@
     export default {
         data() {
             return {
+                title: '',
                 isAddVisible: false,
                 isEditVisible:false,
                 isLoading: false,
@@ -142,7 +115,8 @@
                 },
                 configType:{
                     normal: '普通',
-                    auth: '权限'
+                    authData: '数据权限',
+                    authAction: '功能权限'
                 }
             }
         },
@@ -184,12 +158,13 @@
                 });
             },
             onEditClick(row){
+                this.title = '编辑',
                 this.formData = Object.assign({}, row);
                 this.formData.status = parseInt(row.status);
-                this.isEditVisible = true;
+                this.isAddVisible = true;
             },
             onRemoveClick(row){
-                this.$confirm('确认删除该用户吗?', '友情提示', { type: 'warning'}).then(() => {
+                this.$confirm('确认删除该配置吗?', '友情提示', { type: 'warning'}).then(() => {
                     let url = '/api/config/'+ row.id;
                     this.$http.delete(url).then((res)=>{
                         if(res.code !== 'SUCCESS'){
@@ -212,8 +187,15 @@
             searchName(){
                 !this.keys && this.bindConfigs();
             },
+            onSubmit(){
+                if(this.formData.id){
+                    this.editSubmit();
+                    return;
+                }
+                this.addSubmit();
+            },
             addSubmit() {
-                this.$refs.addForm.validate((valid) => {
+                this.$refs.dialogForm.validate((valid) => {
                   if (!valid) {
                     return false;
                   }
@@ -226,7 +208,7 @@
                         return;
                     }
 
-                    this.resetForm('addForm');
+                    this.resetForm();
                     this.bindConfigs();
                   }).catch(() => {
                     this.isAddLoading = false;
@@ -234,11 +216,19 @@
                 });
             },
             resetForm(formName) {
-                this.isAddVisible = this.isEditVisible = false;
-                this.$refs[formName].resetFields();
+                this.isAddVisible = false;
+                this.title = '',
+                this.formData = {
+                    type:'normal',
+                    name:'',
+                    desc:'',
+                    key:'',
+                    status: 1,
+                    value:''
+                };
             },
             editSubmit() {
-                this.$refs.editForm.validate((valid) => {
+                this.$refs.dialogForm.validate((valid) => {
                   if (!valid) {
                     return false;
                   }
@@ -250,7 +240,7 @@
                         return;
                     }
                     this.isEditLoading = false;
-                    this.resetForm('editForm');
+                    this.resetForm();
                     this.bindConfigs()
                   }).catch(() => {
                     this.isEditLoading = false;

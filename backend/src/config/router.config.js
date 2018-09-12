@@ -33,6 +33,13 @@ module.exports = {
                 get:'sys.role.getListByDepId'
             }
         },
+        '/rule':{
+            get: 'sys.rule.list',
+            post: 'sys.rule.add',
+            '/:id': {
+                delete: 'sys.rule.delete'
+            }
+        },
         '/user':{
         	post: 'sys.user.add',
         	get: 'sys.user.list',
@@ -54,14 +61,6 @@ module.exports = {
         '/log':{
             get: 'sys.log.list',
         },
-        '/rule':{
-            get:'sys.rule.list',
-            post: 'sys.rule.add',
-            '/:id':{
-                put:'sys.rule.update',
-                delete: 'sys.rule.delete'
-            }
-        }
     }
     
 }

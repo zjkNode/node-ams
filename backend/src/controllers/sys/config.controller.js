@@ -110,10 +110,6 @@ exports.list = function(req,res) {
             logService.log(req, '服务器出错，查询配置出错');
             return res.status(err.constructor.status).json(err);
         }
-        return res.status(200).json({
-            code: 'SUCCESS',
-            data: result,
-            msg: ''
-        });
+        return res.status(200).json({ code: 'SUCCESS', data: result });
     });
 }
