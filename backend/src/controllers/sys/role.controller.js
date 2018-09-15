@@ -163,7 +163,7 @@ exports.list = function(req,res) {
       desc:['like',searchKey]
     }
   }
-  if(utils.isAdmin(curUser.id)){
+  if(utils.isAdmin(curUser)){
     // 超管
     async.waterfall([
       depService.allLists,

@@ -36,9 +36,7 @@ module.exports = {
         '/rule':{
             get: 'sys.rule.list',
             post: 'sys.rule.add',
-            '/:id': {
-                delete: 'sys.rule.delete'
-            }
+            delete: 'sys.rule.delete'
         },
         '/user':{
         	post: 'sys.user.add',
@@ -51,6 +49,9 @@ module.exports = {
             }
         },
         '/config':{
+            '/listByType':{
+                get: 'sys.config.listByType'
+            },
             get:'sys.config.list',
             post:'sys.config.add',
             '/:id':{

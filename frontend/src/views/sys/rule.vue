@@ -1,7 +1,7 @@
 <template>
     <el-row>
         <h2>系统功能配置</h2>
-        <el-table :data="menuList" highlight-current-row v-loading="loading">
+        <el-table :data="menuList" highlight-current-row v-loading="isLoading">
             <el-table-column type="expand">
                 <template slot-scope="scope">
                     <el-tag
@@ -17,11 +17,7 @@
                         添加功能<i class="el-icon-arrow-down el-icon--right"></i>
                       </el-tag>
                       <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item :command='"a_"+ scope.row.menu_id'>黄金糕</el-dropdown-item>
-                        <el-dropdown-item command="b">狮子头</el-dropdown-item>
-                        <el-dropdown-item command="c">螺蛳粉</el-dropdown-item>
-                        <el-dropdown-item command="d" disabled>双皮奶</el-dropdown-item>
-                        <el-dropdown-item command="e" divided>蚵仔煎</el-dropdown-item>
+                        <el-dropdown-item v-for="(action, index) in actions" :command='`${action.key}_${scope.row.menu_id}`' :disabled='scope.row.actions.includes(action.key)'>{{ action.name }}</el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -35,41 +31,72 @@
     export default {
         data() {
             return {
-                keys:'',
                 menuList:[],
-                rules:[],
-                loading: false,
-                editValue:'',
+                actions:[],
+                isLoading: false,
             }
         },
         mounted() {
             this.loadRules();
+            this.loadSysActions();
         },
         methods: {
-            onAddAction(action){
-                console.log(action)
+            onAddAction(command){
+                let cmds = command.split('_');
+                let params = {
+                    menu_id: cmds[1],
+                    action: cmds[0]
+                };
+                this.$http.post('/api/rule',  params).then(res => {
+                    if(res.code !== "SUCCESS"){
+                        this.$message.error(res.msg);
+                        return;
+                    }
+                    this.$message.success(res.msg);
+                    let curMenu = this.menuList.find(item => item.id === params.menu_id);
+                    curMenu.actions.push(params.action);
+                });
             },
-            onRemoveAction(menuId, action){
-
+            onRemoveAction(menu, action){
+                let params = {
+                    menu_id: menu,
+                    action: action
+                };
+                this.$http.delete('/api/rule',  params ).then(res => {
+                    if(res.code !== "SUCCESS"){
+                        this.$message.error(res.msg);
+                        return;
+                    }
+                    this.$message.success(res.msg);
+                    menu.actions.splice(menu.actions.indexOf(action)+1, 1);
+                }); 
             },
             //获取全部数据
             loadRules(){
                 let url = '/api/rule';
-                let data = { keys: this.keys };
-                this.loading = true;
-                this.$http.get(url, { params: data }).then((res)=> {
-                    this.loading = false;
+                this.isLoading = true;
+                this.$http.get(url).then((res)=> {
+                    this.isLoading = false;
                     if(res.code !== 'SUCCESS'){
                         this.$message.error(res.msg);
                         return;
                     }
                     this.menuList = res.data;
                 }).catch(() => {
-                    this.loading = false;
+                    this.isLoading = false;
                 });
             },
             loadSysActions(){
-                
+                let query = {
+                    type: 'authAction'
+                };
+                this.$http.get('/api/config/listByType', { params: query }).then(res => {
+                    if(res.code !== 'SUCCESS'){
+                        this.$message.error(res.msg);
+                        return;
+                    }
+                    this.actions = res.data;
+                });
             }
         }
     }

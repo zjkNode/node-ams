@@ -3,6 +3,7 @@
  *  createby susan
  */
 var logger = require('../../lib/logger.lib'),
+    CONSTANTS = require('../../config/constants.config'),
     configModel = require('../../models/sys/config.model.js'),
     configService = require('../../services/sys/config.service.js');
 const { ComError, ValidationError} = require('../../models/errors.model');
@@ -107,9 +108,28 @@ exports.list = function(req,res) {
     }
     configService.list(where, page, function(err, result){
         if(err){
-            logService.log(req, '服务器出错，查询配置出错');
+            logService.log(req, '服务器出错，获取配置出错');
             return res.status(err.constructor.status).json(err);
         }
         return res.status(200).json({ code: 'SUCCESS', data: result });
+    });
+}
+
+exports.listByType = function(req, res){
+    req.checkQuery({
+        'type': { isNotEmpty: { errorMessage: '系统配置类型不能为空'} }
+    });
+    let vErrors = req.validationErrors();
+    if(vErrors) {
+        logger.error(__filename, '参数验证失败', vErrors);
+        return res.status(ValidationError.status).json(vErrors);
+    }
+    let type = req.query.type.trim();
+    configService.listByType(type, function(err, configs){
+        if(err){
+            logService.log(req, '服务器出错，获取配置出错');
+            return res.status(err.constructor.status).json(err);
+        }
+        return res.status(200).json({ code: 'SUCCESS', data: configs });
     });
 }

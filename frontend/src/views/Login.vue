@@ -59,13 +59,13 @@
                         }
 
                         let user = res.data;
-                        if(!user.rules || user.rules.length == 0){
-                            this.$message({
-                              message: '您没有权限访问系统，请联系系统管理员',
-                              type: 'warning'
-                            });
-                            return;
-                        }
+                        // if(!user.rules || user.rules.length == 0){
+                        //     this.$message({
+                        //       message: '您没有权限访问系统，请联系系统管理员',
+                        //       type: 'warning'
+                        //     });
+                        //     return;
+                        // }
 
                         localStorage.setItem('user',JSON.stringify(user));
                         if(this.isRemember){

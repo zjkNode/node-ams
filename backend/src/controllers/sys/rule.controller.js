@@ -10,11 +10,32 @@ var async = require('async'),
 const { ComError, ValidationError, DBError} = require('../../models/errors.model');
 
 exports.add = function(req, res){
-
+	let rule = {
+		menu_id: parseInt(req.body.menu_id),
+		action: req.body.action.trim(),
+		create_time: utils.dateFormat()
+	};
+	ruleService.add(rule, function(err){
+		if(err){
+			logService.log(req, '服务器出错，菜单新增功能失败');
+		    return res.status(error.constructor.status).json(error);
+		}
+		return res.status(200).json({ code: 'SUCCESS', data:'', msg:'菜单新增功能成功'});
+	});
 }
 
 exports.delete = function(req, res){
-
+	let where = {
+		menu_id: parseInt(req.body.menu_id),
+		action: req.body.action.trim()
+	};
+	ruleService.delete(where, function(err){
+		if(err){
+			logService.log(req, '服务器出错，菜单移除功能失败');
+		    return res.status(error.constructor.status).json(error);
+		}
+		return res.status(200).json({ code: 'SUCCESS', data:'', msg:'菜单移除功能成功'});
+	});
 }
 
 exports.list = function(req, res){
@@ -29,7 +50,7 @@ exports.list = function(req, res){
 	}
 
 	let curUser = req.session.user;
-	if(utils.isAdmin(curUser.id)){
+	if(utils.isAdmin(curUser)){
 		async.auto({
 			rules: function(callback){
 				ruleService.list(function(err, rules){

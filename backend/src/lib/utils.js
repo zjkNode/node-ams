@@ -36,22 +36,21 @@ module.exports = {
     getHost: function(req){
 
     },
-    firstUper:function(str) {
+    firstUper(str) {
         str = str.toLowerCase();
         return str.replace(/\b(\w)|\s(\w)/g, function(m) {
             return m.toUpperCase();
         });
     },
-    buildTree:function(data,pid){
+    buildTree(data, pid){
         var _this = this;
-        var resData = data.filter(function(item,index,arr){
-            return item.pid === pid;
-        });
+        var resData = data.filter(item => item.pid === pid);
         if(!resData || resData.length ===0){
             return null;
         }
-        resData.map(function(item){
+        resData.forEach(item => {
             item.children = _this.buildTree(data,item.id);
+            item.isLeaf = item.children === null;
         });
 
         return resData;
@@ -62,14 +61,15 @@ module.exports = {
         
         return flatTree(treeData);
     },
-    authCheck(user, action){
-        if(_.includes(CONSTANTS.ADMINISTRATOR_USERS, user.id)){
+    authCheck(user, menuId){
+        if(this.isAdmin(user)){
             return true;
         }
-        return _.includes(user.rules, action);
+        return user.menu_ids.includes(menuId);
+        // return _.includes(user.rules, action);
     },
-    isAdmin(userId){
-        return _.includes(CONSTANTS.ADMINISTRATOR_USERS, userId);
+    isAdmin(user){
+        return CONSTANTS.ADMINISTRATOR_USERS.includes(user.id);
     },
     mkdirsSync(dirpath, mode){
         try{   
@@ -78,7 +78,7 @@ module.exports = {
                 //这里指用/ 或\ 都可以分隔目录  如  linux的/usr/local/services   和windows的 d:\temp\aaaa
                 // _.forEach(dirpath.split(/[/\\]/), function(dirname){
                 dirpath.split(/[/\\]/).forEach(function (dirname) {
-                    dirname = _.trim(dirname);
+                    dirname = dirname.trim();
                     if (pathtmp != null) {
                         pathtmp = path.join(pathtmp, dirname);
                     } else {

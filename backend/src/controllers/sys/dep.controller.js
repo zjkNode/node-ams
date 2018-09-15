@@ -151,7 +151,7 @@ exports.list = function(req,res) {
 		};
 	}
 
-	if(utils.isAdmin(curUser.id)){
+	if(utils.isAdmin(curUser)){
 
 		async.waterfall([
 			function(callback){
@@ -227,7 +227,7 @@ exports.list = function(req,res) {
 
 exports.tree = function(req,res){
 	let curUser = req.session.user;
-	if(utils.isAdmin(curUser.id)){
+	if(utils.isAdmin(curUser)){
 		depService.allLists(function(err,result){
 			if(err){
 			  	logService.log(req, '服务器出错，获取部门类型失败');

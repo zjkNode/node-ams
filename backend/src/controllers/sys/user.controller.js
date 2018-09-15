@@ -59,10 +59,10 @@ exports.signIn = function (req,res) {
     }],
     actions:['user', function(results, callback){
       // 超管 所有权限
-      if(utils.isAdmin(results.user.id)){
+      if(utils.isAdmin(results.user)){
         return callback(null, ['ALL']);
       }
-      confService.getValidList({ type: CONSTANTS.CONFIG_TYPES.AUTH_ACTION } function(error, configs){
+      confService.listByType(CONSTANTS.CONFIG_TYPES.AUTH_ACTION, function(error, configs){
       	return callback(error, configs);
       });
       // ruleService.getRulesByRole(results.role, function(error, rules){

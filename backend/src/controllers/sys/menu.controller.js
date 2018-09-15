@@ -28,8 +28,7 @@ exports.add = function (req,res) {
 	menuService.add(newMenu,function(err,resId) {
 		if(err){
 			logService.log(req, '服务器出错，新增菜单失败');
-			let status = err.constructor.status;
-        	return res.status(status).json(err);
+        	return res.status(err.constructor.status).json(err);
 		}
 		logService.log(req, '新增菜单成功'+ newMenu.name);
 		return res.status(200).json({ code: 'SUCCESS', msg:'新增菜单成功'});
@@ -54,8 +53,7 @@ exports.delete = function(req,res){
 	menuService.delete(map, function(err){
 		if(err){
 			logService.log(req, '服务器出错，删除菜单失败');
-			let status = err.constructor.status;
-        	return res.status(status).json(err);
+        	return res.status(err.constructor.status).json(err);
 		}
 		return res.status(200).json({code:'SUCCESS', msg:'删除菜单成功'});
 	});
@@ -88,29 +86,25 @@ exports.update = function(req,res) {
 	menuService.update(menu, map, function(err){
 		if(err){
 			logService.log(req, '服务器出错，更新失败');
-			let status = err.constructor.status;
-        	return res.status(status).json(err);
+        	return res.status(err.constructor.status).json(err);
 		}
 		return res.status(200).json({code:'SUCCESS', msg:'更新成功'});
 	});
 }
 
 exports.tree = function(req,res){
-    menuService.tree(function(err,rs){
+    menuService.tree(function(err, rows){
 		if(err){
 			logService.log(req, '服务器出错，获取菜单列表失败');
-			let status = err.constructor.status;
-        	return res.status(status).json(err);
+        	return res.status(err.constructor.status).json(err);
 		}
 		// 权限过滤 菜单
 		let curUser = req.session.user;
 		let menus = [];
-		if(util.isAdmin(curUser.id)){
-			menus = rs;
+		if(util.isAdmin(curUser)){
+			menus = rows;
 		} else {
-			menus = _.filter(rs, (item)=>{
-				return util.authCheck(curUser, item.alink);
-			});
+			menus = rows.filter(item => util.authCheck(curUser, item.id));
 		}
 		return res.status(200).json({
             code: 'SUCCESS',
@@ -118,58 +112,57 @@ exports.tree = function(req,res){
             msg: ""
         });
     })
-};
+}
 
 exports.list = function(req,res){
 	var where = {};
 	let searchKey = req.query.keys;
-    if(searchKey){
-		where._complex = {
-			_logic: 'or',
-			name: ['like',searchKey],
-			alink: ['like',searchKey]
-		}
-		async.waterfall([
-			function(callback){
-				menuService.list(where,function(error,resList){
-					callback(error,resList);
-				});
-	  		},
-	  		function(resList,callback){
-				let ids = [];
-				for(let i = 0; i < resList.length; i++){
-					let item = resList[i];
-					ids.push(item.id);
-					ids = _.union(ids,item.pids.split(',').map((pid)=>{ return parseInt(pid); }))
-				}
-				menuService.list({id:['in',ids]},function(error, resList){
-					callback(error, resList);
-				});
-  
-	  		}],function(err, result){
-				if(err){
-					logService.log(req, '服务器出错，获取菜单列表失败');
-					let status = err.constructor.status;
-        			return res.status(status).json(err);
-				}
-				let resTable = util.buildTreeTable(result);
-				return res.status(200).json({
-					code: 'SUCCESS',
-					data: resTable
-				});
-	  		});
-	} else {
+	if(!searchKey){
 		menuService.list(where,function(err, result){
 			if(err){
 				logService.log(req, '服务器出错，获取菜单列表失败');
-				let status = err.constructor.status;
-        		return res.status(status).json(err);
+        		return res.status(err.constructor.status).json(err);
 			}
 			let resTable = util.buildTreeTable(result);
 			return res.status(200).json({
 				code: 'SUCCESS',
-				data:resTable
+				data: resTable
 			});
 	  	});
+		return;
 	}
+
+	where._complex = {
+		_logic: 'or',
+		name: ['like',searchKey],
+		alink: ['like',searchKey]
+	};
+	async.waterfall([
+		function(callback){
+			menuService.list(where,function(error,resList){
+				return callback(error,resList);
+			});
+  		},
+  		function(menus,callback){
+			let ids = [];
+			menus.forEach(menu => {
+				ids.push(menu.id);
+				ids = _.union(ids, menu.pids.split(',').map(pid => parseInt(pid)))
+			});
+			menuService.list({ id: ['in', ids]},function(error, resList){
+				return callback(error, resList);
+			});
+
+  	}],function(err, result){
+		if(err){
+			logService.log(req, '服务器出错，获取菜单列表失败');
+			return res.status(err.constructor.status).json(err);
+		}
+		let resTable = util.buildTreeTable(result);
+		return res.status(200).json({
+			code: 'SUCCESS',
+			data: resTable
+		});
+  	});
+	
 }

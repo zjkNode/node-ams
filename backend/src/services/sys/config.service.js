@@ -78,13 +78,16 @@ exports.list = function(where, page, callback){
     });
 }
 
-exports.getValidList = function(where, callback){
-    where.status:CONSTANTS.CONFIG_STATUS.VALID;
-    mysql.where(where).select(configModel.tbname,function(err,rows){
+exports.listByType = function(type, callback){
+    let where = {
+        type: type,
+        status: CONSTANTS.CONFIG_STATUS.VALID
+    };
+    mysql.where(where).select(configModel.tbname, function(err, rows){
         if(err){
             logger.errorDB(__filename, err);
             return callback(new DBError());
         }
-        return callback(null,rows);
+        return callback(null, rows);
     });
 }
