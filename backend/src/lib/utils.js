@@ -19,6 +19,7 @@ function flatTree(treeData){
         if(item.children && item.children.length > 0){
             resArr = resArr.concat(flatTree(item.children));
         }
+        delete item.children;
     }
     return resArr;
 }
@@ -66,7 +67,6 @@ module.exports = {
             return true;
         }
         return user.menu_ids.includes(menuId);
-        // return _.includes(user.rules, action);
     },
     isAdmin(user){
         return CONSTANTS.ADMINISTRATOR_USERS.includes(user.id);

@@ -21,7 +21,8 @@ exports.add = function(newMenu,callback) {
 }
 
 exports.delete = function(where, callback){
-	mysql.where(where).remove(menuModel.tbname,function(err,res){
+	where.tbname = menuModel.tbname;
+	mysql.execute(baseService.SQL_deleteCascadeById, where, function(err, res){
 		if(err){
 			logger.errorDB(__filename, err);
 			return callback(new DBError());

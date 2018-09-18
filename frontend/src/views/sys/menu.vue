@@ -7,7 +7,7 @@
             </el-col>
             <el-col :span="13" :offset="1">
                 <el-button size="small" type="primary" @click="loadMenus" icon="el-icon-search">查询</el-button>
-                <el-button size="small" type="primary" @click="$refs.addForm.show()" icon="el-icon-plus"> 新增</el-button>
+                <el-button size="small" type="primary" @click="isFormVisible = true" icon="el-icon-plus"> 新增</el-button>
             </el-col>  
         </el-row>
         <el-table :data="menuList" stripe v-loading="isLoading" style="width: 100%;" @cell-click="onCellClick">
@@ -47,6 +47,7 @@
                 </template>
             </el-table-column>
         </el-table>
+        
         <el-dialog
           :title="rowData.name +' -- 功能配置'"
           :visible.sync="actionVisible">
@@ -71,27 +72,86 @@
               </el-dropdown-menu>
             </el-dropdown>
         </el-dialog>
-        <addForm ref='addForm' @afterSubmit="loadMenus" ></addForm>   
-        <editForm ref="editForm" @afterSubmit="loadMenus" :rowData="rowData"></editForm>
+        
+        <el-dialog :title="'菜单 -- '+(title || '新增')" :visible.sync="isFormVisible" @close="onFormClose">
+            <el-form label-width="90px" ref="dgForm" :model="formData" :rules="rules" :show-message="true">
+                <el-form-item label="菜单级别" prop="pids" >
+                    <el-cascader 
+                        change-on-select 
+                        :options="menuTree" 
+                        :props="props" 
+                        v-model="formData.pids" 
+                        @change="pidsChange">
+                    </el-cascader> 
+                </el-form-item> 
+                <el-form-item label="菜单名称" prop="name">
+                    <el-input v-model="formData.name" placeholder="请输入菜单名称"></el-input>
+                </el-form-item>
+                <el-form-item label="菜单地址" prop="alink">
+                    <el-input v-model="formData.alink" placeholder="请输入菜单访问地址（如 /menus ）"></el-input>
+                </el-form-item>
+                <el-form-item label="菜单排序" prop="sort">
+                    <el-input-number v-model="formData.sort" :min="1"></el-input-number>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button size="small" @click="isFormVisible = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="onSubmit">确 定</el-button>
+            </div> 
+        </el-dialog>
     </el-row>
 </template>
 <script>
-    import addForm from './add.vue';
-    import editForm from './edit.vue';
+    import { mapGetters } from 'vuex';
 
     export default {
-        components:{ addForm, editForm},
         data(){
             return {
-                isLoading: true,
+                isLoading: false,
+                isDoing: false,
+                isFormVisible: false,
                 menuList: null,
-                // menuTree: null,
+                menuTree: [],
                 actionVisible: false,
                 actions:null,
                 rowData: {},
                 keys:"",
-                addFormVisible: false,
-                editFormVisible:false
+                title: '',
+                props:{ value:'id', label:'name' },
+                formData: {
+                    id:'',
+                    name: '',
+                    pid: null,
+                    pids: null,
+                    alink:'',
+                    sort: 1
+                },
+                rules: {
+                    name: [
+                        { required: true, message: '请输入菜单名称', trigger: 'blur' }
+                    ],
+                    alink: [
+                        { required: true, message: '请输入菜单访问地址', trigger: 'blur' }
+                    ],
+                    pids: [
+                        { required: true, min: 1, type:'array', trigger: 'blur'}
+                    ],
+                    sort: [
+                        { required: false, min:1, message:'请输入菜单排序编号', type:'number', trigger: 'blur' }
+                    ]
+                }
+            }
+        },
+        computed: mapGetters({
+            menuData:'getMenuTree',
+        }),
+        watch: {
+            menuData(val){
+                let tmp = [{ name:'顶级菜单', id: 0, pid: 0 }];
+                if(val){
+                    tmp = tmp.concat(val);
+                }
+                this.menuTree = tmp;
             }
         },
         mounted(){
@@ -108,6 +168,7 @@
                 this.$http.get(url,{ params: params}).then((res)=>{
                     this.isLoading = false;
                     if(res.code !== 'SUCCESS'){
+                        this.$message.error(res.msg);
                         return;
                     }
                     this.menuList = res.data;
@@ -127,6 +188,18 @@
                     this.actions = res.data;
                 });
             },
+            pidsChange(val){
+                if(val[0] === 0){ // 顶级
+                    this.formData.sort = this.menuTree.length;
+                    return;
+                }
+                let tmpMenu = { children: this.menuTree};
+                val.forEach(id => {
+                    tmpMenu = tmpMenu.children.find(menu => menu.id === id);
+                });
+                let sort = tmpMenu.children && tmpMenu.children.slice(-1)[0].sort;
+                this.formData.sort = sort + 1;
+            },
             onCellClick(row, column){
                 if(column.property == "actions" && row.isLeaf){
                     this.rowData = Object.assign({}, row);
@@ -136,6 +209,19 @@
                     }
                     this.actionVisible = true;
                 }
+            },
+            onRemoveClick(index,row){
+                this.$confirm('级联子菜单将被同步删除，确认删除吗?', '友情提示', { type: 'warning'}) .then(() => {
+                    let url = '/api/menu/'+ row.id;
+                    this.$http.delete(url).then((res)=>{
+                        if(res.code !== 'SUCCESS'){
+                            this.$message.error(res.msg);
+                            return;
+                        }
+                        this.$store.dispatch('refreshMenuTree');
+                        this.loadMenus();
+                    });
+                }).catch(() => {});
             },
             onUpdateAction(command, type){
                 let params = Object.assign({}, this.rowData);
@@ -166,19 +252,66 @@
                 });
             },
             onEditClick(row){
-                this.rowData = Object.assign({}, row);
-                this.rowData.pids = row.pids ? row.pids.split(',').map(id => parseInt(id)) : [row.id];
-                this.$refs.editForm.show();
+                this.formData = Object.assign({}, row);
+                this.formData.pids = this.formData.pids.split(',').map(id => parseInt(id));
+                this.isFormVisible = true;
             },
-            onRemoveClick(index,row){
-                this.$confirm('确认删除吗?', '友情提示', { type: 'warning'})
-                .then(() => {
-                    let url = '/api/menu/'+ row.id;
-                    this.$http.delete(url).then((res)=>{
-                        this.menuList.splice(index,1);
+            onFormClose(){
+                this.formData = {
+                    id:'',
+                    name: '',
+                    pid: null,
+                    pids: [],
+                    alink:'',
+                    sort: 1
+                };
+                this.title = "";
+                this.$refs.dgForm.resetFields();
+            },
+            onSubmit(){
+                if(this.formData.id){
+                    this.onEditSubmit();
+                    return;
+                }
+                this.onAddSubmit();
+            },
+            onAddSubmit(){
+                this.$refs.dgForm.validate((valid) => {
+                    if (!valid) {
+                        return false;
+                    }
+                    this.formData.pid = this.formData.pids.slice(-1)[0] || 0;
+                    this.isDoing = true;
+                    this.$http.post('/api/menu', this.formData).then(res => {
+                        this.isDoing = false;
+                        if(res.code != 'SUCCESS'){
+                            this.$message.error(res.msg);
+                            return;
+                        }
+                        this.isFormVisible = false;
                         this.$store.dispatch('refreshMenuTree');
+                        this.loadMenus();
                     });
-                }).catch(() => {});
+                });
+            },
+            onEditSubmit(){
+                this.$refs.dgForm.validate((valid) => {
+                    if (!valid) {
+                        return false;
+                    }
+
+                    this.formData.pid = this.formData.pids.slice(-1)[0] || 0;
+                    var apiUrl = "/api/menu/"+ this.formData.id;
+                    this.isDoing = true;
+                    this.$http.put(apiUrl, this.formData).then((res)=>{
+                        this.isDoing = false;
+                        this.isFormVisible = false;
+                        this.$store.dispatch('refreshMenuTree');
+                        this.loadMenus();
+                    }).catch(() => {
+                        this.isDoing = false;
+                    });
+                });
             }
         }
     }

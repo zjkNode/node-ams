@@ -16,24 +16,16 @@ exports.add = function (req,res) {
 		logger.error(__filename, '参数验证失败', vErrors);
 		return res.status(ValidationError.status).json(vErrors);
 	}
-	var newMenu = {
-		name:req.body.name,
-		alink:req.body.alink,
-		pid:parseInt(req.body.pid),
-		pids: req.body.pids,
-		sort: parseInt(req.body.sort),
-		status:parseInt(req.body.status)
-	}
-	menuModel.auto(newMenu);
-	menuService.add(newMenu,function(err,resId) {
+	
+	let menu = Object.assign({}, req.body);
+	menuModel.auto(menu);
+	menuService.add(menu,function(err,resId) {
 		if(err){
 			logService.log(req, '服务器出错，新增菜单失败');
         	return res.status(err.constructor.status).json(err);
 		}
-		logService.log(req, '新增菜单成功'+ newMenu.name);
 		return res.status(200).json({ code: 'SUCCESS', msg:'新增菜单成功'});
 	});
-
 }
 
 exports.delete = function(req,res){
@@ -74,15 +66,6 @@ exports.update = function(req,res) {
 	let map = {
 		id: parseInt(req.params.id)
 	};
-	// let menu = {
-	// 	id: parseInt(req.params.id),
-	// 	name:req.body.name,
-	// 	alink:req.body.alink,
-	// 	pid:parseInt(req.body.pid),
-	// 	pids:req.body.pids,
-	// 	sort:parseInt(req.body.sort),
-	// 	status: parseInt(req.body.status)
-	// };
 	let menu = Object.assign({}, req.body, map);
 	menuModel.auto(menu);
 	menuService.update(menu, map, function(err){

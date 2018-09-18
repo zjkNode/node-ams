@@ -10,7 +10,7 @@ module.exports.SQL_deleteCascadeById =  `DELETE FROM :tbname WHERE id in(
 											SELECT a.id from (
 												SELECT * FROM :tbname 
 												WHERE id = :id or pids LIKE CONCAT((SELECT CASE pids WHEN '0' THEN id ELSE CONCAT(pids,',',id) END 
-												FROM rule WHERE id = :id),'%') 
+												FROM :tbname WHERE id = :id),'%') 
 											) a
 										)`;
 // 级联更新所有子栏目pids,在执行update语句之前执行,前提是pids 被更新了
