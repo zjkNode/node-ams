@@ -25,15 +25,6 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination
-                @size-change="onSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page="page"
-                :page-sizes="[15, 30, 50, 100]"
-                :page-size="pageSize"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="total">
-        </el-pagination>
         
         <el-dialog :title="'角色 -- '+ title || '新增'" :visible.sync="isVisible" @close="onFormClose">
             <el-form :model="formData" :rules="rules" ref="formData" label-width="80px">
@@ -73,11 +64,7 @@
                     desc:[
                         { min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
                     ]
-                },
-                total: 0,
-                page: 1,
-                pageSize:15,
-                pageIndex:1,
+                }
             }
         },
         mounted() {
@@ -87,9 +74,7 @@
             bindRoles(){
                 let url = '/api/role';
                 let data = {
-                    keys: this.keys,
-                    pageIndex: this.page,
-                    pageSize: this.pageSize
+                    keys: this.keys
                 };
                 this.loading = true;
                 this.$http.get(url, { params:data }).then((res)=> {
@@ -98,10 +83,7 @@
                         this.$message.error(res.msg);
                         return;
                     } 
-
-                    var data = res.data;
-                    this.roles = data.lists;
-                    this.total = data.total;
+                    this.roles = res.data;;
                 }).catch(() => {
                     this.loading = false;
                 });
@@ -112,6 +94,7 @@
                     desc: '',
                 };
                 this.title = "";
+                this.$refs.formData.resetFields();
             },
             onSubmit(){
                 if(this.formData.id){
@@ -189,15 +172,6 @@
                     path:'/sys/org/role/authority',
                     query:{ id:row.id }
                 });
-            },
-            //跳转分页
-            handleCurrentChange(val) {
-                this.page = val;
-                this.bindRoles();
-            },
-            onSizeChange(val){
-                this.pageSize = val;
-                this.bindRoles();
             },
             searchName(){
                 !this.keys && this.bindRoles();

@@ -2,7 +2,11 @@ var moment = require('moment');
 
 export function formatDate(value, format){
   format = format || 'YYYY-MM-DD hh:mm:ss';
-  return moment(value).format(format);
+  var tmpDate = moment();
+  if(value){
+      tmpDate = moment(value);
+  }
+  return tmpDate.format(format);
 }
 
 export function isNormal(value){

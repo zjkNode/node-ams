@@ -19,7 +19,7 @@ let validation = {
 	'depids': {
 		isNotEmpty: { errorMessage: '部门不能为空' }
 	},
-	'roleid': {
+	'roleids': {
 		isNotEmpty: { errorMessage: '角色不能为空'}
 	}
 };
@@ -33,6 +33,7 @@ let auto = function(user) {
 		user.create_time = moment().format('YYYY-MM-DD hh:mm:ss');
 	} else { // 修改时，默认字段赋值
 		user.update_time = moment().format('YYYY-MM-DD hh:mm:ss');
+		delete user.create_time;
 	}
 };
 

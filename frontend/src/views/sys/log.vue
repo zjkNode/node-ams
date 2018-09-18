@@ -73,9 +73,6 @@
             handleCurrentChange(val) {
                 this.pageIndex = val;
                 this.loadData();
-            },
-            dateFormat(row, column, cellvalue){
-                this.$options.filters.formatDate(cellvalue);
             }
         }
     })

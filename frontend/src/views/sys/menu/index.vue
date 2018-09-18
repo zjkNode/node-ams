@@ -39,7 +39,7 @@
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="create_time" label="添加时间" align="center" width="200" :formatter="formatterDate" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="create_time" label="添加时间" align="center" width="200" :formatter="dateFormat" show-overflow-tooltip></el-table-column>
             <el-table-column fixed="right" label="操作" width="100" >
                 <template scope="scope">
                     <el-button type="text" size="small" @click="onEditClick(scope.row)">编辑</el-button>
@@ -92,15 +92,6 @@
                 keys:"",
                 addFormVisible: false,
                 editFormVisible:false
-            }
-        },
-        filters:{
-            statusFilter(val){
-                if(val === 1)
-                    return '正常';
-                if(val === 2)
-                    return '停用';
-                return '未知';
             }
         },
         mounted(){
@@ -188,12 +179,6 @@
                         this.$store.dispatch('refreshMenuTree');
                     });
                 }).catch(() => {});
-            },
-            formatterDate(row,column,cellValue){
-                return this.$options.filters.formatDate(cellValue);
-            },
-            formatTree(row, column,value){
-                return this.$options.filters.flatTree(row, value);
             }
         }
     }

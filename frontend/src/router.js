@@ -8,7 +8,7 @@ Vue.use(Router)
 var routes = [
   { title:'首页', name:'home', path:'/', view:'Home'},
   { title:'菜单管理', name:'menu', path:'/sys/menu', view:'sys/menu/index'},
-  { title:'用户管理', name:'user', path:'/sys/org/user', view:'sys/user/index'},
+  { title:'用户管理', name:'user', path:'/sys/org/user', view:'sys/user'},
   { title:'部门管理', name:'dep', path:'/sys/org/dep', view:'sys/dep'},
   { title:'角色管理', name:'role', path:'/sys/org/role', view:'sys/role'},
   { title:'系统配置', name:'config', path:'/sys/conf', view:'sys/config'},

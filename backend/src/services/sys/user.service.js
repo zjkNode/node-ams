@@ -52,57 +52,57 @@ exports.delete = function(where, callback){
 	});
 }
 
-exports.lists = function(where, page, callback){
+exports.list = function(where, page, callback){
 	async.auto({
 		total:function(callback){
 			mysql.where(where).count(userModel.tbname,function(err,res){
-				callback(err,res); // res 将被赋值 total
+				return callback(err,res); // res 将被赋值 total
 			});
 		},
-		lists: function(callback){
+		list: function(callback){
 			mysql.where(where)
 				 .order({id:'desc'})
 				 .limit(page.index, page.size)
 				 .select(userModel.tbname, function(err,rows){
-					callback(err,rows);
+					return callback(err,rows);
 				});
 		},
-		depList: ['lists', function(results, callback){
-			let depIds = _.union(_.map(results.lists, 'depid'));
-			depService.lists({ id:['in', depIds] }, function(error, deps){
-				return callback(error, deps);
-			});
-		}],
-		roleList: ['lists', function(results, callback){
-			let roleIds = _.union(_.map(results.lists, 'roleid'));
-			roleService.getRoleList({ id: ['in', roleIds] }, function(error, roles){
-				return callback(error, roles);
-			});
-		}]
+		// depList: ['list', function(results, callback){
+		// 	let depIds = _.union(_.map(results.list, 'depid'));
+		// 	depService.list({ id:['in', depIds] }, function(error, deps){
+		// 		return callback(error, deps);
+		// 	});
+		// }],
+		// roleList: ['list', function(results, callback){
+		// 	let roleIds = _.union(_.map(results.list, 'roleid'));
+		// 	roleService.getRoleList({ id: ['in', roleIds] }, function(error, roles){
+		// 		return callback(error, roles);
+		// 	});
+		// }]
 	},function(error,results){ 
 		// 以上并行操作，任何一个出错，就会进error 并终止拉下来的操作
-		// results.total,results.lists
+		// results.total,results.list
 		if(error){
 			logger.errorDB(__filename, error);
 			return callback(new DBError());
 		}
-		_.forEach(results.lists, function(user){
-			user.dep = results.depList.filter((dep)=>{
- 				return dep.id == user.depid;
- 			})[0];
-			user.dep = user.dep || { name: '部门不存在' };
+		// _.forEach(results.list, function(user){
+		// 	user.dep = results.depList.filter((dep)=>{
+ 	// 			return dep.id == user.depid;
+ 	// 		})[0];
+		// 	user.dep = user.dep || { name: '部门不存在' };
 
- 			user.role = results.roleList.filter((role)=>{
- 				return role.id == user.roleid;
- 			})[0];
-			user.role = user.role || { name: '角色不存在' };
-		});
+ 	// 		user.role = results.roleList.filter((role)=>{
+ 	// 			return role.id == user.roleid;
+ 	// 		})[0];
+		// 	user.role = user.role || { name: '角色不存在' };
+		// });
 
 		let resData = {
 			total:results.total || 0,
 			pageIndex:page.index,
 			pageSize: page.size,
-			lists: results.lists || []
+			list: results.list || []
 		}
 
 		return callback(null,resData);

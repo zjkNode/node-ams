@@ -102,22 +102,24 @@ exports.add = function (req,res) {
 		logger.error(__filename, '参数验证失败', vErrors);
 		return res.status(ValidationError.status).json(vErrors);
 	}
-	let depid = parseInt(req.body.depids[req.body.depids.length - 1]);
-	let user = {
-		email:req.body.email,
-		nickname:req.body.nickname,
-		password:utils.decrypt(req.body.password),
-		depid: depid,
-		roleid: parseInt(req.body.roleid),
-		phone:req.body.phone || ''
-	}
+
+	// let depid = parseInt(req.body.depids[req.body.depids.length - 1]);
+	// let user = {
+	// 	email:req.body.email,
+	// 	nickname:req.body.nickname,
+	// 	password:utils.decrypt(req.body.password),
+	// 	depid: depid,
+	// 	roleid: parseInt(req.body.roleid),
+	// 	phone:req.body.phone || ''
+	// }
+	let user = Object.assign({}, req.body);
+	user.password = utils.decrypt(user.password);
 	userModel.auto(user);
 
 	userService.add(user,function(err,resId) {
 		if(err){
 			logService.log(req, '服务器出错，新增用户失败');
-			let status = err.constructor.status;
-        	return res.status(status).json(err);
+        	return res.status(err.constructor.status).json(err);
 		}
 		return res.status(200).json({ code: 'SUCCESS', msg:'新增用户成功'});
 	});
@@ -138,23 +140,24 @@ exports.update = function(req,res) {
 	let map = {
 		id: parseInt(req.params.id)
 	};
-	let depid = parseInt(req.body.depids[req.body.depids.length - 1]);
-	let user = {
-		id: parseInt(req.params.id),
-		email:req.body.email,
-		nickname:req.body.nickname,
-		password:utils.decrypt(req.body.password),
-		depid: depid,
-		roleid: parseInt(req.body.roleid),
-		status: parseInt(req.body.status),
-		phone:req.body.phone || ''
-	}
+	// let depid = parseInt(req.body.depids[req.body.depids.length - 1]);
+	// let user = {
+	// 	id: parseInt(req.params.id),
+	// 	email:req.body.email,
+	// 	nickname:req.body.nickname,
+	// 	password:utils.decrypt(req.body.password),
+	// 	depid: depid,
+	// 	roleid: parseInt(req.body.roleid),
+	// 	status: parseInt(req.body.status),
+	// 	phone:req.body.phone || ''
+	// }
+	let user = Object.assign({}, req.body, map);
+	user.password = utils.decrypt(user.password);
 	userModel.auto(user);
 	userService.update(user, map, function(err){
 		if(err){
 			logService.log(req, '服务器出错，更新用户信息失败');
-			let status = err.constructor.status;
-        	return res.status(status).json(err);
+        	return res.status(err.constructor.status).json(err);
 		}
 		return res.status(200).json({code:'SUCCESS', msg:'更新用户信息成功'});
 	});
@@ -205,16 +208,38 @@ exports.list = function(req,res) {
 	// 	where.depid = curUser.depid;
 	// }
 
-	userService.lists(where, page, function(err, result){
-		if(err){
+	async.auto({
+		userData: function(callback){
+			userService.list(where, page, function(err, result){
+				return callback(err, result)
+			});
+		},
+		deps: ['userData', function(results, callback){
+			let depids = _.map(results.userData.list, 'depids').join(',');
+			depids = _.union(depids.split(','));
+			depService.list({ id:['in', depids] }, function(err, rows){
+				return callback(err, rows);
+			});
+		}]
+	}, function(error, results){
+		if(error){
 			logService.log(req, '服务器出错，获取用户列表失败');
-			let status = err.constructor.status;
-        	return res.status(status).json(err);
+        	return res.status(error.constructor.status).json(error);
 		}
-		return res.status(200).json({
-			code: 'SUCCESS',
-			data: result,
-			msg:''
+		results.userData.list.forEach(user => {
+			user.depids = user.depids.split(',').map(id => parseInt(id));
+			let deps = results.deps.filter(dep => user.depids.includes(dep.id));
+			user.depName = _.map(deps, 'name').join(' / ');
+			user.roleids = user.roleids.split(',').map(id => parseInt(id));
 		});
+
+		return res.status(200).json({ code: 'SUCCESS', data: results.userData });
 	});
+	// userService.list(where, page, function(err, result){
+	// 	if(err){
+	// 		logService.log(req, '服务器出错，获取用户列表失败');
+ //        	return res.status(err.constructor.status).json(err);
+	// 	}
+	// 	return res.status(200).json({ code: 'SUCCESS', data: result });
+	// });
 }

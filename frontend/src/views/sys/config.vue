@@ -45,7 +45,7 @@
             :total="total">
         </el-pagination>
         
-        <el-dialog :title='"配置 -- "+ (title || "新增")' :show-close='false' :close-on-click-modal="false" :visible.sync="isAddVisible">
+        <el-dialog :title='"配置 -- "+ (title || "新增")' :visible.sync="isAddVisible" @close="onDialogClose">
           <el-form :model="formData" :rules="rules" ref="dialogForm" @keyup.enter.native="onSubmit" label-width="80px">
             <el-form-item label="配置类型" prop="type">
                 <el-radio-group v-model="formData.type" size="small">
@@ -72,7 +72,7 @@
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
-            <el-button size="small" @click="resetForm">取 消</el-button>
+            <el-button size="small" @click="isAddVisible = false">取 消</el-button>
             <el-button type="primary" size="small" @click="onSubmit" :loading='isAddLoading'>确 定</el-button>
           </div>
         </el-dialog>
@@ -84,10 +84,8 @@
             return {
                 title: '',
                 isAddVisible: false,
-                isEditVisible:false,
                 isLoading: false,
                 isAddLoading: false,
-                isEditLoading: false,
                 keys:"",
                 rowData:null,
                 dataList: null,
@@ -120,22 +118,10 @@
                 }
             }
         },
-        filters:{
-            statusFilter(val){
-                if(val === 1)
-                    return '正常';
-                if(val === 2)
-                    return '停用';
-                return '未知';
-            }
-        },
         mounted(){
             this.bindConfigs();
         },
         methods:{
-            dateFormat(row,column,cellvalue){
-                return this.$options.filters.formatDate(cellvalue);
-            },
             bindConfigs(){
                 let url = '/api/config';
                 let params = {
@@ -187,6 +173,18 @@
             searchName(){
                 !this.keys && this.bindConfigs();
             },
+            onDialogClose(){
+                this.title = '',
+                this.formData = {
+                    type:'normal',
+                    name:'',
+                    desc:'',
+                    key:'',
+                    status: 1,
+                    value:''
+                };
+                this.$refs.dialogForm.resetFields();
+            },
             onSubmit(){
                 if(this.formData.id){
                     this.editSubmit();
@@ -208,24 +206,12 @@
                         return;
                     }
 
-                    this.resetForm();
+                    this.isAddVisible = false;
                     this.bindConfigs();
                   }).catch(() => {
                     this.isAddLoading = false;
                   });
                 });
-            },
-            resetForm(formName) {
-                this.isAddVisible = false;
-                this.title = '',
-                this.formData = {
-                    type:'normal',
-                    name:'',
-                    desc:'',
-                    key:'',
-                    status: 1,
-                    value:''
-                };
             },
             editSubmit() {
                 this.$refs.dialogForm.validate((valid) => {
@@ -240,7 +226,7 @@
                         return;
                     }
                     this.isEditLoading = false;
-                    this.resetForm();
+                    this.isAddVisible = false;
                     this.bindConfigs()
                   }).catch(() => {
                     this.isEditLoading = false;

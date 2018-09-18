@@ -62,34 +62,16 @@ exports.delete = function(where, callback){
 /**
  * 总数据
  */
- exports.list = function(where, page, callback){
-  async.auto({
-    total: function(callback){
-      mysql.where(where).count(roleModel.tbname,function(err,res){
-        return callback(err,res); // res 将被赋值 total
-      });
-    },
-    lists: function(callback){
-      mysql.where(where)
+ exports.list = function(where, callback){
+  mysql.where(where)
         .order({id:'desc'})
-        .limit(page.index, page.size)
         .select(roleModel.tbname, function(err,rows){
-          return callback(err, rows);
+          if(err){
+            logger.errorDB(__filename, err);
+            return callback(new DBError());
+          }
+          return callback(null, rows);
         });
-    }
-  },function(error,results){
-    if(error){
-      logger.errorDB(__filename, error);
-      return callback(new DBError());
-    }
-    let resData = {
-      total:results.total || 0,
-      pageIndex:page.index,
-      pageSize: page.size,
-      lists: results.lists || []
-    }
-    return callback(null,resData);
-  });
 }
 
 exports.getRoleList = function(where,callback){

@@ -139,10 +139,6 @@ exports.delete = function(req,res){
 exports.list = function(req,res) {
   let where = {};
   let searchKey = req.query.keys;
-  let page = {
-    index: parseInt(req.query.pageIndex),
-    size: parseInt(req.query.pageSize)
-  }
   if(searchKey){
     where._complex = {
       _logic: 'or',
@@ -150,7 +146,7 @@ exports.list = function(req,res) {
       desc:['like',searchKey]
     }
   }
-  roleService.list(where, page, function(err, resRoles){
+  roleService.list(where, function(err, resRoles){
     if(err){
       logService.log(req, '服务器出错，获取角色列表失败');
       return res.status(err.constructor.status).json(err);

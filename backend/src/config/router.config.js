@@ -46,6 +46,10 @@ module.exports = {
             },
             '/signout': {
                 post: 'sys.user.signOut'
+            },
+            '/:id':{
+                put: 'sys.user.update',
+                delete: 'sys.user.delete'
             }
         },
         '/config':{
