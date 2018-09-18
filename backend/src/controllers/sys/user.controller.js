@@ -65,14 +65,6 @@ exports.signIn = function (req,res) {
       confService.listByType(CONSTANTS.CONFIG_TYPES.AUTH_ACTION, function(error, configs){
       	return callback(error, configs);
       });
-      // ruleService.getRulesByRole(results.role, function(error, rules){
-      //   if(error){
-      //     logService.log(req, '获取用户权限异常: ', results.user);
-      //     return callback(error);
-      //   }
-      //   let rulesArr = _.map(rules, 'path');
-      //   return callback(error, rulesArr);
-      // });
     }]
   }, function(err, results) {
       if(err){
@@ -103,15 +95,6 @@ exports.add = function (req,res) {
 		return res.status(ValidationError.status).json(vErrors);
 	}
 
-	// let depid = parseInt(req.body.depids[req.body.depids.length - 1]);
-	// let user = {
-	// 	email:req.body.email,
-	// 	nickname:req.body.nickname,
-	// 	password:utils.decrypt(req.body.password),
-	// 	depid: depid,
-	// 	roleid: parseInt(req.body.roleid),
-	// 	phone:req.body.phone || ''
-	// }
 	let user = Object.assign({}, req.body);
 	user.password = utils.decrypt(user.password);
 	userModel.auto(user);
@@ -140,17 +123,6 @@ exports.update = function(req,res) {
 	let map = {
 		id: parseInt(req.params.id)
 	};
-	// let depid = parseInt(req.body.depids[req.body.depids.length - 1]);
-	// let user = {
-	// 	id: parseInt(req.params.id),
-	// 	email:req.body.email,
-	// 	nickname:req.body.nickname,
-	// 	password:utils.decrypt(req.body.password),
-	// 	depid: depid,
-	// 	roleid: parseInt(req.body.roleid),
-	// 	status: parseInt(req.body.status),
-	// 	phone:req.body.phone || ''
-	// }
 	let user = Object.assign({}, req.body, map);
 	user.password = utils.decrypt(user.password);
 	userModel.auto(user);
@@ -235,11 +207,4 @@ exports.list = function(req,res) {
 
 		return res.status(200).json({ code: 'SUCCESS', data: results.userData });
 	});
-	// userService.list(where, page, function(err, result){
-	// 	if(err){
-	// 		logService.log(req, '服务器出错，获取用户列表失败');
- //        	return res.status(err.constructor.status).json(err);
-	// 	}
-	// 	return res.status(200).json({ code: 'SUCCESS', data: result });
-	// });
 }

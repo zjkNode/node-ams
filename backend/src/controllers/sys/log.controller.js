@@ -22,13 +22,8 @@ exports.list = function (req, res) {
     logService.list(where, page, function (err, result) {
         if(err){
             logService.log(req, '服务器出错，更新配置失败');
-            let status = err.constructor.status;
-            return res.status(status).json(err);
+            return res.status(err.constructor.status).json(err);
         }
-        return res.status(200).json({
-            code: 200,
-            data: result,
-            msg: ''
-        });
+        return res.status(200).json({ code: 'SUCCESS', data: result });
     });
 }

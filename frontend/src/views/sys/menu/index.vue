@@ -183,8 +183,3 @@
         }
     }
 </script>
-<style scope>
-    .el-tag + .el-tag, .el-tag + .el-dropdown {
-        margin-left: 10px;
-    }
-</style>

@@ -141,7 +141,10 @@
 .el-pagination{
     margin-top:10px;
 }
-  
+
+.el-tag + .el-tag, .el-tag + .el-dropdown {
+    margin-left: 10px;
+}
 .main {
     overflow-y: auto;
     overflow-x:hidden;

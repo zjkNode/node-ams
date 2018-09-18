@@ -15,10 +15,14 @@
             <el-table-column prop="email" label="登录名" width="180"></el-table-column>
             <el-table-column prop="nickname" label="真实姓名" min-width="180"></el-table-column>
             <el-table-column prop="depName" label="所在部门" min-width="180"></el-table-column>
-            <el-table-column prop="roleids" label="角色" min-width="180"></el-table-column>
+            <el-table-column prop="roleids" label="角色" min-width="180">
+              <template scope="scope">
+                <el-tag size="small" type="info" v-for="id in scope.row.roleids" :key="id">{{ roleFormat(id) }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column prop="status" label="状态" width="80">
                 <template scope="scope">
-                    <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{scope.row.status | statusFilter}}</el-tag>
+                  <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{scope.row.status | statusFilter}}</el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="create_time" label="添加时间" :formatter="dateFormat" width="200"></el-table-column>
@@ -55,8 +59,7 @@
                 v-model="formData.roleids" 
                 multiple
                 collapse-tags 
-                placeholder="请选择角色" 
-                @change="onRoleChanged">
+                placeholder="请选择角色">
                     <el-option
                       v-for="item in roles"
                       :key="item.id"
@@ -171,7 +174,7 @@ export default {
           });
         },
         bindRoles(){
-            this.$http.get('/api/role', { params: {}}).then(res => {
+            this.$http.get('/api/role').then(res => {
                 if(res.code !== 'SUCCESS'){
                     this.$message.error(res.msg);
                     return;
@@ -179,8 +182,24 @@ export default {
                 this.roles = res.data;
             }).catch(() => {});
         },
-        onRoleChanged(val){
-            console.log(val)
+        roleFormat(roleId){
+          let role = this.roles.find(item => item.id === roleId);
+          if(!role){
+            return roleId;
+          }
+          return role.name;
+        },
+        onRemoveClick(index,row){
+            this.$confirm('确认删除该用户吗?', '友情提示', { type: 'warning'}).then(() => {
+                let url = '/api/user/'+ row.id;
+                this.$http.delete(url).then(res => {
+                    if(res.code !== 'SUCCESS'){
+                        this.$message.error(res.msg);
+                        return;
+                    }
+                    this.userList.splice(index,1);
+                });
+            }).catch(() => {});
         },
         onDialogClose(){
             this.formData = {
@@ -206,18 +225,6 @@ export default {
             this.title = "编辑";
             this.formData = Object.assign({}, row);
             this.isVisible = true;
-        },
-        onRemoveClick(index,row){
-            this.$confirm('确认删除该用户吗?', '友情提示', { type: 'warning'}).then(() => {
-                let url = '/api/user/'+ row.id;
-                this.$http.delete(url).then(res => {
-                    if(res.code !== 'SUCCESS'){
-                        this.$message.error(res.msg);
-                        return;
-                    }
-                    this.userList.splice(index,1);
-                });
-            }).catch(() => {});
         },
         onAddSubmit(){
             this.$refs.dialogForm.validate((valid) => {
@@ -272,5 +279,5 @@ export default {
             this.bindUsers();
         }
     }
-  };
+  }
 </script>

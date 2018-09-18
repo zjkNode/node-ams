@@ -55,12 +55,12 @@
                 this.isLoading = true;
                 this.$http.get(url, {params: params}).then((res)=> {
                     this.isLoading = false;
-                    if (res.code === 200) {
-                        this.$toast(res.msg);
+                    if (res.code !== 'SUCCESS') {
+                        this.$message.error(res.msg);
                         return;
                     }
                     let resData = res.data;
-                    this.logsList = resData.lists;
+                    this.logsList = resData.list;
                     this.total = resData.total;
                 }).catch(() => {
                     this.isLoading = false;

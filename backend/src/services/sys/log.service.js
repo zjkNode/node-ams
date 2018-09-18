@@ -29,20 +29,20 @@ exports.list = function (where, page, callback) {
     async.parallel({
         total: function (callback) {
             mysql.where(where).count(logModel.tbname, function (err, res) {
-                callback(err, res); // res 将被赋值 total
+                return callback(err, res); // res 将被赋值 total
             });
         },
-        lists: function (callback) {
+        list: function (callback) {
             mysql.where(where)
                 .order({id: 'desc'})
                 .limit(page.index, page.size)
                 .select(logModel.tbname, function (err, rows) {
-                    callback(err, rows);
+                    return callback(err, rows);
                 });
         }
     }, function (error, results) {
         // 以上并行操作，任何一个出错，就会进error 并终止拉下来的操作
-        // results.total,results.lists
+        // results.total,results.list
         if (error) {
             logger.errorDB(__filename, error);
             return callback(new DBError());
@@ -51,7 +51,7 @@ exports.list = function (where, page, callback) {
             total: results.total || 0,
             pageIndex: page.index,
             pageSize: page.size,
-            lists: results.lists || []
+            list: results.list || []
         }
 
         return callback(null, resData);
