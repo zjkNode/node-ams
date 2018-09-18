@@ -7,7 +7,7 @@
             </el-col>
             <el-col :span="13" :offset="1">
                 <el-button size="small" type="primary" @click="bindDepList" icon="el-icon-search"> 查询</el-button>
-                <el-button size="small" type="primary" @click="isAddVisible = true" icon="el-icon-plus">新增</el-button>
+                <el-button size="small" type="primary" @click="isDialogVisible = true" icon="el-icon-plus">新增</el-button>
             </el-col>
         </el-row>
         <el-table :data="depList" stripe v-loading="isLoading" >
@@ -27,43 +27,23 @@
             </el-table-column>
       </el-table>
 
-        <el-dialog title="新增部门" :visible.sync="isAddVisible">
-          <el-form :model="addFormData" :rules="rules" ref="addFrom" label-width="90px">
+        <el-dialog :title="'部门 -- '+ (title || '新增')" :visible.sync="isDialogVisible" @close="onFormClose">
+          <el-form :model="formData" :rules="rules" ref="dialogForm" label-width="90px">
             <el-form-item label="父级部门" prop="pids">
-              <el-cascader change-on-select :options="depOptions"  :props="props"
-                v-model="addFormData.pids">
+              <el-cascader 
+                change-on-select 
+                :options="depOptions"  
+                :props="props"
+                v-model="formData.pids">
               </el-cascader>
             </el-form-item>
             <el-form-item label="部门名称" prop="name">
-              <el-input v-model="addFormData.name" auto-complete="off" name="name" placeholder="部门名称"></el-input>
+              <el-input v-model="formData.name" auto-complete="off" name="name" placeholder="部门名称"></el-input>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
-            <el-button @click="resetForm('addFrom')">取 消</el-button>
-            <el-button type="primary" @click="onAddSubmit" :loading="isAddLoading">确 定</el-button>
-          </div>
-        </el-dialog>
-        
-        <el-dialog title="修改部门" :visible.sync="isEditVisible">
-          <el-form :model="editFormData" :rules="rules" ref="editFrom" label-width="90px">
-            <el-form-item label="父级部门" prop="pids">
-              <el-cascader change-on-select :options="depOptions"  :props="props"
-                v-model="editFormData.pids">
-              </el-cascader>
-            </el-form-item>
-            <el-form-item label="部门名称" prop="name">
-              <el-input v-model="editFormData.name" auto-complete="off" name="name" placeholder="部门名称"></el-input>
-            </el-form-item>
-            <el-form-item label="是否可用">
-              <el-radio-group v-model="editFormData.status">
-                <el-radio class="radio" :label="1">正常</el-radio>
-                <el-radio class="radio" :label="2">停用</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="resetForm('editFrom')">取 消</el-button>
-            <el-button type="primary" @click="onEditSubmit" :loading='isEditLoading'>确 定</el-button>
+            <el-button @click="isDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="onSubmit" :loading="isDoing">确 定</el-button>
           </div>
         </el-dialog>
     </el-row>
@@ -74,25 +54,21 @@ export default {
       return {
             depList: null,
             isLoading: false,
-            isAddLoading: false,
-            isEditLoading: false,
-            isAddVisible: false,
-            isEditVisible:false,
+            isDoing: false,
+            isDialogVisible: false,
             keys:"",
             depOptions:[],
             props:{ value:'id', label:'name' },
-            addFormData:{
-                pids:[],
-                name:''
-            },
-            editFormData:{
+            title: '',
+            formData:{
+                pid:'',
                 pids:[],
                 name:'',
                 status:1
             },
             rules: {
                 pids: [
-                    {type:'array', required: true,message:'父级部门不能为空', trigger: 'change'}
+                    { type:'array', required: true, message:'父级部门不能为空', trigger: 'blur'}
                 ],
                 name: [
                     {required: true, message:'部门名称不能为空',trigger: 'blur'},
@@ -149,14 +125,28 @@ export default {
                     this.$message.error(res.msg);
                     return;
                 } 
-                this.depOptions = res.data || [];
+                let tmpOption = [{ name:'顶级', id:0, pid: 0}];
+                if(res.data && res.data.length > 0){
+                    tmpOption = [...tmpOption, ...res.data];
+                }
+                this.depOptions = tmpOption;
             }).catch(() => {});
         },
+        onFormClose(){
+            this.formData = {
+                pids:[],
+                name:''
+            };
+            this.title = '';
+            this.$refs.dialogForm.resetFields();
+            this.$options.filters.disableItem(this.depOptions, -1);
+        },
         onEditClick(row){
-            this.editFormData = Object.assign({}, row);
-            this.editFormData.pids = this.editFormData.pids.split(',').map((item) => { return item == '0' ? -1 : parseInt(item); });
-            this.$options.filters.disableItem(this.depOptions,row.id)
-            this.isEditVisible = true;
+            this.title = "编辑";
+            this.formData = Object.assign({}, row);
+            this.formData.pids = this.formData.pids.split(',').map((item) => parseInt(item));
+            this.$options.filters.disableItem(this.depOptions,row.id);
+            this.isDialogVisible = true;
         },
         onRemoveClick(index,row){
             this.$confirm('确认删除该部门吗?', '友情提示', { type: 'warning'}).then(() => {
@@ -170,49 +160,53 @@ export default {
                 });
             }).catch(()=>{});
         },
+        onSubmit(){
+            if(this.formData.id){
+                this.onEditSubmit();
+                return;
+            }
+            this.onAddSubmit();
+        },
         onAddSubmit(){
-            this.$refs.addFrom.validate((valid) => {
+            this.$refs.dialogForm.validate((valid) => {
               if (!valid) {
                 return false;
               }
-              var apiUrl = "/api/dep";
-              this.isAddLoading = true;
-              this.$http.post(apiUrl,this.addFormData).then((res)=>{
-                this.isAddLoading = false;
+              this.formData.pid = this.formData.pids.slice(-1)[0] || 0;
+              this.isDoing = true;
+              this.$http.post("/api/dep", this.formData).then((res)=>{
+                this.isDoing = false;
                 if(res.code !== 'SUCCESS'){
-                    this.$message(res.msg);
+                    this.$message.error(res.msg);
                     return;
                 } 
-                this.resetForm('addFrom');
+                this.isDialogVisible = false;
                 this.refreshData();
               }).catch(() => {
-                this.isAddLoading = false;
+                this.isDoing = false;
               });
             });
         },
         onEditSubmit(){
-            this.$refs.editFrom.validate((valid) => {
+            this.$refs.dialogForm.validate((valid) => {
               if (!valid) {
                 return false;
               }
-              var apiUrl = "/api/dep/"+ this.editFormData.id;
-              this.isEditLoading = true;
-              this.$http.put(apiUrl,this.editFormData).then((res)=>{
-                this.isEditLoading = false;
+              this.formData.pid = this.formData.pids.slice(-1)[0] || 0;
+              let apiUrl = "/api/dep/"+ this.formData.id;
+              this.isDoing = true;
+              this.$http.put(apiUrl,this.formData).then((res)=>{
+                this.isDoing = false;
                 if(res.code !== 'SUCCESS'){
-                    this.$message(res.msg);
+                    this.$message.error(res.msg);
                     return;
                 } 
-                this.resetForm('editFrom');
+                this.isDialogVisible = false;
                 this.refreshData();
               }).catch(() => {
-                this.isEditLoading = false;
+                this.isDoing = false;
               });
             });
-        },
-        resetForm(formName) {
-            this.$refs[formName].resetFields();
-            this.isAddVisible = this.isEditVisible = false;
         }
     }
 }

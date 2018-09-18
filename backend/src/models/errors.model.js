@@ -6,8 +6,8 @@ const ComError = function(code, message){
 ComError.status = 400;
 
 
-const ValidationError = function(param, message, value){
-	ComError.call(this, 'VALIDATE_FAILED', message);
+const ValidationError = function(code, message, param, value){
+	ComError.call(this, code || 'VALIDATE_FAILED', message);
 	this.param = param;
 	this.value = value;
 	return this;

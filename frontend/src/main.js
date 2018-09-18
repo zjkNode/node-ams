@@ -17,6 +17,10 @@ Object.keys(filters).forEach(key => {
 });
 
 import store from './store/'
+
+import mixin from './mixin'
+Vue.use(mixin)
+
 Vue.config.productionTip = false
 
 import App from './App.vue'

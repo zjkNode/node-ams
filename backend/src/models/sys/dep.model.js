@@ -24,6 +24,7 @@ let auto = function(dep) {
 		dep.create_time = moment().format('YYYY-MM-DD hh:mm:ss');
 	} else { // 修改时，默认字段赋值
 		dep.update_time = moment().format('YYYY-MM-DD hh:mm:ss');
+		delete dep.create_time;
 	}
 };
 

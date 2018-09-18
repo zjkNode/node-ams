@@ -12,4 +12,5 @@ export const ACT_UPLOAD_DATA = 'ACT_UPLOAD_DATA';
 
 
 // 系统菜单
-export const MENU_TREE_DATA = 'MENU_TREE_DATA'
+export const MENU_TREE_DATA = 'MENU_TREE_DATA';
+export const SET_CUR_MENU = 'SET_CUR_MENU';

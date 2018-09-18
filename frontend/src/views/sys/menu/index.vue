@@ -10,14 +10,25 @@
                 <el-button size="small" type="primary" @click="$refs.addForm.show()" icon="el-icon-plus"> 新增</el-button>
             </el-col>  
         </el-row>
-        
         <el-table :data="menuList" stripe v-loading="isLoading" style="width: 100%;" @cell-click="onCellClick">
             <el-table-column fixed type="index" label="" width="60"></el-table-column>
             <el-table-column fixed prop="name" label="菜单名称" show-overflow-tooltip width="220" :formatter="formatTree" class-name='flat-tree'></el-table-column>
             <el-table-column prop="alink" label="链接地址" show-overflow-tooltip width="200"></el-table-column>
-            <el-table-column prop="actions" label="页面功能" min-width="200">
+            <el-table-column prop="actions" label="页面功能" min-width="200" show-overflow-tooltip>
                 <template v-if="scope.row.isLeaf" scope="scope">
-                    <el-tag>测试</el-tag>
+                    <template v-if="scope.row.actions">
+                        <el-tag
+                          v-if="scope.row.actions && actions"
+                          :key="action.id"
+                          :offset="1"
+                          size="small"
+                          v-for="action in scope.row.actions.split(',')">
+                          {{actions[action].name}}
+                        </el-tag>
+                    </template>
+                    <template v-else>
+                        <el-tag size='small' type="info">暂无</el-tag>
+                    </template>
                 </template>
             </el-table-column> 
             <el-table-column prop="sort" label="排序" width="70" align="center"></el-table-column> 
@@ -37,20 +48,26 @@
             </el-table-column>
         </el-table>
         <el-dialog
-          :title="actionTitle+' -- 功能配置'"
+          :title="rowData.name +' -- 功能配置'"
           :visible.sync="actionVisible">
-          <el-tag
-              :key="action.id"
-              :offset="1"
-              v-for="action in actions"
-              closable
-              type="info">
-              {{action.name}}
-            </el-tag>
-          <el-dropdown split-button type="primary" size="small">
-              更多
+            <template v-if="rowData.actions && actions">
+                <el-tag
+                  :key="action"
+                  :offset="1"
+                  v-for="action in rowData.actions"
+                  closable
+                  @close="onUpdateAction(action, 'delete')">
+                  {{ actions[action].name }}
+                </el-tag>
+            </template>
+            <el-dropdown split-button type="primary" size="small" @command="onUpdateAction">
+              添加功能
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-for="(item, index) in actions" :key="index">{{ item.name }}</el-dropdown-item>
+                <el-dropdown-item 
+                    v-for="(item, index) in actions" 
+                    :key="index" 
+                    :disabled="item.disabled"
+                    :command='item.key'>{{ item.name }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
         </el-dialog>
@@ -69,10 +86,9 @@
                 isLoading: true,
                 menuList: null,
                 // menuTree: null,
-                actionTitle:'',
                 actionVisible: false,
                 actions:null,
-                rowData: null,
+                rowData: {},
                 keys:"",
                 addFormVisible: false,
                 editFormVisible:false
@@ -122,9 +138,41 @@
             },
             onCellClick(row, column){
                 if(column.property == "actions" && row.isLeaf){
-                    this.actionTitle = row.name;
+                    this.rowData = Object.assign({}, row);
+                    this.rowData.actions = row.actions ? row.actions.split(',') : [];
+                    for(let key in this.actions){
+                        this.actions[key].disabled = this.rowData.actions.includes(key);
+                    }
                     this.actionVisible = true;
                 }
+            },
+            onUpdateAction(command, type){
+                let params = Object.assign({}, this.rowData);
+                if(type && type === 'delete'){
+                    params.actions.splice(params.actions.indexOf(command), 1);
+                } else {
+                    params.actions.push(command);
+                }
+                // 按系统配置，排序显示
+                let tmpActions = [];
+                for(let key in this.actions){
+                    if(params.actions.includes(key)){
+                        tmpActions.push(key);
+                    }
+                }
+                params.actions = tmpActions.join(',');
+                var url = "/api/menu/"+ this.rowData.id;
+                this.$http.put(url,  params).then(res => {
+                    if(res.code !== "SUCCESS"){
+                        this.$message.error(res.msg);
+                        return;
+                    }
+                    this.$message.success(res.msg);
+                    for(let key in this.actions){
+                        this.actions[key].disabled = tmpActions.includes(key);
+                    }
+                    this.menuList.find(item => item.id === this.rowData.id).actions = params.actions;
+                });
             },
             onEditClick(row){
                 this.rowData = Object.assign({}, row);

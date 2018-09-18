@@ -44,18 +44,13 @@ exports.add = function (req,res) {
       logger.error(__filename, '参数验证失败', vErrors);
       return res.status(ValidationError.status).json(vErrors);
   }
-  var roles = {
-    name:req.body.name,
-    desc:req.body.desc,
-    depid:req.body.depid
-  }
-  roleModel.auto(roles);
+  let role = Object.assign({}, req.body);
+  roleModel.auto(role);
 
-  roleService.add(roles,function(err,resid) {
+  roleService.add(role,function(err,resid) {
     if(err){
       logService.log(req, '服务器出错，新增角色失败');
-      let status = err.constructor.status;
-      return res.status(status).json(err);
+      return res.status(err.constructor.status).json(err);
     }
     return res.status(200).json({ code: 'SUCCESS', msg:'新增成功'});
   });
@@ -77,18 +72,12 @@ exports.update = function(req,res) {
   var map = {
     id: parseInt(req.params.id)
   };
-  var roles = {
-    id: parseInt(req.params.id),
-    name:req.body.name,
-    desc:req.body.desc,
-    depid:req.body.depid
-  };
-  roleModel.auto(roles);
-  roleService.update(roles, map, function(err){
+  let role = Object.assign({}, req.body, map);
+  roleModel.auto(role);
+  roleService.update(role, map, function(err){
     if(err){
       logService.log(req, '服务器出错，更新角色失败');
-      let status = err.constructor.status;
-      return res.status(status).json(err);
+      return res.status(err.constructor.status).json(err);
     }
     return res.status(200).json({code: 'SUCCESS',msg:'更新成功'});
   });
@@ -117,7 +106,7 @@ exports.updateAuth = function(req,res) {
     if(err){
       logService.log(req, '服务器出错，更新角色权限失败');
       let status = err.constructor.status;
-      return res.status(status).json(err);
+      return res.status(err.constructor.status).json(err);
     }
     return res.status(200).json({code: 'SUCCESS',msg:'更新成功'});
   });
@@ -141,16 +130,14 @@ exports.delete = function(req,res){
   roleService.delete(map, function(err){
     if(err){
       logService.log(req, '服务器出错，删除角色失败');
-      let status = err.constructor.status;
-      return res.status(status).json(err);
+      return res.status(err.constructor.status).json(err);
     }
     return res.status(200).json({code: 'SUCCESS',msg:'删除成功'});
   });
 }
 
 exports.list = function(req,res) {
-  let curUser = req.session.user;
-  var where = {};
+  let where = {};
   let searchKey = req.query.keys;
   let page = {
     index: parseInt(req.query.pageIndex),
@@ -163,76 +150,14 @@ exports.list = function(req,res) {
       desc:['like',searchKey]
     }
   }
-  if(utils.isAdmin(curUser)){
-    // 超管
-    async.waterfall([
-      depService.allLists,
-      function(depList, callback){
-        roleService.list(where, page, function(error, resRoles){
-          if(error){
-            return callback(error);
-          }
-          resRoles.lists.map((role) => {
-            let dep = depList.filter((dep) => {
-              return dep.id === role.depid;
-            })[0];
-            role.dep = dep || { name: '部门已删除' };
-          });
-          return callback(null, resRoles);
-        });
-      }
-    ], function(err, result){
-      if(err){
-        logService.log(req, '服务器出错，获取角色列表失败');
-        let status = err.constructor.status;
-      return res.status(status).json(err);
-      }
-      return res.status(200).json({
-              code: 'SUCCESS',
-              data: result,
-              msg:''
-            });
-    });
-
-  } else {
-    // 非超管
-    async.waterfall([
-      function(callback){
-        depService.getChildById(curUser.depid, function(error, depList) {
-          return callback(error, depList);  
-        });
-      },
-      function(depList, callback){
-        let depIds = _.map(depList,'id');
-        where.depid = ['in', depIds];
-        roleService.list(where, page, function(error, resRoles) {
-          if(error){
-            return callback(error);
-          }
-          resRoles.lists.map((role) => {
-            let dep = depList.filter((dep) => {
-              return dep.id === role.depid;
-            })[0];
-            role.dep = dep || { name: '部门已删除' };
-          });
-
-          return callback(null, resRoles);
-        })
-      }
-    ], function(err, result){
-      if(err){
-        logService.log(req, '服务器出错，获取角色列表失败');
-        let status = err.constructor.status;
-        return res.status(status).json(err);
-      }
-      return res.status(200).json({
-                    code: 'SUCCESS',
-                    data: result,
-                    msg:''
-                  });
-    });
-  } 
-};
+  roleService.list(where, page, function(err, resRoles){
+    if(err){
+      logService.log(req, '服务器出错，获取角色列表失败');
+      return res.status(err.constructor.status).json(err);
+    }
+    return res.status(200).json({ code: 'SUCCESS', data: resRoles });
+  });
+}
 
 //根据部门ID获取该部门下所有的角色
 exports.getListByDepId = function(req, res){
@@ -253,8 +178,7 @@ exports.getListByDepId = function(req, res){
   roleService.getRoleList(where, function(err, roles){
     if(err){
       logService.log(req, '服务器出错，获取部门角色失败，部门id:'+ depId);
-      let status = err.constructor.status;
-      return res.status(status).json(err);
+      return res.status(err.constructor.status).json(err);
     }
 
     return res.status(200).json({ 
@@ -262,4 +186,4 @@ exports.getListByDepId = function(req, res){
       data: roles, 
       msg: ''});
   });
-};
+}

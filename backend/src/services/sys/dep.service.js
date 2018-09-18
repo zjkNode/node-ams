@@ -64,8 +64,7 @@ exports.delete = function(where, callback){
 	});
 }
 
-exports.lists = function(where, callback){
-
+exports.list = function(where, callback){
 	mysql.where(where)
 		.order({ pids: 'asc' })
 		.select(depModel.tbname, function(err,rows){
@@ -77,19 +76,19 @@ exports.lists = function(where, callback){
 		});
 }
 
-exports.allLists = function(callback){
-	let where = {
-		status:CONSTANTS.DEP_STATUS.NORMAL
-	};
+// exports.allLists = function(callback){
+// 	let where = {
+// 		status:CONSTANTS.DEP_STATUS.NORMAL
+// 	};
 
-	mysql.where(where).select(depModel.tbname,function(err,res){
-		if(err){
-		  logger.errorDB(__filename, err);
-		  return callback(new DBError());
-		}
-		return callback(null,res);
-	});
-}
+// 	mysql.where(where).select(depModel.tbname,function(err,res){
+// 		if(err){
+// 		  logger.errorDB(__filename, err);
+// 		  return callback(new DBError());
+// 		}
+// 		return callback(null,res);
+// 	});
+// }
 
 exports.getChildById = function(depId, callback){
 	let params = {
@@ -107,7 +106,6 @@ exports.getChildById = function(depId, callback){
 }
 
 exports.getParentsById = function(depId, callback){
-
 	async.waterfall([
 		function(callback){
 			exports.one({ id: depId }, function(error, dep){
@@ -115,9 +113,9 @@ exports.getParentsById = function(depId, callback){
 			});
 		},
 		function(dep, callback){
-			let pids = dep.pids.split(',').map((id)=>{ return parseInt(id); });
+			let pids = dep.pids.split(',').map(id => parseInt(id));
 			pids.push(dep.id);
-			exports.lists({ id: ['in', pids] }, function(error, deps){
+			exports.list({ id: ['in', pids] }, function(error, deps){
 				return callback(error, deps);
 			})
 		}

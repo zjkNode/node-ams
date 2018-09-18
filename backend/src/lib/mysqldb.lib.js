@@ -183,7 +183,7 @@ function insert(tbname,options,callback){
 
             fields.push('`'+ fieldName +'`');
             if(cols[fieldName].type.indexOf('int') > -1){
-                values.push(':'+ fieldName);
+                values.push('CONVERT(":'+ fieldName +'", SIGNED)');
             } else {
                 values.push('":'+ fieldName +'"');
             }
@@ -224,7 +224,7 @@ function update(tbname, data, callback){
             if(cols[key].primary) continue;
 
             if(cols[key].type.indexOf('int') > -1){
-                setFields.push('`'+ key +'`=:'+ key);
+                setFields.push('`'+ key +'`= CONVERT(":'+ key+'", SIGNED)');
             } else {
                 setFields.push('`'+ key +'`=":'+ key +'"');
             }

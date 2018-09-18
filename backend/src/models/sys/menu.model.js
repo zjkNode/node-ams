@@ -30,6 +30,7 @@ let auto = function(menu) {
 		menu.create_time = moment().format('YYYY-MM-DD hh:mm:ss');
 	} else {
 		menu.update_time = moment().format('YYYY-MM-DD hh:mm:ss');
+		delete menu.create_time;
 	}
 	
 	

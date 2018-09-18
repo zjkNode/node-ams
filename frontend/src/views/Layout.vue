@@ -7,6 +7,8 @@
         <el-menu router
           background-color="#324157"
           text-color="#fff"
+          @select="onMenuSelected"
+          :default-active='$route.path'
           active-text-color="#ffd04b">
           <MenuTree :menuData="menuData" ></MenuTree>
         </el-menu>
@@ -92,6 +94,15 @@
             },
             onEditVisibleChange(val){
                 this.editFormVisible = val;
+            },
+            onMenuSelected(index, indexPath){
+                let curMenu = {};
+                let tmpMenus = this.menuData;
+                indexPath.forEach(path => {
+                   curMenu = tmpMenus.find(menu => menu.alink === path);
+                   tmpMenus = curMenu.children;
+                });
+                this.$store.dispatch('setCurMenu', curMenu);
             }
         }
     }

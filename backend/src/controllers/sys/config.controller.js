@@ -130,6 +130,10 @@ exports.listByType = function(req, res){
             logService.log(req, '服务器出错，获取配置出错');
             return res.status(err.constructor.status).json(err);
         }
-        return res.status(200).json({ code: 'SUCCESS', data: configs });
+        let result = {};
+        configs.forEach(item => {
+            return result[item.key] = item;
+        });
+        return res.status(200).json({ code: 'SUCCESS', data: result });
     });
 }

@@ -71,18 +71,20 @@ exports.update = function(req,res) {
 		logger.error(__filename, '参数验证失败', vErrors);
 		return res.status(ValidationError.status).json(vErrors);
 	}
-	var map = {
+	let map = {
 		id: parseInt(req.params.id)
 	};
-	var menu = {
-		id: parseInt(req.params.id),
-		name:req.body.name,
-		alink:req.body.alink,
-		pid:parseInt(req.body.pid),
-		pids:req.body.pids,
-		sort:parseInt(req.body.sort),
-		status: parseInt(req.body.status)
-	}
+	// let menu = {
+	// 	id: parseInt(req.params.id),
+	// 	name:req.body.name,
+	// 	alink:req.body.alink,
+	// 	pid:parseInt(req.body.pid),
+	// 	pids:req.body.pids,
+	// 	sort:parseInt(req.body.sort),
+	// 	status: parseInt(req.body.status)
+	// };
+	let menu = Object.assign({}, req.body, map);
+	menuModel.auto(menu);
 	menuService.update(menu, map, function(err){
 		if(err){
 			logService.log(req, '服务器出错，更新失败');
