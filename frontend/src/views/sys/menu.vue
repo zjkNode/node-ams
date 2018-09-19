@@ -14,6 +14,7 @@
             <el-table-column fixed type="index" label="" width="60"></el-table-column>
             <el-table-column fixed prop="name" label="菜单名称" show-overflow-tooltip width="220" :formatter="formatTree" class-name='flat-tree'></el-table-column>
             <el-table-column prop="alink" label="链接地址" show-overflow-tooltip width="200"></el-table-column>
+            <el-table-column prop="sort" label="排序" width="70" align="center"></el-table-column> 
             <el-table-column prop="actions" label="页面功能" min-width="200" show-overflow-tooltip>
                 <template v-if="scope.row.isLeaf" scope="scope">
                     <template v-if="scope.row.actions">
@@ -31,7 +32,6 @@
                     </template>
                 </template>
             </el-table-column> 
-            <el-table-column prop="sort" label="排序" width="70" align="center"></el-table-column> 
             <el-table-column prop="status" label="状态" width="80"  filter-placement="bottom-end" align="center">
                 <template scope="scope" >
                     <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="small">

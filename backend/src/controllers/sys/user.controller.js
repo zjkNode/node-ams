@@ -27,64 +27,72 @@ exports.signIn = function (req,res) {
 		logger.error(__filename, '参数验证失败', vErrors);
 		return res.status(ValidationError.status).json(vErrors);
 	}
-	var params = {
+	let params = {
 		email:req.body.email
 	};
 
-  async.auto({
-    user: function(callback) {
-      userService.one(params, function(error, user){
-        if(error){
-        	return callback(error);
-        }
-        if(!user){
-        	return callback(new ComError('NOT_EXIST_USER','用户名不存在'))
-        }
-        if(user.password !== utils.decrypt(req.body.password)){
-        	return callback(new ComError('ERR_USER_OR_PWD','用户名或密码不正确'))
-        }
-        delete user.password; // 验证完成，移除密码
-        return callback(null, user);
-      });
-    },
-    role:['user', function(results, callback){
-      roleService.one({ id: results.user.roleid }, function(error, role){
-        	return callback(error, role);
-      });
-    }],
-    deps:['user', function(results, callback){
-      depService.getParentsById(results.user.depid, function(error, deps){
-        return callback(error, deps);
-      })
-    }],
-    actions:['user', function(results, callback){
-      // 超管 所有权限
-      if(utils.isAdmin(results.user)){
-        return callback(null, ['ALL']);
-      }
-      confService.listByType(CONSTANTS.CONFIG_TYPES.AUTH_ACTION, function(error, configs){
-      	return callback(error, configs);
-      });
-    }]
-  }, function(err, results) {
-      if(err){
-      	logService.log(req,'登录失败:'+ err.msg);
-        return res.status(err.constructor.status).json(err);
-      }
-      let curUser = results.user;
-      curUser.role = results.role;
-      curUser.deps = results.deps;
-      curUser.actions = results.actions;
+  	async.auto({
+		user: function(callback) {
+			userService.one(params, function(error, user){
+				if(error){
+					return callback(error);
+				}
+				if(!user){
+					return callback(new ComError('NOT_EXIST_USER','用户名不存在'))
+				}
+				if(user.password !== utils.decrypt(req.body.password)){
+					return callback(new ComError('ERR_USER_OR_PWD','用户名或密码不正确'))
+				}
+				delete user.password; // 验证完成，移除密码
+				return callback(null, user);
+			});
+		},
+		roles:['user', function(results, callback){
+			if(utils.isAdmin(results.user)){
+				return callback(null, [{ id: 0, name: '超级管理员'}]);
+			}
+			let roleids = results.user.roleids.split(',').map(id => parseInt(id));
+			roleService.list({ id: ['in', roleids]}, function(error, role){
+				return callback(error, role);
+			});
+		}],
+		deps:['user', function(results, callback){
+			if(utils.isAdmin(results.user)){
+				return callback(null, [{ id: 0, name: '系统管理', pid:0 }]);
+			}
+			let depids = results.user.depids.split(',').map(id => parseInt(id));
+			depService.list({ id: ['in', depids]}, function(error, deps){
+				return callback(error, deps);
+			});
+		}],
+		actions:['user', function(results, callback){
+			// 超管 所有权限
+			if(utils.isAdmin(results.user)){
+				return callback(null, ['ALL']);
+			}
+			confService.listByType(CONSTANTS.CONFIG_TYPES.AUTH_ACTION, function(error, configs){
+				return callback(error, configs);
+			});
+		}]
+	}, function(err, results) {
+		if(err){
+			logService.log(req,'登录失败:'+ err.msg);
+			return res.status(err.constructor.status).json(err);
+		}
+		let curUser = results.user;
+		curUser.roles = results.roles;
+		curUser.deps = results.deps;
+		curUser.actions = results.actions;
 
-      req.session.user = curUser;
-      logService.log(req,'登录成功:'+ curUser.nickname);
-      return res.status(200).json({ code:'SUCCESS', data: curUser });
+		req.session.user = curUser;
+		logService.log(req,'登录成功:'+ curUser.nickname);
+		return res.status(200).json({ code:'SUCCESS', data: curUser });
   });
 }
 
 exports.signOut = function(req, res){
-  req.session.user = null;
-  return res.status(200).json({ code:'SUCCESS', msg:'成功退出系统'});
+	req.session.user = null;
+	return res.status(200).json({ code:'SUCCESS', msg:'成功退出系统'});
 }
 
 exports.add = function (req,res) {

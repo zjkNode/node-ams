@@ -6,7 +6,7 @@ const state = {
 	curMenu: null
 }
 
-function getCurMenu(menus){
+function _getCurMenu(menus){
     // 页面刷新时，需要根据当前路由，设置当前菜单对象
 
     let curPath = window.location.pathname;
@@ -18,7 +18,7 @@ function getCurMenu(menus){
         if(!menu.children || menu.children.length === 0){
             continue;
         }
-        return getCurMenu(menu.children);
+        return _getCurMenu(menu.children);
     }
 }
 
@@ -34,7 +34,7 @@ const getters = {
             	return;
             }
             state.menuData = res.data;
-            let curMenu = getCurMenu(res.data);
+            let curMenu = _getCurMenu(res.data);
             window.localStorage.setItem('curMenu', JSON.stringify(curMenu));
         });
 	},

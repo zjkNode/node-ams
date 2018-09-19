@@ -1,4 +1,6 @@
 
+// 设置当前登录用户
+export const SET_CUR_USER = 'SET_CUR_USER';
 // 活动组件 -- 按钮功能 -- 按钮去响应 
 export const ACT_COMP_BTN_RES = 'ACT_COMP_BTN_RES';
 // 活动的配置数据

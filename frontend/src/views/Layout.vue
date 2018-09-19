@@ -16,12 +16,12 @@
       <el-container>
         <el-header>
             <el-col :span="20">
-            您好！ {{ user.deps | formatDep }} -- {{ user.role.name }} -- {{ user.nickname }}
+            您好！ {{ curUser.deps | formatDep }} -- {{ curUser.roles && curUser.roles[0].name  }} -- {{ curUser.nickname }}
             </el-col>
             <el-col :span="4" style="text-align:right">
                 <el-dropdown trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
-                        {{ user.nickname }}<i class="el-icon-caret-bottom el-icon--right"></i>
+                        {{ curUser.nickname }}<i class="el-icon-caret-bottom el-icon--right"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item command="info">修改信息</el-dropdown-item>
@@ -50,11 +50,11 @@
         },
         computed: mapGetters({
             menuData:'getMenuTree',
+            curUser: 'getCurUser'
         }),
         data() {
             return {
                 user:{
-                    role:{}
                 }
             }
         },
@@ -72,7 +72,7 @@
         },
         methods:{
             init(){
-                this.user = JSON.parse(localStorage.getItem('user')) || this.user;
+                // this.user = JSON.parse(localStorage.getItem('user')) || this.user;
             },
             handleCommand(command){
                 if(command=='signout'){

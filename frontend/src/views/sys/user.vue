@@ -15,9 +15,13 @@
             <el-table-column prop="email" label="登录名" width="180"></el-table-column>
             <el-table-column prop="nickname" label="真实姓名" min-width="180"></el-table-column>
             <el-table-column prop="depName" label="所在部门" min-width="180"></el-table-column>
-            <el-table-column prop="roleids" label="角色" min-width="180">
+            <el-table-column prop="roleids" label="角色" min-width="180" show-overflow-tooltip>
               <template scope="scope">
-                <el-tag size="small" type="info" v-for="id in scope.row.roleids" :key="id">{{ roleFormat(id) }}</el-tag>
+                <el-tag 
+                  size="small" 
+                  type="info" 
+                  v-for="id in scope.row.roleids" 
+                  :key="id">{{ roleFormat(id) }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="status" label="状态" width="80">
