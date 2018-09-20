@@ -41,7 +41,7 @@
             </div>
         </el-dialog>
 
-        <el-dialog :title="'角色权限分配 -- '+ authTitle" :visible.sync="isAuthVisible" @close="onAuthClose">
+        <el-dialog :title="'角色权限分配 -- '+ roleData.name" :visible.sync="isAuthVisible">
             <el-tabs style="margin: 0 2%;">
                 <el-tab-pane label="系统菜单权限">
                     <el-tree
@@ -50,8 +50,7 @@
                         :data="menuData"
                         node-key="id"
                         show-checkbox
-                        @node-click="onNodeClick"
-                        @check-change="onCheckChanged">
+                        @check="onMenuChecked">
                         <span class='custom-node' slot-scope="{ node, data }">
                             {{ data.name }}
                             <template v-if="data.isLeaf">
@@ -71,6 +70,10 @@
                 </el-tab-pane>
                 <el-tab-pane label="系统数据权限">配置管理</el-tab-pane>
             </el-tabs>
+            <div slot="footer" class="dialog-footer">
+                <el-button size="small" @click="isAuthVisible = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="onAuthUpdate" :loading="isDoing">确 定</el-button>
+            </div>
         </el-dialog>
     </el-row>
 </template>
@@ -102,14 +105,19 @@
                     ]
                 },
 
-                authTitle:'',
                 isAuthVisible: false,
-                roleData:'',
+                isDoing: false,
                 props: {
                     label: 'name',
                 },
-                tmpActions:[],
-                actions:[],
+                actions:null,
+                cacheRole:null,
+                roleData:{
+                    id:'',
+                    mids:[],
+                    actions:{}, //{ menuid: ['add', 'edit', ...]}
+                    datas:[]
+                }
             }
         },
         mounted() {
@@ -216,17 +224,16 @@
             },
             //显示分配权限页面
             showAuthConf(row){
-                this.authTitle = row.name;
-                this.roleData = row;
-                this.roleData.actions = row.actions ? JSON.parse(row.actions) : {};
+                this.cacheRole = row;
+                this.roleData = Object.assign({}, row);
                 this.loadActions();
                 this.isAuthVisible = true;
-            },
-            onAuthClose(){
-                console.log('onAuthClose');
+                this.$nextTick(() => {
+                    this.$refs.menuTree.setCheckedKeys(row.mids);
+                });
             },
             loadActions(){
-                if(this.actions.length > 0){
+                if(this.actions){
                     return;
                 }
                 let query = {
@@ -240,50 +247,61 @@
                     this.actions = res.data;
                 });
             },
-            onNodeClick(data, node){
-                // console.log(data, node)
-                // if(data.isLeaf){
-                //  this.nodeData = data;
-                //  this.nodeData.actions = data.actions ? data.actions.split(',') : [];
-                // }
-            },
-            onCheckChanged(data, checked, indeterminate){
-                console.log(data, checked, indeterminate);
-            },
-            onActionChecked(value){
-                console.log(value)
+            onMenuChecked(data, tree){
+                this.roleData.mids = tree.checkedKeys;
+                let tmpActions = Object.assign({}, this.roleData.actions);
+                for(let key in tmpActions){
+                    if(!tree.checkedKeys.includes(data.id)){
+                        delete tmpActions[key];
+                    }
+                }
+                this.roleData.actions = tmpActions;
             },
             onCheckAction(menuId, action){
                 let roleActions = Object.assign({}, this.roleData.actions);
                 roleActions[menuId] = roleActions[menuId] || [];
                 roleActions[menuId].push(action);
-                // actions = { menuid: ['add', 'edit', ...]}
-                let params = {
-                    roleid: this.roleData.id,
-                    actions: roleActions
-                };
-                // 更新成功后同步本地状态
-                // this.tmpActions = roleActions[menuId];
                 this.roleData.actions = roleActions;
-                console.log(this.tmpActions)
-                console.log(params);
+                if(!this.roleData.mids.includes(menuId)){
+                    this.roleData.mids.push(menuId);
+                }
+                this.$refs.menuTree.setCheckedKeys(this.roleData.mids);
             },
             onRemoveAction(menuId, action){
                 let roleActions = Object.assign({}, this.roleData.actions);
                 roleActions[menuId].splice(roleActions[menuId].indexOf(action),1);
-                let params = {
-                    roleid: this.roleData.id,
-                    actions: roleActions
+                if(roleActions[menuId].length === 0){
+                    delete roleActions[menuId];
+                    this.roleData.mids.splice(this.roleData.mids.indexOf(menuId), 1);
                 }
-
-                // 更新成功后 同步本地状态
                 this.roleData.actions = roleActions;
+                this.$refs.menuTree.setCheckedKeys(this.roleData.mids);
+            },
+            onAuthUpdate(){
+                let url = '/api/role/'+ this.roleData.id;
+                this.roleData.mids = this.$refs.menuTree.getCheckedKeys();
+                this.isDoing = true;
+                this.$http.put(url, this.roleData).then((res)=> {
+                    this.isDoing = false;
+                    if (res.code !=='SUCCESS') {
+                        this.$message.error(res.msg);
+                        return;
+                    }
+                    this.isAuthVisible = false;
+                    this.cacheRole.mids = this.roleData.mids;
+                    this.cacheRole.actions = this.roleData.actions;
+                    this.cacheRole.datas = this.roleData.datas;
+                }).catch(() => { 
+                    this.isDoing = false;
+                });
             }
         }
     }
 </script>
 <style scope>
-   
+    .custom-node{
+        font-size: 12px;
+    }
     .btn-mini{
         font-size: 12px;
         padding: 0 5px;

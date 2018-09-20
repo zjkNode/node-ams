@@ -17,6 +17,7 @@ let auto = function(role) {
   if(!role){
     return ;
   }
+  role.actions = role.actions ? JSON.stringify(role.actions) : '';
   if(!role.id){ // id 不存在，为新增
     role.create_time = moment().format('YYYY-MM-DD hh:mm:ss');
   } else { // 修改时，默认字段赋值

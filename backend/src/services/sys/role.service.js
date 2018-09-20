@@ -24,8 +24,8 @@ exports.one = function(where,callback){
 /**
  * 插入数据
  */
-exports.add = function(roles,callback) {
-  mysql.insert(roleModel.tbname , roles, function(err,resid){
+exports.add = function(role, callback) {
+  mysql.insert(roleModel.tbname , role, function(err,resid){
     if(err){
       logger.errorDB(__filename, err);
       return callback(new DBError());
@@ -70,6 +70,11 @@ exports.delete = function(where, callback){
             logger.errorDB(__filename, err);
             return callback(new DBError());
           }
+          rows.forEach(row => {
+            row.actions = row.actions ? JSON.parse(_.unescape(row.actions)) : {};
+            row.mids = row.mids ? row.mids.split(',').map(id => parseInt(id)) : [];
+            row.datas = row.datas ? row.datas.split(',') : [];
+          });
           return callback(null, rows);
         });
 }
