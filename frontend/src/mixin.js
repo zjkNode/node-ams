@@ -28,6 +28,7 @@ export default {
 		        formatTree(row, column,value){
 		            return this.$options.filters.flatTree(row, value);
 		        },
+		        
 			}
 		});
 	}

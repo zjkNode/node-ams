@@ -66,7 +66,7 @@ module.exports = {
         if(this.isAdmin(user)){
             return true;
         }
-        return user.menu_ids.includes(menuId);
+        return user.mids.includes(menuId);
     },
     isAdmin(user){
         return CONSTANTS.ADMINISTRATOR_USERS.includes(user.id);

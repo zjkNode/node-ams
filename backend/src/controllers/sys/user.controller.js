@@ -64,29 +64,31 @@ exports.signIn = function (req,res) {
 			depService.list({ id: ['in', depids]}, function(error, deps){
 				return callback(error, deps);
 			});
-		}],
-		actions:['user', function(results, callback){
-			// 超管 所有权限
-			if(utils.isAdmin(results.user)){
-				return callback(null, ['ALL']);
-			}
-			confService.listByType(CONSTANTS.CONFIG_TYPES.AUTH_ACTION, function(error, configs){
-				return callback(error, configs);
-			});
 		}]
 	}, function(err, results) {
 		if(err){
 			logService.log(req,'登录失败:'+ err.msg);
 			return res.status(err.constructor.status).json(err);
 		}
-		let curUser = results.user;
-		curUser.roles = results.roles;
-		curUser.deps = results.deps;
-		curUser.actions = results.actions;
 
+		let curUser = results.user;
+		curUser.isAdmin = utils.isAdmin(curUser);
+		curUser.mids = [];
+		curUser.depName = _.map(results.deps, 'name').join(',');
+		curUser.roleName = _.map(results.roles, 'name').join(',');
+		let tmpActions = {};
+		results.roles.forEach(role => {
+			for(let mid in role.actions){
+				tmpActions[mid] = tmpActions[mid] || [];
+				tmpActions[mid] = [...new Set([...tmpActions[mid], ...role.actions[mid]])];
+				curUser.mids = [...curUser.mids,...role.mids];
+			}
+		});
+		curUser.actions = tmpActions;
+		curUser.mids = [...new Set(curUser.mids)];
 		req.session.user = curUser;
 		logService.log(req,'登录成功:'+ curUser.nickname);
-		return res.status(200).json({ code:'SUCCESS', data: curUser });
+		return res.status(200).json({ code:'SUCCESS',  data: curUser });
   });
 }
 

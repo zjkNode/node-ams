@@ -16,7 +16,7 @@
       <el-container>
         <el-header>
             <el-col :span="20">
-            您好！ {{ curUser.deps | formatDep }} -- {{ curUser.roles && curUser.roles[0].name  }} -- {{ curUser.nickname }}
+            您好！ {{ curUser.depName }} -- {{ curUser.roleName  }} -- {{ curUser.nickname }}
             </el-col>
             <el-col :span="4" style="text-align:right">
                 <el-dropdown trigger="click" @command="handleCommand">
@@ -59,21 +59,8 @@
             }
         },
         mounted(){
-            this.init();
-        },
-        filters:{
-            formatDep(deps) {
-                if(!deps || deps.length == 0){
-                    return '';
-                }
-                let depName = deps.map((dep)=>{ return dep.name }).join(' -- ');
-                return depName;
-            }
         },
         methods:{
-            init(){
-                // this.user = JSON.parse(localStorage.getItem('user')) || this.user;
-            },
             handleCommand(command){
                 if(command=='signout'){
                     let url = '/api/user/signout';
