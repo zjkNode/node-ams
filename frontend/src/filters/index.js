@@ -30,10 +30,10 @@ export function flatTree(row,value){
 }
 
 export function disableItem(datas,id){
-  datas.map(function(item){
+  datas.forEach(item => {
       item.disabled = item.id === id;
-      if( !item.disabled && item.children){
-          disableItem(item.children,id)
+      if(!item.disabled && item.children){
+          disableItem(item.children,id);
       }
-  })
+  });
 }

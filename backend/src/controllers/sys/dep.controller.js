@@ -126,7 +126,7 @@ exports.list = function(req,res) {
 	}
 	
 	let curUser = req.session.user;
-	if(utils.isAdmin(curUser)){
+	if(curUser.isAdmin){
 		async.waterfall([
 			function(callback){
 				depService.list(where, function(error, resList){
@@ -166,45 +166,95 @@ exports.list = function(req,res) {
 	}
 
 	// 非超管
-	async.waterfall([
-		function(callback){
-			depService.getChildById(curUser.depid, function(error,depList){
-				return callback(error,depList);
+	async.auto({
+		parents: function(callback){
+			let pids = curUser.depids.split(',').map(id => parseInt(id));
+			where.id = ['in', pids];
+			depService.list(where, function(error, rows){
+				return callback(error, rows);
 			});
 		},
-		function(depList, callback){
-			let ids = [];
-			depList.forEach(dep => {
-				ids.push(dep.id);
-				ids.push(dep.pids.split(',').map(id => parseInt(id)));
-			})
-			ids = _.union(ids);
-
-			let idMap = ['in', ids];
-			where._complex ? where._complex.id = idMap : where.id = idMap;
-			depService.list(where, function(error,resList){
-				return callback(error, resList);
+		children: function(callback){
+			let id = parseInt(curUser.depids.split(',').pop());
+			depService.getChildById(id, function(error, rows){
+				if(error || !searchKey){
+					return callback(error, rows);
+				}
+				let children = rows.filter(dep => dep.name.indexOf(searchKey) > -1);
+				let tmpIds = [];
+				children.forEach(dep => {
+					let ids = dep.pids.split(',').map(id => parseInt(id));
+					tmpIds = [...tmpIds, ...ids];
+				});
+				tmpIds = [...new Set(tmpIds)];
+				let childrenIds = children.map(dep => dep.id);
+				rows.forEach(dep => {
+					if(tmpIds.includes(dep.id) && !childrenIds.includes(dep.id)){
+						children.push(dep);
+					}
+				});
+				return callback(error, children);
 			});
 		}
-	],function(err,result){
+	}, function(err, results){
 		if(err){
-			logService.log(req, '服务器出错，获取部门列表失败');
+			logService.log(req, '服务器出错，获取部门失败');
     		return res.status(err.constructor.status).json(err);
 		}
-		let resList = result ? utils.buildTreeTable(result) : [];
-		return res.status(200).json({
-			code: 'SUCCESS',
-			data: resList
-		});
+		let resList = [...results.parents, ...results.children];
+		resList = resList.length > 0 ? utils.buildTreeTable(resList, resList[0].pid) : [];
+		return res.status(200).json({ code:'SUCCESS',  data: resList });
 	});
+
+	// depService.list(where, function(err, deps){
+	// 	if(err){
+	// 		logService.log(req, '服务器出错，获取部门列表失败');
+ //    		return res.status(err.constructor.status).json(err);
+	// 	}
+	// 	let resList = deps ? utils.buildTreeTable(deps) : [];
+	// 	return res.status(200).json({ code: 'SUCCESS', data: resList });
+	// });
+
+
+	// async.waterfall([
+	// 	function(callback){
+	// 		depService.getChildById(curUser.depid, function(error,depList){
+	// 			return callback(error,depList);
+	// 		});
+	// 	},
+	// 	function(depList, callback){
+	// 		let ids = [];
+	// 		depList.forEach(dep => {
+	// 			ids.push(dep.id);
+	// 			ids.push(dep.pids.split(',').map(id => parseInt(id)));
+	// 		})
+	// 		ids = _.union(ids);
+
+	// 		let idMap = ['in', ids];
+	// 		where._complex ? where._complex.id = idMap : where.id = idMap;
+	// 		depService.list(where, function(error,resList){
+	// 			return callback(error, resList);
+	// 		});
+	// 	}
+	// ],function(err,result){
+	// 	if(err){
+	// 		logService.log(req, '服务器出错，获取部门列表失败');
+ //    		return res.status(err.constructor.status).json(err);
+	// 	}
+	// 	let resList = result ? utils.buildTreeTable(result) : [];
+	// 	return res.status(200).json({
+	// 		code: 'SUCCESS',
+	// 		data: resList
+	// 	});
+	// });
 }
 
 exports.tree = function(req,res){
+	let where = {
+		status: CONSTANTS.DEP_STATUS.NORMAL
+	};
 	let curUser = req.session.user;
-	if(utils.isAdmin(curUser)){
-		let where = {
-			status: CONSTANTS.DEP_STATUS.NORMAL
-		};
+	if(curUser.isAdmin){
 		depService.list(where, function(err,result){
 			if(err){
 			  	logService.log(req, '服务器出错，获取部门类型失败');
@@ -219,17 +269,42 @@ exports.tree = function(req,res){
 		return;
 	}
 	// 非超管
-	depService.getChildById(curUser.depid,function(err,result){
+	async.auto({
+		parents: function(callback){
+			let pids = curUser.depids.split(',').map(id => parseInt(id));
+			where.id = ['in', pids];
+			depService.list(where, function(error, rows){
+				return callback(error, rows);
+			});
+		},
+		children: function(callback){
+			let id = parseInt(curUser.depids.split(',').pop());
+			depService.getChildById(id, function(error, rows){
+				return callback(error, rows);
+			});
+		}
+	}, function(err, results){
 		if(err){
-			logService.log(req, '服务器出错，获取部门失败，部门id:'+ curUser.depid);
+			logService.log(req, '服务器出错，获取部门失败');
     		return res.status(err.constructor.status).json(err);
 		}
-		// 过滤状态 状态为正常的部门
-		let resList = _.filter(result, 'status', CONSTANTS.DEP_STATUS.NORMAL) || [];
-		return res.status(200).json({ 
-				code:'SUCCESS', 
-				data: utils.buildTree(resList,result[0].pid),
-				msg: ''
-			});
+		let children = results.children.filter(dep => dep.status === CONSTANTS.DEP_STATUS.NORMAL);
+		let resList = [...results.parents, ...children];
+		return res.status(200).json({  code:'SUCCESS',  data: utils.buildTree(resList, resList[0].pid),});
 	});
+
+	// // 非超管
+	// depService.getChildById(curUser.depid,function(err,result){
+	// 	if(err){
+	// 		logService.log(req, '服务器出错，获取部门失败，部门id:'+ curUser.depid);
+ //    		return res.status(err.constructor.status).json(err);
+	// 	}
+	// 	// 过滤状态 状态为正常的部门
+	// 	let resList = _.filter(result, 'status', CONSTANTS.DEP_STATUS.NORMAL) || [];
+	// 	return res.status(200).json({ 
+	// 			code:'SUCCESS', 
+	// 			data: utils.buildTree(resList,result[0].pid),
+	// 			msg: ''
+	// 		});
+	// });
 }

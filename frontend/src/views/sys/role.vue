@@ -279,7 +279,9 @@
             },
             onAuthUpdate(){
                 let url = '/api/role/'+ this.roleData.id;
-                this.roleData.mids = this.$refs.menuTree.getCheckedKeys();
+                
+                let checkedNodes = this.$refs.menuTree.getCheckedNodes(false, true);
+                this.roleData.mids = checkedNodes.map(node => node.id);
                 this.isDoing = true;
                 this.$http.put(url, this.roleData).then((res)=> {
                     this.isDoing = false;

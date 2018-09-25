@@ -56,9 +56,10 @@ module.exports = {
 
         return resData;
     },
-    buildTreeTable(data){
+    buildTreeTable(data, pid){
         let _this = this;
-        let treeData = _this.buildTree(data,0);
+        pid = pid || 0;
+        let treeData = _this.buildTree(data, pid);
         
         return flatTree(treeData);
     },

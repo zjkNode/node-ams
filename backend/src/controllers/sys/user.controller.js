@@ -74,8 +74,8 @@ exports.signIn = function (req,res) {
 		let curUser = results.user;
 		curUser.isAdmin = utils.isAdmin(curUser);
 		curUser.mids = [];
-		curUser.depName = _.map(results.deps, 'name').join(',');
-		curUser.roleName = _.map(results.roles, 'name').join(',');
+		curUser.depName = results.deps.map(dep => dep.name).join(',');
+		curUser.roleName = results.roles.map(role => role.name).join(',');
 		let tmpActions = {};
 		results.roles.forEach(role => {
 			for(let mid in role.actions){

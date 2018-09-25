@@ -95,15 +95,6 @@ export default  {
         var encrypted = encrypt.encrypt(md5(plainText));
         return encrypted;
     },
-    dateFormate: function(value) {
-        if(value === undefined){
-            return moment().format("YYYY-MM-DD hh:mm:ss");
-        }
-        if(!value){
-            return '---';
-        }
-        return moment(value).format("YYYY-MM-DD hh:mm:ss");
-    },
     uuid(){
         return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);

@@ -146,19 +146,22 @@
             menuData:'getMenuTree',
         }),
         watch: {
-            menuData(val){
-                let tmp = [{ name:'顶级菜单', id: 0, pid: 0 }];
-                if(val){
-                    tmp = tmp.concat(val);
-                }
-                this.menuTree = tmp;
-            }
+            menuData: 'bindMenuTree',
         },
         mounted(){
+            this.bindMenuTree(this.menuData)
             this.loadMenus();
             this.loadActions();
         },
         methods: {
+            bindMenuTree(val){
+                if(!val){
+                    return;
+                }
+                let tmp = [{ name:'顶级菜单', id: 0, pid: 0 }];
+                tmp = tmp.concat(val);
+                this.menuTree = tmp;
+            },
             loadMenus(){
                 let url = '/api/menu';
                 let params = {

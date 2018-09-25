@@ -96,7 +96,7 @@ exports.getChildById = function(depId, callback){
 		id: depId
 	}
 	let sql = baseService.SQL_selectChildById;
-	mysql.execute(sql,params,function(err, rows){
+	mysql.execute(sql, params, function(err, rows){
 		if(err){
 			logger.errorDB(__filename, err);
 			return callback(new DBError());

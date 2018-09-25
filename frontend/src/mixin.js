@@ -2,15 +2,16 @@
 import { mapGetters } from 'vuex';
 
 export default {
-	install(Vue, options){
+	install(Vue, opts){
 		Vue.mixin({
 			data(){
 				return {
-					// options: options
+					opts: opts
 				}
 			},
 			computed: mapGetters({
 			    curMenu:'getCurMenu',
+			    curUser: 'getCurUser'
 			}),
 			filters:{
 	            statusFilter(val){
@@ -19,7 +20,7 @@ export default {
 	                if(val === 2)
 	                    return '停用';
 	                return '未知';
-	            }
+	            },
 	        },
 			methods:{
 				dateFormat(row,column,cellvalue){
@@ -28,7 +29,13 @@ export default {
 		        formatTree(row, column,value){
 		            return this.$options.filters.flatTree(row, value);
 		        },
-		        
+		        authCheck(action){
+					if(this.curUser.isAdmin){
+						return true;
+					}
+					let actions = this.curUser.actions[this.curMenu.id];
+					return actions.includes(action);
+				}
 			}
 		});
 	}

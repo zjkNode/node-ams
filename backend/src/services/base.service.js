@@ -2,7 +2,7 @@
 
 // 根据id 查询所有子栏目
 module.exports.SQL_selectChildById =  `SELECT * FROM :tbname 
-				WHERE id = :id or pids LIKE CONCAT((SELECT CASE pids WHEN '0' THEN id ELSE CONCAT(pids,',',id) END 
+				WHERE pids LIKE CONCAT((SELECT CASE pids WHEN '0' THEN id ELSE CONCAT(pids,',',id) END 
 					FROM :tbname WHERE id = :id),'%')`;
 
 // 级联删除当前及所有子集

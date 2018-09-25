@@ -6,7 +6,7 @@ var async = require('async'),
     _ = require('lodash'),
     mysql = require('../../lib/mysqldb.lib'),
     logger = require('../../lib/logger.lib'),
-    cache = require('../../lib/cache.lib'),
+    // cache = require('../../lib/cache.lib'),
     CONSTANTS = require('../../config/constants.config'),
     configModel = require('../../models/sys/config.model.js');
 
@@ -18,7 +18,6 @@ exports.add = function(configs,callback) {
             logger.errorDB(__filename, err);
             return callback(new DBError());
         }
-        cache.del('cacheConfigs');
         return callback(null, resId);
     });
 };
@@ -29,7 +28,6 @@ exports.delete = function(where, callback){
             logger.errorDB(__filename, err);
             return callback(new DBError());
         };
-        cache.del('cacheConfigs');
         return callback();
     });
 };
@@ -40,7 +38,6 @@ exports.update = function (data, where, callback) {
             logger.errorDB(__filename, err);
             return callback(new DBError());
         };
-        cache.del('cacheConfigs');
         return callback();
     });
 };

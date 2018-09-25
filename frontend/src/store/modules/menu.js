@@ -25,9 +25,11 @@ function _getCurMenu(menus){
 // getters
 const getters = {
 	getMenuTree: state => {
+		state.menuData = state.menuData || JSON.parse(window.localStorage.getItem('menuData'));
 		if(state.menuData){
 			return state.menuData;
 		}
+
         Vue.prototype.$http.get('/api/menu/tree').then( (res) =>{
             if(res.code != 'SUCCESS'){
             	Vue.prototype.$message.error(res.msg);
@@ -36,6 +38,7 @@ const getters = {
             state.menuData = res.data;
             let curMenu = _getCurMenu(res.data);
             window.localStorage.setItem('curMenu', JSON.stringify(curMenu));
+            window.localStorage.setItem('menuData', JSON.stringify(res.data));
         });
 	},
 	getCurMenu: state => {
@@ -50,7 +53,7 @@ const getters = {
 // actions 
 const actions = {
 	refreshMenuTree({ commit }){
-		commit(types.MENU_TREE_DATA, null)
+		commit(types.MENU_TREE_DATA)
 	},
 	setCurMenu({ commit }, menu){
 		commit(types.SET_CUR_MENU, menu);
@@ -58,8 +61,9 @@ const actions = {
 }
 
 const mutations = {
-	[types.MENU_TREE_DATA](state, treeData){
-		state.menuData = treeData;
+	[types.MENU_TREE_DATA](state){
+		state.menuData = null;
+        window.localStorage.removeItem('menuData');
 	},
 	[types.SET_CUR_MENU](state, menu){
 		state.curMenu = menu;

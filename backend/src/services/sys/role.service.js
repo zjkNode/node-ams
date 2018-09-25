@@ -2,7 +2,6 @@ var async = require('async'),
   _ = require('lodash'),
   mysql = require('../../lib/mysqldb.lib'),
   logger = require('../../lib/logger.lib'),
-  cache = require('../../lib/cache.lib'),
   roleModel = require('../../models/sys/role.model'),
   depService=require('../../services/sys/dep.service');
 

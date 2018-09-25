@@ -7,7 +7,7 @@
             </el-col>
             <el-col :span="13" :offset="1">
                 <el-button size="small" type="primary" @click="bindDepList" icon="el-icon-search"> 查询</el-button>
-                <el-button size="small" type="primary" @click="isDialogVisible = true" icon="el-icon-plus">新增</el-button>
+                <el-button v-if="authCheck('add')" size="small" type="primary" @click="isDialogVisible = true" icon="el-icon-plus">新增</el-button>
             </el-col>
         </el-row>
         <el-table :data="depList" stripe v-loading="isLoading" >
@@ -21,8 +21,8 @@
             <el-table-column prop="create_time" label="添加时间" :formatter="dateFormat" show-overflow-tooltip width="180"></el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
               <template scope="scope">
-                <el-button @click="onEditClick(scope.row)" type="text" size="small">编辑</el-button>
-                <el-button @click="onRemoveClick(scope.$index,scope.row)" type="text" size="small" style="color: #ff4949;">删除</el-button>
+                <el-button v-if="authCheck('edit')" @click="onEditClick(scope.row)" type="text" size="small">编辑</el-button>
+                <el-button v-if="authCheck('delete')" @click="onRemoveClick(scope.$index,scope.row)" type="text" size="small" style="color: #ff4949;">删除</el-button>
               </template>
             </el-table-column>
       </el-table>

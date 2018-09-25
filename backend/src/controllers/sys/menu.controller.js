@@ -78,22 +78,20 @@ exports.update = function(req,res) {
 }
 
 exports.tree = function(req,res){
-    menuService.tree(function(err, rows){
+	let where = {};
+	let curUser = req.session.user;
+	if(!curUser.isAdmin){
+		where.id = ['in', curUser.mids];
+	}
+    menuService.tree(where, function(err, rows){
 		if(err){
 			logService.log(req, '服务器出错，获取菜单列表失败');
         	return res.status(err.constructor.status).json(err);
 		}
 		// 权限过滤 菜单
-		let curUser = req.session.user;
-		let menus = [];
-		if(util.isAdmin(curUser)){
-			menus = rows;
-		} else {
-			menus = rows.filter(item => util.authCheck(curUser, item.id));
-		}
 		return res.status(200).json({
             code: 'SUCCESS',
-            data: util.buildTree(menus,0),
+            data: util.buildTree(rows,0),
             msg: ""
         });
     })

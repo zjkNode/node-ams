@@ -15,7 +15,7 @@ exports.add = function(newMenu,callback) {
 			logger.errorDB(__filename, err);
 			return callback(new DBError());
 		}
-        cache.del('menuTree');
+        // cache.del('menuTree');
 		return callback(null, resId);
 	});
 }
@@ -27,7 +27,7 @@ exports.delete = function(where, callback){
 			logger.errorDB(__filename, err);
 			return callback(new DBError());
 		}
-        cache.del('menuTree');
+        // cache.del('menuTree');
 		return callback(null);
 	});
 }
@@ -54,25 +54,24 @@ exports.update = function (data, where, callback) {
 			logger.errorDB(__filename, err);
 			return callback(new DBError());
 		}
-        cache.del('menuTree');
+        // cache.del('menuTree');
 		return callback();
     });
 };
 
-exports.tree = function(callback){
-    let menuTree = cache.get('menuTree');
-    if(menuTree){
-        return callback(null, _.cloneDeep(menuTree));
-    };
-    var where= {
-		status: CONSTANTS.MENUS_STATUS.VALID
-	};
+exports.tree = function(where, callback){
+    // let menuTree = cache.get('menuTree');
+    // if(menuTree){
+    //     return callback(null, _.cloneDeep(menuTree));
+    // }
+    where = where || {};
+    where.status = CONSTANTS.MENUS_STATUS.VALID;
     mysql.where(where).order({sort:'asc'}).select(menuModel.tbname, function(err,res){
         if(err){
 			logger.errorDB(__filename, err);
 			return callback(new DBError());
 		}
-        cache.set('menuTree', res);
+        // cache.set('menuTree', res);
         return callback(null,res);
     });
 };
