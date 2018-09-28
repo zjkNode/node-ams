@@ -306,7 +306,7 @@
                     this.formData.pid = this.formData.pids.slice(-1)[0] || 0;
                     var apiUrl = "/api/menu/"+ this.formData.id;
                     this.isDoing = true;
-                    this.$http.put(apiUrl, this.formData).then((res)=>{
+                    this.$http.put(apiUrl, this.formData).then(() => {
                         this.isDoing = false;
                         this.isFormVisible = false;
                         this.$store.dispatch('refreshMenuTree');

@@ -182,8 +182,10 @@ function insert(tbname,options,callback){
             }
 
             fields.push('`'+ fieldName +'`');
-            if(cols[fieldName].type.indexOf('int') > -1){
+            if(cols[fieldName].type.indexOf('int') === 0){ // 只处理int tinyint 不处理
                 values.push('CONVERT(":'+ fieldName +'", SIGNED)');
+            } else if(cols[fieldName].type.indexOf('int') > 0){
+                values.push(':' + fieldName);
             } else {
                 values.push('":'+ fieldName +'"');
             }
@@ -223,8 +225,10 @@ function update(tbname, data, callback){
             if(!cols.hasOwnProperty(key)) continue;
             if(cols[key].primary) continue;
 
-            if(cols[key].type.indexOf('int') > -1){
+            if(cols[key].type.indexOf('int') === 0){ // 只处理int 不处理tinyint
                 setFields.push('`'+ key +'`= CONVERT(":'+ key+'", SIGNED)');
+            } else if(cols[key].type.indexOf('int') > 0){
+                setFields.push('`'+ key +'`= :'+ key);
             } else {
                 setFields.push('`'+ key +'`=":'+ key +'"');
             }

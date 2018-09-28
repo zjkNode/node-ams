@@ -16,8 +16,8 @@ var options = {
 
 
 module.exports = {
-  secret: 'amsnode', // 用来对session id相关的cookie进行签名
-  name: 'amsnodecookie', // cookie的名字
+  secret: 'nodesys', // 用来对session id相关的cookie进行签名
+  name: 'nodesyscookie', // cookie的名字
   cookie: {
     httpOnly: false,
     maxAge:1000 * 60 * 60 * 24 * 7 // session 及相应cookie过期时间， 未设置为null 代表每次关闭浏览器时，session会失效

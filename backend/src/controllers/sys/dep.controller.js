@@ -69,49 +69,16 @@ exports.delete = function(req,res){
 		logger.error(__filename, '参数验证失败', vErrors);
 		return res.status(ValidationError.status).json(vErrors);
 	}
-	let depId = parseInt(req.params.id);
-	
-	async.parallel({
-		existChildDeps: function(callback){
-			// 检查是否存在子部门
-			depService.getChildById(depId, function(err, deps){
-				let isExist = deps && deps.length > 1; // 第一个是自身
-				return callback(err, isExist);
-			});
-		},
-		existUser: function(callback){
-			// 查检部门下是否存在用户
-			userService.getUsersByDepId(depId, function(err, users){
-				let isExist = users && users.length > 0;
-				return callback(err, isExist);
-			});
+
+	let where = { 
+		id: parseInt(req.params.id) 
+	};
+	depService.delete(where, function(error, callback){
+		if(error){
+			logService.log(req, '服务器出错，删除部门失败');
+    		return res.status(err.constructor.status).json(err);
 		}
-	}, function(err, results){
-		if(err){
-			logService.log(req, '服务器出错，检查部门依赖关系出错，删除部门失败');
-        	return res.status(err.constructor.status).json(err);
-		}
-		let linkErrs = [];
-		if(results.existChildDeps){
-			linkErrs.push(new ValidationError('EXIST_CHILD_DEP', '该部门下存在子部门，不能删除'));
-		}
-		if(results.existUser){
-			linkErrs.push(new ValidationError('EXIST_USERS', '该部门下存在用户，不能删除'));
-		}
-		if(linkErrs.length > 0){
-			return res.status(ValidationError.status).json({ 
-				code: 'EXIST_REFERENCE', 
-				data: linkErrs, 
-				msg: '该部门存在依赖关系，无法删除'});
-		}
-		let where = { id: depId };
-		depService.delete(where, function(error, callback){
-			if(error){
-				logService.log(req, '服务器出错，删除部门失败');
-        		return res.status(err.constructor.status).json(err);
-			}
-			return res.status(200).json({code:'SUCCESS', msg:'删除部门成功'});
-		});
+		return res.status(200).json({code:'SUCCESS', msg:'删除部门成功'});
 	});
 }
 

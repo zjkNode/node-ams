@@ -70,7 +70,8 @@
                             return;
                         }
                         localStorage.clear();
-                        this.$cookie.delete('amsnodecookie');
+                        this.$store.dispatch('refreshMenuTree');
+                        this.$cookie.delete('nodesyscookie');
                         this.$router.push({ path: '/login'});
                     }).then(() => { }); // todo 成功 也走then 为什么
                     return;

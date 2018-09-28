@@ -52,7 +52,7 @@ axios.interceptors.response.use(
             case 401:
                 // 401 清除token信息并跳转到登录页面
                 localStorage.clear();
-                Vue.cookie.delete('amsnodecookie');
+                Vue.cookie.delete('nodesyscookie');
                 location.href = '/login';
                 break;
         }

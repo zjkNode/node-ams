@@ -49,7 +49,7 @@ exports.signIn = function (req,res) {
 		},
 		roles:['user', function(results, callback){
 			if(utils.isAdmin(results.user)){
-				return callback(null, [{ id: 0, name: '超级管理员'}]);
+				return callback(null, [{ id: 0, name: '超级管理员', mids:[], datas: []}]);
 			}
 			let roleids = results.user.roleids.split(',').map(id => parseInt(id));
 			roleService.list({ id: ['in', roleids]}, function(error, role){
@@ -81,8 +81,8 @@ exports.signIn = function (req,res) {
 			for(let mid in role.actions){
 				tmpActions[mid] = tmpActions[mid] || [];
 				tmpActions[mid] = [...new Set([...tmpActions[mid], ...role.actions[mid]])];
-				curUser.mids = [...curUser.mids,...role.mids];
 			}
+			curUser.mids = [...curUser.mids,...role.mids];
 		});
 		curUser.actions = tmpActions;
 		curUser.mids = [...new Set(curUser.mids)];
