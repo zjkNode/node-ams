@@ -279,9 +279,12 @@
             },
             onAuthUpdate(){
                 let url = '/api/role/'+ this.roleData.id;
-                
-                let checkedNodes = this.$refs.menuTree.getCheckedNodes(false, true);
-                this.roleData.mids = checkedNodes.map(node => node.id);
+                // let checkedNodes = this.$refs.menuTree.getCheckedNodes(false, true);
+                // this.roleData.mids = checkedNodes.map(node => node.id);
+                let checkedKeys = this.$refs.menuTree.getCheckedKeys();
+                let halfCheckedKeys = this.$refs.menuTree.getHalfCheckedKeys();
+                halfCheckedKeys = halfCheckedKeys.map(id => -id); // 负值代表半选状态，页面绑定时生效
+                this.roleData.mids = [...checkedKeys, ...halfCheckedKeys];
                 this.isDoing = true;
                 this.$http.put(url, this.roleData).then((res)=> {
                     this.isDoing = false;

@@ -73,19 +73,21 @@ exports.signIn = function (req,res) {
 
 		let curUser = results.user;
 		curUser.isAdmin = utils.isAdmin(curUser);
-		curUser.mids = [];
 		curUser.depName = results.deps.map(dep => dep.name).join(',');
 		curUser.roleName = results.roles.map(role => role.name).join(',');
+		curUser.mids = [];
 		let tmpActions = {};
+		let tmpMids = [];
 		results.roles.forEach(role => {
 			for(let mid in role.actions){
 				tmpActions[mid] = tmpActions[mid] || [];
 				tmpActions[mid] = [...new Set([...tmpActions[mid], ...role.actions[mid]])];
 			}
-			curUser.mids = [...curUser.mids,...role.mids];
+			tmpMids = [...curUser.mids,...role.mids];
 		});
+		tmpMids = tmpMids.map(id => Math.abs(id)); // 负值在权限分配时代表半选状态，建菜单树时需要转成正值
+		curUser.mids = [...new Set(tmpMids)];
 		curUser.actions = tmpActions;
-		curUser.mids = [...new Set(curUser.mids)];
 		req.session.user = curUser;
 		logService.log(req,'登录成功:'+ curUser.nickname);
 		return res.status(200).json({ code:'SUCCESS',  data: curUser });

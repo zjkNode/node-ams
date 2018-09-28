@@ -33,7 +33,7 @@ export default {
 					if(this.curUser.isAdmin){
 						return true;
 					}
-					let actions = this.curUser.actions[this.curMenu.id];
+					let actions = this.curUser.actions[this.curMenu.id] || [];
 					return actions.includes(action);
 				}
 			}
