@@ -10,8 +10,8 @@ module.exports = function () {
     errorFormatter: function (param, message, value) {
       return {
         code:'VALIDATE_FAILED',
-        param: param,
         msg: message,
+        param: param,
         value: value
       };
     },

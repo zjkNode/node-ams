@@ -3,37 +3,38 @@
         <h2>用户管理</h2>
         <el-row class="tools">
             <el-col :span="10">
-                <el-input size="small" v-model="keys" placeholder="请输入用户email/姓名/电话"></el-input>
+                <el-input size="small" v-model="keys" placeholder="请输入用户/姓名/电话"></el-input>
             </el-col>
             <el-col :span="13" :offset="1">
                 <el-button size="small" type="primary" @click="bindUsers" icon="el-icon-search">查询</el-button>
-                <el-button size="small" type="primary" @click="isVisible = true" icon="el-icon-plus">新增</el-button>
+                <el-button v-if="authCheck(sysActions.add)" size="small" type="primary" @click="isVisible = true" icon="el-icon-plus">新增</el-button>
             </el-col>
         </el-row>
-        <el-table :data="userList" stripe v-loading="isLoading" style="width: 100%">
+        <el-table :data="userList" stripe v-loading="isLoading">
             <el-table-column type="index" width="60"></el-table-column>
-            <el-table-column prop="email" label="登录名" width="180"></el-table-column>
-            <el-table-column prop="nickname" label="真实姓名" min-width="180"></el-table-column>
-            <el-table-column prop="depName" label="所在部门" min-width="180"></el-table-column>
-            <el-table-column prop="roleids" label="角色" min-width="180" show-overflow-tooltip>
-              <template scope="scope">
+            <el-table-column prop="email" label="登录名" width="100"></el-table-column>
+            <el-table-column prop="nickname" label="真实姓名" min-width="100"></el-table-column>
+            <el-table-column prop="depName" label="所在部门" min-width="230" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="roleids" label="角色" min-width="200" show-overflow-tooltip>
+              <template slot-scope="scope">
                 <el-tag 
+                  v-if="roleFormat(id)"
                   size="small" 
                   type="info" 
                   v-for="id in scope.row.roleids" 
                   :key="id">{{ roleFormat(id) }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="status" label="状态" width="80">
-                <template scope="scope">
+            <el-table-column prop="status" label="状态" width="90" align='center'>
+                <template slot-scope="scope">
                   <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{scope.row.status | statusFilter}}</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="create_time" label="添加时间" :formatter="dateFormat" width="200"></el-table-column>
+            <el-table-column prop="create_time" label="添加时间" :formatter="dateFormat" width="160" sortable></el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
-              <template scope="scope">
-                <el-button @click="onEditClick(scope.row)" type="text" size="small">编辑</el-button>
-                <el-button @click="onRemoveClick(scope.$index,scope.row)" type="text" size="small" style="color: #ff4949;">删除</el-button>
+              <template v-if="scope.row.operateAble" slot-scope="scope">
+                <el-button v-if="authCheck(sysActions.edit)" @click="onEditClick(scope.row)" type="text" size="small">编辑</el-button>
+                <el-button v-if="authCheck(sysActions.delete)" @click="onRemoveClick(scope.$index,scope.row)" type="text" size="small" style="color: #F56C6C;">删除</el-button>
               </template>
             </el-table-column>
         </el-table>
@@ -48,7 +49,7 @@
         </el-pagination>
 
         <el-dialog :title="'用户 -- '+ (title || '新增')" :visible.sync="isVisible" @close="onDialogClose">
-          <el-form :model="formData" :rules="rules" ref="dialogForm" label-width="80px">
+          <el-form :model="formData" :rules="rules" ref="dialogForm" label-width="80px" @keyup.enter.native="onSubmit">
             <el-form-item label="所在部门" prop="depids">
               <el-cascader 
                 change-on-select 
@@ -73,16 +74,25 @@
               </el-select>
             </el-form-item>
             <el-form-item label="用户名" prop="email">
-              <el-input v-model="formData.email" auto-complete="off" name="email" placeholder="登录用户名"></el-input>
+              <el-input v-model="formData.email" name="email" placeholder="登录用户名"></el-input>
             </el-form-item>
-            <el-form-item label="密码" prop="password">
-              <el-input v-model="formData.password" type="password" auto-complete="off" name="password" placeholder="登录密码"></el-input>
+            <el-form-item v-if="!formData.id" label="密码" prop="password">
+              <el-input v-model="formData.password" type="password" name="password" placeholder="登录密码"></el-input>
+            </el-form-item>
+            <el-form-item v-else label="密码" prop="newPwd">
+              <el-input v-model="formData.newPwd" type="password" name="newPwd" placeholder="登录密码"></el-input>
             </el-form-item>
             <el-form-item label="真实姓名" prop="nickname">
-              <el-input v-model="formData.nickname" auto-complete="off" name="nickname" placeholder="真实姓名"></el-input>
+              <el-input v-model="formData.nickname" name="nickname" placeholder="真实姓名"></el-input>
             </el-form-item>
             <el-form-item label="联系电话" prop="phone">
-              <el-input v-model="formData.phone" auto-complete="off" name="phone" placeholder="联系电话"></el-input>
+              <el-input v-model="formData.phone" name="phone" placeholder="联系电话"></el-input>
+            </el-form-item>
+            <el-form-item v-if="formData.id" label="是否可用" prop="status">
+                <el-radio-group v-model.number="formData.status">
+                    <el-radio v-bind:label="1">正常</el-radio>
+                    <el-radio v-bind:label="2">停用</el-radio>
+                </el-radio-group>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -102,7 +112,6 @@ export default {
             isLoading: false,
             isDoing: false,
             keys:"",
-            rowData:null,
             depTree: null,
             userList: null,
             pageSize:15,
@@ -115,6 +124,7 @@ export default {
               id:'',
               email: '',
               password: '',
+              newPwd:'',
               nickname: '',
               depids: [],
               roleids: [],
@@ -122,13 +132,13 @@ export default {
             },
             rules: {
                 email:[
-                    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+                    { required: true, message: '请输入用户名', trigger: 'blur' },
                 ],
                 password:[
                     { required: true, message: '请输入登录密码', trigger: 'blur' }
                 ],
                 nickname:[
-                    { required:true, message:'请输入用户别名',trigger:'blur'}
+                    { required:true, message:'请输入真实姓名',trigger:'blur'}
                 ],
                 depids: [
                     { type: "array", required:true, message:'请选择部门',trigger:'blur' }
@@ -167,15 +177,14 @@ export default {
         },
         bindDepTree(){
           let url = '/api/dep/tree';
-          this.$http.get(url,null).then((res)=>{
+          this.$http.get(url).then((res)=>{
             if(res.code !== 'SUCCESS'){
                 this.$message.error(res.msg);
                 return;
             } 
+            this.formData.depids = this.curUser.depids;
             this.depTree = res.data || [];
-          }).catch((err) => {
-            console.log(err)
-          });
+          }).catch(() => {});
         },
         bindRoles(){
             this.$http.get('/api/role').then(res => {
@@ -188,10 +197,11 @@ export default {
         },
         roleFormat(roleId){
           let role = this.roles.find(item => item.id === roleId);
-          if(!role){
-            return roleId;
+          if(role){
+            return role.name;
           }
-          return role.name;
+          // 找不到角色 不做绑定
+          return '';
         },
         onRemoveClick(index,row){
             this.$confirm('确认删除该用户吗?', '友情提示', { type: 'warning'}).then(() => {
@@ -211,7 +221,7 @@ export default {
                 email: '',
                 password: '',
                 nickname: '',
-                depids: [],
+                depids: this.curUser.depids,
                 roleids: [],
                 phone: ''
             };
@@ -227,7 +237,15 @@ export default {
         },
         onEditClick(row){
             this.title = "编辑";
-            this.formData = Object.assign({}, row);
+            let tmpData = Object.assign({}, row);
+            tmpData.newPwd = '';
+            if(!tmpData.depName){ // 部门为空，编辑时，重置部门ids
+              tmpData.depids = [];
+            }
+            // 过滤出未删除的角色
+            let roles = this.roles.filter(item => tmpData.roleids.includes(item.id));
+            tmpData.roleids = roles.map(item => item.id); 
+            this.formData = tmpData;
             this.isVisible = true;
         },
         onAddSubmit(){
@@ -247,7 +265,7 @@ export default {
                 }
                 this.isVisible = false;
                 this.bindUsers();
-              }).catch((err) => {
+              }).catch(() => {
                 this.isDoing = false;
               });
             });
@@ -258,9 +276,11 @@ export default {
                 return false;
               }
               this.isDoing = true;
-              var apiUrl = "/api/user/"+ this.formData.id;
-              var params = Object.assign({}, this.formData);
-              params.password = util.encrypt(params.password)
+              let apiUrl = "/api/user/"+ this.formData.id;
+              let params = Object.assign({}, this.formData);
+              if(params.newPwd.trim()){
+                params.newPwd = util.encrypt(params.newPwd.trim());
+              }
               this.$http.put(apiUrl, params).then((res)=>{
                 this.isDoing = false;
                 if(res.code !== 'SUCCESS'){

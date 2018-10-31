@@ -1,8 +1,8 @@
 /**
- *
- * 新闻分类模型
+ * role
+ * create by zjk
  */
-var moment = require('moment');
+let utils = require('../../lib/utils');
 
 let validation = {
   'name': {
@@ -19,9 +19,9 @@ let auto = function(role) {
   }
   role.actions = role.actions ? JSON.stringify(role.actions) : '';
   if(!role.id){ // id 不存在，为新增
-    role.create_time = moment().format('YYYY-MM-DD hh:mm:ss');
+    role.create_time = utils.dateFormat();
   } else { // 修改时，默认字段赋值
-    role.update_time = moment().format('YYYY-MM-DD hh:mm:ss');
+    role.update_time = utils.dateFormat();
     delete role.create_time;
   }
 };

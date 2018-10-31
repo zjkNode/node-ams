@@ -6,12 +6,13 @@ export default {
 		Vue.mixin({
 			data(){
 				return {
-					opts: opts
+					opts: opts,
 				}
 			},
 			computed: mapGetters({
 			    curMenu:'getCurMenu',
-			    curUser: 'getCurUser'
+			    curUser: 'getCurUser',
+			    sysActions: 'getActions'
 			}),
 			filters:{
 	            statusFilter(val){
@@ -26,15 +27,33 @@ export default {
 				dateFormat(row,column,cellvalue){
 		           return this.$options.filters.formatDate(cellvalue);
 		        },
-		        formatTree(row, column,value){
+		        treeFormat(row, column,value){
 		            return this.$options.filters.flatTree(row, value);
 		        },
 		        authCheck(action){
-					if(this.curUser.isAdmin){
+					let actions = this.curUser.actions[this.curMenu.id];
+					if(this.curUser.isAdmin || !actions){ // 默认 所有菜单不受权限控制
 						return true;
 					}
-					let actions = this.curUser.actions[this.curMenu.id] || [];
 					return actions.includes(action);
+				},
+				signout(){
+					let url = '/api/user/signout';
+                    this.$http.post(url).then((res) => {
+                        if(res.code !== 'SUCCESS'){
+                            this.$message.error(res.msg)
+                            return;
+                        }
+                        localStorage.removeItem('curMenu');
+                        localStorage.removeItem('curUser');
+                        localStorage.removeItem('menuData');
+                        
+                        this.$store.dispatch('refreshMenuTree');
+                        this.$cookie.delete('nodesyscookie');
+            			// 强制刷新页面，清除vuex 对变量的缓存，否则重新登录后，系统菜单加载不出来
+                        window.location.replace('/login');
+                        // this.$router.push({ path: '/login'});
+                    }).catch(() => { }); 
 				}
 			}
 		});

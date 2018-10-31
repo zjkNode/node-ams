@@ -1,3 +1,7 @@
+/**
+ *  log 表
+ *  createBy zjk
+ */
 var async = require('async'),
     _ = require('lodash'),
     mysql = require('../../lib/mysqldb.lib.js'),
@@ -7,17 +11,20 @@ var async = require('async'),
 const { DBError } = require('../../models/errors.model');
 
 //添加;
-exports.log = function (req,content) {
-    var userName = req.session.user;
-    var logsInfo = {
+exports.log = function (req, msg, content) {
+    let curUser = req.session.user;
+    let log = {
+        desc: msg || '',
         content: _.isString(content) ? content : JSON.stringify(content),
-        url: req.originalUrl,
+        'user_agent': req.headers['user_agent'],
+        api: req.originalUrl,
         ip: req.ip.substring(7),
-        username: userName ? userName.nickname : ''
+        uid: curUser.id || -1,
+        uname: curUser.nickname
     }
-    logModel.auto(logsInfo);
+    logModel.auto(log);
     
-    mysql.insert(logModel.tbname, logsInfo, function (err, resId) {
+    mysql.insert(logModel.tbname, log, function (err, resId) {
         if (err) {
             logger.errorDB(__filename, err);
         }
@@ -37,6 +44,10 @@ exports.list = function (where, page, callback) {
                 .order({id: 'desc'})
                 .limit(page.index, page.size)
                 .select(logModel.tbname, function (err, rows) {
+                    rows.forEach(row => {
+                        row.url = _.unescape(row.url);
+                        row.content = _.unescape(row.content);
+                    });
                     return callback(err, rows);
                 });
         }

@@ -28,14 +28,11 @@ module.exports = {
             '/:id':{
                 put:'sys.role.update',
                 delete:'sys.role.delete'
-            },
-            '/byDepId':{
-                get:'sys.role.getListByDepId'
             }
         },
         '/user':{
-        	post: 'sys.user.add',
-        	get: 'sys.user.list',
+            post: 'sys.user.add',
+            get: 'sys.user.list',
             '/signin': {
                 post: 'sys.user.signIn'
             },
@@ -60,6 +57,68 @@ module.exports = {
         },
         '/log':{
             get: 'sys.log.list',
+        },
+        '/act':{
+            '/component':{
+                get: 'act.component.list',
+                post: 'act.component.upload',
+                '/:name': {
+                    delete: 'act.component.delete'
+                }
+            },
+            '/upload': {
+                post: 'act.act.upload'
+            },
+            '/draft': {
+                post: 'act.act.draft'
+            },
+            '/online': {
+                post: 'act.act.online'
+            },
+            '/offline':{
+                post: 'act.act.offline'
+            },
+            get:'act.act.list',
+            post: 'act.act.publish',
+            '/:id': {
+                get: 'act.act.one',
+                delete: 'act.act.delete',
+                patch: 'act.act.recover'
+            }
+        },
+        '/contract':{
+            '/type':{
+                '/tree':{
+                    get: 'contract.type.treeList'
+                },
+                get: 'contract.type.list',
+                post: 'contract.type.add',
+                '/:id':{
+                    put: 'contract.type.update',
+                    delete: 'contract.type.delete'
+                }
+            },
+            '/vm':{
+                get: 'contract.vm.list',
+                post: 'contract.vm.add',
+                '/:id':{
+                    put: 'contract.vm.update',
+                    delete: 'contract.vm.delete'
+                }
+            },
+            '/online':{
+                post: 'contract.contract.online'
+            },
+            '/offline':{
+                post: 'contract.contract.offline'
+            },
+            get: 'contract.contract.list',
+            post: 'contract.contract.add',
+            '/:id':{
+                get: 'contract.contract.one',
+                put: 'contract.contract.update',
+                delete: 'contract.contract.delete'
+            }
         }
     }
     

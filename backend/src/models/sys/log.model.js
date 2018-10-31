@@ -1,19 +1,16 @@
 /**
- *
- * 用户模型
+ * log
+ * create by zjk
  */
-var moment = require('moment');
 
-let validation = {
-
-};
+let utils = require('../../lib/utils');
 
 let auto = function(log) {
     if(!log){
         return ;
     }
     if(!log.id){ // id 不存在，为新增
-        log.create_time = moment().format('YYYY-MM-DD hh:mm:ss');
+        log.create_time = utils.dateFormat();
     } else { // 修改时，默认字段赋值
 
     }
@@ -23,7 +20,6 @@ let auto = function(log) {
 
 module.exports = {
     tbname:'log',
-    validation:validation,
+    pk: 'id',
     auto: auto
-
-};
+}

@@ -11,16 +11,15 @@ let path = require('path'),
 	util = require('../lib/utils'),
     CONSTANTS = require('../config/constants.config');
 
-module.exports.init = function() {
+module.exports.init = function (req, res, next) {
 	tempDirLink();
 	actCompDirLink();
-	
 }
 
 // 组件因为每次发布会从Git上拉取代码，组件会丢失，所以软连接到某个公共目录
 let actCompDirLink = function(){
 	let actCompDist = path.join(__dirname, '../../src/themes', CONSTANTS.ACT_COMPONENTS_PATH);
-	let actCompSrc = '/www/nodecms/static-act-comps';
+	let actCompSrc = '/www/nodesystem/act-components';
 	if(process.env.NODE_ENV == 'dev'){
 		actCompSrc = path.join(__dirname, '../../', actCompSrc);
 	}
@@ -29,7 +28,7 @@ let actCompDirLink = function(){
 	fs.access(actCompDist,(err) => {
 		if(err){
 			if(err.code == 'ENOENT'){
-				fs.symlinkSync(actCompSrc,actCompDist);
+				fs.symlinkSync(actCompSrc, actCompDist, 'junction'); // 加junction 兼容windows 创建文件夹软连接
 				return;
 			}
 			console.log(err);
@@ -44,7 +43,7 @@ let actCompDirLink = function(){
 
 let tempDirLink = function(){
 	let tempDist = path.join(__dirname, '../../temp');
-	let tempSrc = '/www/nodecms/static-temp';
+	let tempSrc = '/www/nodesystem/temp';
 	if(process.env.NODE_ENV == 'dev'){
 		tempSrc = path.join(__dirname, '../../', tempSrc);
 	}
@@ -53,7 +52,7 @@ let tempDirLink = function(){
 	fs.access(tempDist,(err) => {
 		if(err){
 			if(err.code == 'ENOENT'){
-				fs.symlinkSync(tempSrc,tempDist);
+				fs.symlinkSync(tempSrc, tempDist, 'junction');
 				return;
 			}
 			console.log(err);

@@ -1,44 +1,37 @@
 let OSS = require('ali-oss'),
     path = require('path'),
     util = require('./utils'),
+    logger = require('./logger.lib'),
     config = require('../config/config');
 
-
-
-function OSSClient(ossEnv, bucketKey){
-    var ossConf = '';
-    if(ossEnv.toUpperCase() == 'PRODUCT'){
-        ossConf = config.ossConfig;
-    } else {
-        ossConf = config.ossTestConfig
-    }
-    let client = new OSS.Wrapper({
-        region: ossConf.region,
-        accessKeyId: ossConf.accessKeyId,
-        accessKeySecret: ossConf.accessKeySecret,
-        bucket: ossConf[bucketKey]
-    });
+function OSSClient(ossConf, bucketKey){
+    // ossConf = {
+    //     region: 'oss-cn-beijing',
+    //     accessKeyId: 'I72OyW8Akz0jqSf1',
+    //     accessKeySecret: 'Y7zVRneL6coe94zjReki0HR3UZ28nO',
+    //     bucket: 'static-act-test'
+    // }
+    let defaultConf = {
+        region: 'oss-cn-beijing'
+    };
+    let client = new OSS(Object.assign({}, defaultConf, ossConf));
     
-    this.upload = function(ossObjKey, localFile, callback){
+    this.upload = function(ossObjKey, localFile){
         client.put(ossObjKey, localFile).then(res => {
-            console.log(res.url)
-            if(callback){
-                return callback(res.url);
-            }
+            // logger.info(localFile +' ====> '+ ossObjKey);
+            // logger.info(res.url);
         }).catch( err => {
-            console.log(file);
-            console.log('error: %j', err);
+            logger.error(__filename, '上传oss文件失败', localFile);
         });
     }
 
     this.delete = function(ossObjKey){
         client.delete(ossObjKey).then(res => {
-            // console.log('oss delete')
-            // console.log(res)
+            // logger.info('oss delete success: '+ ossObjKey);
+            // logger.info(res);
         }).catch(err => {
-            console.log('oss delete error')
-            console.log(err);
-        })
+            logger.error(__filename, '删除oss文件失败', ossObjKey)
+        });
     }
 
     this.list = function(qus,callback){
@@ -68,24 +61,3 @@ function OSSClient(ossEnv, bucketKey){
 }
 
 exports.Client = OSSClient;
-
-
-
-// exports.upload = function (file, callback) {
-//     let objKey = util.uuid() + '.jpg';
-//     client.put('supermarket/product/' + objKey, file)
-//         .then((res)=> {
-//             return callback(null, res.url);
-//         }).catch((err)=> {
-//         console.log('error: %j', err)
-//     });
-// }
-
-// exports.upload = function(file, callback){
-// 	let objKey = util.uuid();
-// 	return client.multipartUpload(objKey, file).then(function (res) {
-// 	    return callback(null, res.res);
-// 	  }).then((err)=>{
-// 	  	return callback(err);
-// 	  });
-// }

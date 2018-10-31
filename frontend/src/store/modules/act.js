@@ -5,11 +5,9 @@ const state = {
 	btnConfig: null, // 活动按钮组件配置
 	alertContentConfig: null, //活动弹框内容配置
 	curActBtnRes:null, // 当前鼠标所以的按钮响应功能
-	actData: { // 当前活动的数据
-		parts: [], // 活动配置的组件集合，如：弹框，分享 [{ name: part_index, desc:partDesc, type:''}]
-	}, 
+	actParts: [], // 活动配置的组件集合，如：弹框，分享 [{ name: partname vlaue: part_index, label:partDesc, type:''}]
 	uploadData:{
-		timeId:'' // 上传图片时的时间戳
+		uuid:'' 
 	}
 }
 
@@ -17,7 +15,7 @@ const state = {
 // getters
 const getters = {
 	getCurActBtnRes: state => state.curActBtnRes,
-	getActData: state => state.actData,
+	getActParts: state => state.actParts,
 	getActBtnConfig: state => state.btnConfig,
 	getActAlertContentConfig: state => state.alertContentConfig,
 	getUploadData: state => state.uploadData
@@ -28,8 +26,8 @@ const actions = {
 	setCurActBtnRes({commit}, itemKey){
 		commit(types.ACT_COMP_BTN_RES, itemKey);
 	},
-	setActData({commit}, actData){
-		commit(types.ACT_DATA, actData);
+	setActParts({commit}, actParts){
+		commit(types.ACT_PARTS, actParts);
 	},
 	setButtonConfig({commit}, btnConfig){
 		commit(types.ACT_BTN_CONFIGED, btnConfig);
@@ -46,8 +44,8 @@ const mutations = {
 	[types.ACT_COMP_BTN_RES](state, itemKey){
 		state.curActBtnRes = itemKey;
 	},
-	[types.ACT_DATA](state, actData){
-		state.actData = actData;
+	[types.ACT_PARTS](state, actParts){
+		state.actParts = actParts;
 	},
 	[types.ACT_BTN_CONFIGED](state, btnConfig){
 		state.btnConfig = null;

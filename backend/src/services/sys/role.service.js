@@ -1,3 +1,7 @@
+/**
+ *  role 表
+ *  createBy zjk
+ */
 var async = require('async'),
   _ = require('lodash'),
   mysql = require('../../lib/mysqldb.lib'),
@@ -72,7 +76,7 @@ exports.delete = function(where, callback){
           rows.forEach(row => {
             row.actions = row.actions ? JSON.parse(_.unescape(row.actions)) : {};
             row.mids = row.mids ? row.mids.split(',').map(id => parseInt(id)) : [];
-            row.datas = row.datas ? row.datas.split(',') : [];
+            row.datas = row.datas ? row.datas.split(',').map(id => parseInt(id)) : [];
           });
           return callback(null, rows);
         });

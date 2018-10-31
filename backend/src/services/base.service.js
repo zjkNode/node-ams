@@ -1,4 +1,6 @@
-
+/**
+ *  createBy zjk
+ */
 
 // 根据id 查询所有子栏目
 module.exports.SQL_selectChildById =  `SELECT * FROM :tbname 

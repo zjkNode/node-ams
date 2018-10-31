@@ -14,6 +14,17 @@ var routes = [
   { title:'权限分配', name:'auth', path:'/sys/org/auth', view:'sys/auth'},
   { title:'系统配置', name:'config', path:'/sys/conf', view:'sys/config'},
   { title:'操作日志', name:'log', path:'/sys/log', view:'sys/log'},
+
+  { title:'活动列表', name:'actList', path:'/act/list', view:'act/index'},
+  { title:'活动组件', name:'actComponent', path:'/act/component', view:'act/component'},
+  { title:'新增活动', name:'actAdd', path:'/act/add', view:'act/add'},
+  { title:'编辑活动', name:'actEdit', path:'/act/edit', view:'act/add'},
+
+  { title:'合同类型', name:'contType', path:'/contract/type', view:'contract/type'},
+  { title:'占位符', name:'contVm', path:'/contract/vm', view:'contract/vm'},
+  { title:'合同列表', name:'contList', path:'/contract/list', view:'contract/list'},
+  { title:'新增合同', name:'contAdd', path:'/contract/add', view:'contract/add'},
+  { title:'编辑合同', name:'contEdit', path:'/contract/edit', view:'contract/add'},
 ];
 
 

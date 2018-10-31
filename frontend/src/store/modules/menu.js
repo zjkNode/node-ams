@@ -3,7 +3,19 @@ import Vue from 'vue'
 
 const state = {
 	menuData:null,
-	curMenu: null
+	curMenu: null,
+	actions:[
+		'add', // 新增
+		'edit', // 编辑
+		'delete', // 删除
+		'confAction', // 系统菜单 -- 配置页面功能
+		'auth', // 角色管理 -- 权限配置
+		'preview', // 预览
+		'online', // 上架
+		'offline', // 下架,
+		'upload', // 活动组件管理 -- 组件上传
+		'update', // 活动组件管理 -- 组件更新
+	]
 }
 
 function _getCurMenu(menus){
@@ -29,8 +41,12 @@ const getters = {
 		if(state.menuData){
 			return state.menuData;
 		}
-
-        Vue.prototype.$http.get('/api/menu/tree').then( (res) =>{
+		
+        Vue.prototype.$http.get('/api/menu/tree').then( res => {
+        	if(!res){
+        		console.log(11111)
+        		return;
+        	}
             if(res.code != 'SUCCESS'){
             	Vue.prototype.$message.error(res.msg);
             	return;
@@ -47,7 +63,12 @@ const getters = {
 		}
 		state.curMenu = JSON.parse(window.localStorage.getItem('curMenu'));
 		return state.curMenu;
-	} 
+	},
+	getActions: state => {
+		let tempActions = {};
+		state.actions.forEach(value => tempActions[value] = value);
+		return tempActions;
+	}
 }
 
 // actions 

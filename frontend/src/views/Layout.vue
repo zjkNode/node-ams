@@ -24,7 +24,7 @@
                         {{ curUser.nickname }}<i class="el-icon-caret-bottom el-icon--right"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item command="info">修改信息</el-dropdown-item>
+                        <el-dropdown-item command="info">基本信息</el-dropdown-item>
                         <el-dropdown-item command="signout">退出</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -32,15 +32,38 @@
         </el-header>
         <el-main class='main'>
             <transition name="el-fade-in-linear" mode="out-in">
-                <router-view></router-view>
+                <router-view ref='mainView'></router-view>
             </transition>
         </el-main>
       </el-container>
+
+        <el-dialog title="基本信息 -- 修改" :visible.sync="isVisible">
+            <el-form :model="formData" :rules="rules" ref="dialogForm" label-width="80px" @keyup.enter.native="onSubmit">
+                <el-form-item label="用户名" prop="email">
+                  <el-input v-model="formData.email" name="email" placeholder="登录邮箱" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="真实姓名" prop="nickname">
+                  <el-input v-model="formData.nickname" name="nickname" placeholder="真实姓名"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="newPwd">
+                  <el-input v-model="formData.newPwd" type="password" name="newPwd" placeholder="登录密码"></el-input>
+                </el-form-item>
+                <el-form-item label="联系电话" prop="phone">
+                  <el-input v-model="formData.phone" name="phone" placeholder="联系电话"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button size="small" @click="isVisible = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="onSubmit" :loading="isDoing">确 定</el-button>
+            </div>
+        </el-dialog>
+
     </el-container>
 
 </template>
 <script>
-    import MenuTree from '@/components/MenuTree'
+    import MenuTree from '@/components/MenuTree';
+    import util from '@/assets/js/util';
     import { mapGetters } from 'vuex';
 
     export default{
@@ -50,38 +73,47 @@
         },
         computed: mapGetters({
             menuData:'getMenuTree',
-            curUser: 'getCurUser'
         }),
         data() {
             return {
-                user:{
+                user:{},
+                isVisible: false,
+                isDoing: false,
+                formData:{
+                    id:'',
+                    depids:[],
+                    roleids:[],
+                    email:'',
+                    nickname:'',
+                    password:'',
+                    newPwd:'',
+                    phone:''
+                },
+                rules: {
+                    email:[
+                        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+                    ],
+                    nickname:[
+                        { required:true, message:'请输入用户别名',trigger:'blur'}
+                    ]
                 }
             }
         },
         mounted(){
+            for(let key in this.formData){
+                this.formData[key] = this.curUser[key];
+            }
         },
         methods:{
             handleCommand(command){
                 if(command=='signout'){
-                    let url = '/api/user/signout';
-                    this.$http.post(url).then((res) => {
-                        if(res.code !== 'SUCCESS'){
-                            this.$message(res.msg)
-                            return;
-                        }
-                        localStorage.clear();
-                        this.$store.dispatch('refreshMenuTree');
-                        this.$cookie.delete('nodesyscookie');
-                        this.$router.push({ path: '/login'});
-                    }).then(() => { }); // todo 成功 也走then 为什么
+                    this.signout();
                     return;
                 }
                 if(command == 'info'){
-                    this.editFormVisible=true;
+                    this.isVisible = true;
+                    return;
                 }
-            },
-            onEditVisibleChange(val){
-                this.editFormVisible = val;
             },
             onMenuSelected(index, indexPath){
                 let curMenu = {};
@@ -91,6 +123,41 @@
                    tmpMenus = curMenu.children;
                 });
                 this.$store.dispatch('setCurMenu', curMenu);
+            },
+            onSubmit(){
+                this.$refs.dialogForm.validate((valid) => {
+                    if (!valid) {
+                        return false;
+                    }
+                    this.isDoing = true;
+                    let apiUrl = "/api/user/"+ this.formData.id;
+                    let params = Object.assign({}, this.formData);
+                    if(params.newPwd && params.newPwd.trim()){
+                        params.newPwd = util.encrypt(params.newPwd.trim());
+                    }
+                    this.$http.put(apiUrl, params).then((res)=>{
+                        this.isDoing = false;
+                        if(res.code !== 'SUCCESS'){
+                            this.$message.error(res.msg);
+                            return;
+                        }
+                        this.isVisible = false;
+
+                        // 更新缓存
+                        let tmpUser = {};
+                        for(let key in this.curUser){
+                            tmpUser[key] = this.formData[key] || this.curUser[key];
+                        }
+                        this.$store.dispatch('setCurUser', tmpUser);
+
+                        // 如果是用户列表页，刷新列表
+                        if(this.$route.path === '/sys/org/user'){
+                            this.$refs.mainView.bindUsers();
+                        }
+                    }).catch(() => {
+                        this.isDoing = false;
+                    });
+                });
             }
         }
     }
@@ -130,8 +197,9 @@
     margin-top:10px;
 }
 
-.el-tag + .el-tag, .el-tag + .el-dropdown {
-    margin-left: 10px;
+.el-tag, .el-tag + .el-dropdown {
+    margin-right: 10px;
+    margin-top: 5px;
 }
 .main {
     overflow-y: auto;
@@ -156,5 +224,12 @@
 body > .el-container {
     height: 100%;
 }
-  
+
+.el-cascader-menus{
+    max-width: 50%;
+    overflow-x:auto;
+}
+.el-button--text[disabled]{
+    color: #c0c4cc !important;
+}
 </style>

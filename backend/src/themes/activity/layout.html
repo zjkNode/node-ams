@@ -10,6 +10,23 @@
     <link rel="stylesheet" type="text/css" href="../css/common.css" />
     <link rel="stylesheet" href="./min.css" />
     <script type="text/javascript" src="../js/jquery-1.10.1.min.js"></script>
+    <script>
+        (function() {
+          var defaultW = 375;
+          var phoneScale = parseInt(window.screen.width) / defaultW;
+          document.write('<meta name="viewport" content="width=' + defaultW + ',initial-scale=' + phoneScale + ',minimum-scale=' + phoneScale + ',maximum-scale=' + phoneScale + ',user-scalable=no" />')
+          var s = document.getElementsByTagName("script")[0];
+        })()
+    </script>
+    {% if extends.abTest %}
+    <!-- abtest -->
+    <script src="https://sdk.appadhoc.com/ab.plus.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        adhoc('init', {
+            appKey: '{{extends.abTest}}'
+        });
+    </script>
+    {% endif %}
 </head>
 <body>
     <div class="contentWrapper" style="{{style | styleFn}}">
@@ -19,24 +36,38 @@
         {% endfor %}
     </div>
 
-    <script type="text/javascript" src="../js/flexible.js"></script>
     <script type="text/javascript" src="../js/base.js"></script>
-    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/utility.js"></script>
     <script type="text/javascript">
-        Global.actCode = '{{activityCode}}';
+        Global.actCode = '{{uuid}}';
         Global.code = '{{code}}';
+        Global.downUrl = JSON.parse('{{download_url | safe}}');
         Global.actData = JSON.parse('{{ components | comFilter | safe }}');
-        Global.downUrls = '{{download_urls}}';
     </script>
     <script type="text/javascript" src="./min.js"></script>
-    <script>
+
+    <script type='text/javascript'>
         var _hmt = _hmt || [];
+        {% if third_code.baidu %}
         (function() {
             var hm = document.createElement("script");
-            hm.src = "https://hm.baidu.com/hm.js?{{baidu_code}}";
+            hm.src = "https://hm.baidu.com/hm.js?{{third_code.baidu}}";
             var s = document.getElementsByTagName("script")[0]; 
             s.parentNode.insertBefore(hm, s);
         })();
+        {% endif %}
     </script>
+
+    {% if third_code.gio %}
+    <script type='text/javascript'>
+      !function(e,t,n,g,i){e[i]=e[i]||function(){(e[i].q=e[i].q||[]).push(arguments)},n=t.createElement("script"),tag=t.getElementsByTagName("script")[0],n.async=1,n.src=('https:'==document.location.protocol?'https://':'http://')+g,tag.parentNode.insertBefore(n,tag)}(window,document,"script","assets.growingio.com/2.1/gio.js","gio");
+      gio('init', '{{third_code.gio}}', {});
+      //custom page code begin here
+
+      //custom page code end here
+      gio('config', {'hashtag':true});
+      gio('send');
+    </script>
+    {% endif %}
 </body>
 </html>

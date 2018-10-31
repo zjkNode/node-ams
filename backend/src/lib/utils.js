@@ -12,7 +12,9 @@ var util = require("util"),
 
 function flatTree(treeData){
     let resArr = [];
-    if(!treeData || treeData.length ===0){return resArr;}
+    if(!treeData || treeData.length ===0 ){ 
+        return resArr;
+    }
     for(let i = 0; i < treeData.length; i++){
         let item = treeData[i];
         resArr.push(item);
@@ -24,18 +26,12 @@ function flatTree(treeData){
     return resArr;
 }
 module.exports = {
-    unix: function(str) {
-        return moment(str).unix();
-    },
-    dateFormat: function(date, format = 'YYYY-MM-DD hh:mm:ss') {
+    dateFormat(date, format = 'YYYY-MM-DD HH:mm:ss') {
         var tmpDate = moment();
         if(date){
             tmpDate = moment(date);
         }
         return tmpDate.format(format);
-    },
-    getHost: function(req){
-
     },
     firstUper(str) {
         str = str.toLowerCase();
@@ -71,6 +67,14 @@ module.exports = {
     },
     isAdmin(user){
         return CONSTANTS.ADMINISTRATOR_USERS.includes(user.id);
+    },
+    getPublishPath(){
+        let filePath = CONSTANTS.PUBLISH_PATH;
+        let rootPath = path.join(__dirname, '../../');
+        if(process.env.NODE_ENV === 'dev'){ // 开发环境
+            filePath = path.join(rootPath, filePath);
+        }
+        return filePath;
     },
     mkdirsSync(dirpath, mode){
         try{   

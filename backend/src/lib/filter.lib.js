@@ -4,30 +4,46 @@
  * date 2017-12-06
 */
 
-var styleFilter = function(styleObj,callback) {
-	var styleArr = [];
-	var exceptArr = ['font-size','border'];
-	for(var key in styleObj){
-		let value = styleObj[key];
-		if(!value){
-			continue;
-		}
-		var str = value;
-		if( exceptArr.indexOf(key) == -1){
-			let reg = /\d+(px)/g;
-			str = value.replace(reg,function(px){
-				var fix2 = (parseInt(px)/108*1).toFixed(2);
-				return fix2 +'rem';
-			});
-		}
-		if(key === 'background-image'){
-			styleArr.push(`${key}:url(${str})`);// key + ':"'+ styleObj[key] +'"'
-		} else {
-			styleArr.push(`${key}:${str}`);// key + ':"'+ styleObj[key] +'"'
-		}
+var styleFilter = function(styleObject,callback) {
+	if(!styleObject){
+		return '';
 	}
+	let styleObj = Object.assign({}, styleObject);
+	let bgImg = styleObj['background-image'],
+	  bgColor = styleObj['background-color'];
 
-	return callback(null, styleArr.join(';') + (styleArr.length > 0 ? ';' : ''));
+	if(bgColor && bgColor.indexOf('background-image') > -1){
+	    bgImg = bgColor.split(':')[1];
+	    bgColor = '';
+	    styleObj['background-image'] = bgImg;
+	    delete styleObj['background-color'];
+	  }
+
+	if(!bgImg){
+    	delete styleObj['background-size'];
+	} 
+	if(bgImg && styleObj['background-repeat'] === 'no-repeat'){ // 背景图适配全屏
+	  	styleObj['background-size'] = 'cover';
+	}
+	let tmpStyle = [];
+	let pxAttrs = ['height', 'width', 'left', 'top', 'padding-top','padding-bottom','margin-top','line-height', 'font-size', 'margin', 'padding'];
+	for(let key in styleObj){
+	  let styleValue = styleObj[key];
+	  if(!styleValue){
+        continue;
+      }
+      if(pxAttrs.indexOf(key) > -1){
+          let valArr = (styleValue+'').split(' ');
+          valArr = valArr.map(val => {
+            val = parseInt(val);
+            val = isNaN(val) ? '': `${val/2}px`;
+            return val;
+          });
+          styleValue = valArr.join(' ');
+      }
+      tmpStyle.push(`${key}:${styleValue};`);
+	}
+	return callback(null, tmpStyle.join(''));
 }
 
 var comFilter = function(compObjs){

@@ -1,9 +1,9 @@
 /**
- * 菜单模型
- * createby susan
+ * menu
+ * createby zjk
  */
-var moment = require('moment'),
-	CONSTANTS = require('../../config/constants.config');
+let CONSTANTS = require('../../config/constants.config');
+let utils = require('../../lib/utils');
 
 let validation = {
 	'name': {
@@ -27,9 +27,9 @@ let auto = function(menu) {
 	menu.sort = menu.sort || 1;
 	if(!menu.id){ // id 不存在，为新增
 		menu.status = CONSTANTS.MENUS_STATUS.VALID;
-		menu.create_time = moment().format('YYYY-MM-DD hh:mm:ss');
+		menu.create_time = utils.dateFormat();
 	} else {
-		menu.update_time = moment().format('YYYY-MM-DD hh:mm:ss');
+		menu.update_time = utils.dateFormat();
 		delete menu.create_time;
 	}
 	

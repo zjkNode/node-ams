@@ -1,3 +1,7 @@
+/**
+ *  menu controller
+ *  createby zjk
+ */
 var async = require('async'),
 	_ = require('lodash'),
 	util = require('../../lib/utils'),
@@ -9,7 +13,7 @@ var async = require('async'),
 
 const { ComError, ValidationError, DBError} = require('../../models/errors.model');
 
-exports.add = function (req,res) {
+exports.add = function (req, res) {
 	req.checkBody(menuModel.validation);
 	let vErrors = req.validationErrors();
 	if(vErrors) {
@@ -19,16 +23,18 @@ exports.add = function (req,res) {
 	
 	let menu = Object.assign({}, req.body);
 	menuModel.auto(menu);
-	menuService.add(menu,function(err,resId) {
+	menuService.add(menu, function(err, resId) {
 		if(err){
-			logService.log(req, '服务器出错，新增菜单失败');
+			logService.log(req, '服务器出错，新增菜单失败', menu);
         	return res.status(err.constructor.status).json(err);
 		}
+		menu.id = resId;
+		logService.log(req, '新增菜单成功', menu);
 		return res.status(200).json({ code: 'SUCCESS', msg:'新增菜单成功'});
 	});
 }
 
-exports.delete = function(req,res){
+exports.delete = function(req, res){
 	req.checkParams({
 		'id': {
       		isNotEmpty: { errorMessage: 'id 不能为空'}
@@ -44,14 +50,15 @@ exports.delete = function(req,res){
 	};
 	menuService.delete(map, function(err){
 		if(err){
-			logService.log(req, '服务器出错，删除菜单失败');
+			logService.log(req, '服务器出错，删除菜单失败', map);
         	return res.status(err.constructor.status).json(err);
 		}
+		logService.log(req, '删除菜单成功', map);
 		return res.status(200).json({code:'SUCCESS', msg:'删除菜单成功'});
 	});
 }
 
-exports.update = function(req,res) {
+exports.update = function(req, res) {
 	req.checkParams({
 	    'id': {
 	    	isNotEmpty: { errorMessage: 'id 不能为空'}
@@ -70,82 +77,60 @@ exports.update = function(req,res) {
 	menuModel.auto(menu);
 	menuService.update(menu, map, function(err){
 		if(err){
-			logService.log(req, '服务器出错，更新失败');
+			logService.log(req, '服务器出错，更新菜单失败', menu);
         	return res.status(err.constructor.status).json(err);
 		}
-		return res.status(200).json({code:'SUCCESS', msg:'更新成功'});
+		logService.log(req, '更新菜单成功', menu);
+		return res.status(200).json({code:'SUCCESS', msg:'更新菜单成功'});
 	});
 }
 
-exports.tree = function(req,res){
-	let where = {};
-	let curUser = req.session.user;
-	if(!curUser.isAdmin){
-		where.id = ['in', curUser.mids];
-	}
-    menuService.tree(where, function(err, rows){
+exports.tree = function(req, res){
+    menuService.tree({}, function(err, rows){
 		if(err){
-			logService.log(req, '服务器出错，获取菜单列表失败');
+			logService.log(req, '服务器出错，获取菜单树失败');
         	return res.status(err.constructor.status).json(err);
 		}
-		// 权限过滤 菜单
-		return res.status(200).json({
-            code: 'SUCCESS',
-            data: util.buildTree(rows,0),
-            msg: ""
-        });
-    })
+		return res.status(200).json({ code: 'SUCCESS', data: util.buildTree(rows, 0), msg: "" });
+    });
 }
 
-exports.list = function(req,res){
-	var where = {};
+exports.list = function(req, res){
+	let where = {};
 	let searchKey = req.query.keys;
-	if(!searchKey){
-		menuService.list(where,function(err, result){
-			if(err){
-				logService.log(req, '服务器出错，获取菜单列表失败');
-        		return res.status(err.constructor.status).json(err);
-			}
-			let resTable = util.buildTreeTable(result);
-			return res.status(200).json({
-				code: 'SUCCESS',
-				data: resTable
-			});
-	  	});
-		return;
+	if(searchKey){
+		where._complex = {
+			_logic: 'or',
+			name: ['like', searchKey],
+			alink: ['like', searchKey]
+		};
 	}
-
-	where._complex = {
-		_logic: 'or',
-		name: ['like',searchKey],
-		alink: ['like',searchKey]
-	};
+	
 	async.waterfall([
 		function(callback){
-			menuService.list(where,function(error,resList){
-				return callback(error,resList);
+			menuService.list(where, function(error, resList){
+				return callback(error, resList);
 			});
   		},
-  		function(menus,callback){
+  		function(menus, callback){
+  			if(!searchKey){
+  				return callback(null, menus);
+  			}
 			let ids = [];
 			menus.forEach(menu => {
 				ids.push(menu.id);
-				ids = _.union(ids, menu.pids.split(',').map(pid => parseInt(pid)))
+				ids.push(menu.pids);
 			});
-			menuService.list({ id: ['in', ids]},function(error, resList){
+			ids = [...new Set(ids.join(',').split(','))]; 
+			menuService.list({ id: ['in', ids]}, function(error, resList){
 				return callback(error, resList);
 			});
-
-  	}],function(err, result){
+  		}
+  	], function(err, result){
 		if(err){
-			logService.log(req, '服务器出错，获取菜单列表失败');
+			logService.log(req, '服务器出错，获取菜单列表失败', where);
 			return res.status(err.constructor.status).json(err);
 		}
-		let resTable = util.buildTreeTable(result);
-		return res.status(200).json({
-			code: 'SUCCESS',
-			data: resTable
-		});
+		return res.status(200).json({ code: 'SUCCESS', data: util.buildTreeTable(result) });
   	});
-	
 }

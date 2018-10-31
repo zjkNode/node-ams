@@ -1,11 +1,13 @@
+/**
+ *  log controller
+ *  createby zjk
+ */
 var async = require('async'),
-    logger = require('../../lib/logger.lib'),
     logModel = require('../../models/sys/log.model'),
     logService = require('../../services/sys/log.service');
 
 exports.list = function (req, res) {
-    var where = {
-    };
+    let where = {};
     let searchKey = req.query.keys;
     let page = {
         index: parseInt(req.query.pageIndex),
@@ -14,7 +16,6 @@ exports.list = function (req, res) {
     if (searchKey) {
         where._complex = {
             _logic: 'or',
-            content: ['like', searchKey],
             url: ['like', searchKey],
             username: ['like', searchKey],
         }

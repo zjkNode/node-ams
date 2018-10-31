@@ -3,7 +3,7 @@
         <h2>日志管理</h2>
         <el-row class="tools">
             <el-col :span="10">
-                <el-input size="small" v-model="keys" placeholder="请输入用户名/内容/链接地址"></el-input>
+                <el-input size="small" v-model="keys" placeholder="请输入用户名/链接地址"></el-input>
             </el-col>
             <el-col :span="13" :offset="1">
                 <el-button size="small" type="primary" icon="el-icon-search" @click="loadData">查询</el-button>
@@ -11,11 +11,12 @@
         </el-row>
         <el-table :data="logsList" stripe v-loading="isLoading">
             <el-table-column type="index" width="60"></el-table-column>
-            <el-table-column prop="username" label="用户名"></el-table-column>
-            <el-table-column prop="content" label="内容描述" min-width="180" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="url" label="链接地址"  min-width="200" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="ip" label="用户 IP" width="150" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="create_time" label="添加时间" width="200" :formatter="dateFormat" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="uname" label="操作用户" width="100"></el-table-column>
+            <el-table-column prop="desc" label="操作描述" min-width="260" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="content" label="操作内容" min-width="300" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="api" label="链接地址"  min-width="300" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="ip" label="用户 IP" width="140"></el-table-column>
+            <el-table-column prop="create_time" label="操作时间" width="160" :formatter="dateFormat" sortable></el-table-column>
         </el-table>
         <el-pagination
                 @size-change="handleSizeChange"

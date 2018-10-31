@@ -1,3 +1,7 @@
+/**
+ *  error controller
+ *  createby zjk
+ */
 var logger = require('../lib/logger.lib');
 
 exports.error = function (err,req,res,next) {

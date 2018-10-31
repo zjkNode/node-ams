@@ -1,3 +1,7 @@
+/**
+ *  menu 表
+ *  createBy zjk
+ */
 var _ = require('lodash'),
     async = require('async'),
 	mysql = require('../../lib/mysqldb.lib'),
@@ -23,6 +27,7 @@ exports.add = function(newMenu,callback) {
 exports.delete = function(where, callback){
 	where.tbname = menuModel.tbname;
 	mysql.execute(baseService.SQL_deleteCascadeById, where, function(err, res){
+		delete where.tbname;
 		if(err){
 			logger.errorDB(__filename, err);
 			return callback(new DBError());

@@ -1,15 +1,15 @@
 var moment = require('moment');
 
 export function formatDate(value, format){
-  format = format || 'YYYY-MM-DD hh:mm:ss';
-  var tmpDate = moment();
-  if(value){
-      tmpDate = moment(value);
+  if(!value){
+    return '--';
   }
-  return tmpDate.format(format);
+  format = format || 'YYYY-MM-DD HH:mm:ss';
+  return moment(value).format(format);
 }
 
 export function isNormal(value){
+  // eslint-disable-next-line
   if(/[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/im.test(value)){
     return false;
   }
@@ -21,7 +21,7 @@ export function flatTree(row,value){
 	if(row.pid == 0){
         return '+ '+ value;
     }
-    let level = row.pids.split(',');
+    let level = typeof(row.pids) === 'string' ? row.pids.split(',') : row.pids;
     let suffix = '';
     for(let i = 0; i < level.length; i++){
         suffix += '     ';                                                                                                         
@@ -29,11 +29,55 @@ export function flatTree(row,value){
     return suffix +'|— '+ value;
 }
 
-export function disableItem(datas,id){
-  datas.forEach(item => {
-      item.disabled = item.id === id;
-      if(!item.disabled && item.children){
-          disableItem(item.children,id);
+export function disableItem(datas, ids){
+  ids = ids || [];
+  datas.forEach((item) => {
+      item.disabled = ids.includes(item.id);
+      if(item.children){
+          disableItem(item.children, ids)
       }
-  });
+  })
+}
+
+export function formatStyle(styleObject,defaultConf){
+  if(!styleObject){
+    return '';
+  }
+  let styleObj = Object.assign({}, styleObject);
+  let bgImg = styleObj['background-image'],
+      bgColor = styleObj['background-color'];
+
+  if(bgColor && bgColor.indexOf('background-image') > -1){
+    bgImg = bgColor.split(':')[1];
+    bgColor = '';
+    styleObj['background-image'] = bgImg;
+    delete styleObj['background-color'];
+  }
+
+  if(!bgImg && !bgColor){
+      styleObj['background-image'] = (defaultConf && defaultConf['background-image']);
+      delete styleObj['background-size'];
+  } 
+  if(bgImg && styleObj['background-repeat'] === 'no-repeat'){ // 背景图适配全屏
+      styleObj['background-size'] = 'cover';
+  }
+  let tmpStyle = [];
+  let pxAttrs = ['height', 'width', 'left', 'top', 'padding-top','padding-bottom','margin-top','line-height', 'font-size', 'margin', 'padding'];
+  for(let key in styleObj){
+      let styleValue = styleObj[key];
+      if(!styleValue){
+        continue;
+      }
+      if(pxAttrs.indexOf(key) > -1){
+          let valArr = (styleValue+'').split(' ');
+          valArr = valArr.map(val => {
+            val = parseInt(val);
+            val = isNaN(val) ? '': `${val/2}px`;
+            return val;
+          });
+          styleValue = valArr.join(' ');
+      }
+      tmpStyle.push(`${key}:${styleValue};`);
+  }
+  return tmpStyle.join('');
 }

@@ -1,26 +1,27 @@
 /**
  *  conifg 表
- *  createBy susan
+ *  createBy zjk
  */
 var async = require('async'),
     _ = require('lodash'),
     mysql = require('../../lib/mysqldb.lib'),
     logger = require('../../lib/logger.lib'),
-    // cache = require('../../lib/cache.lib'),
+    cache = require('../../lib/cache.lib'),
     CONSTANTS = require('../../config/constants.config'),
     configModel = require('../../models/sys/config.model.js');
 
 const { DBError } = require('../../models/errors.model');
 
-exports.add = function(configs,callback) {
-    mysql.insert(configModel.tbname , configs, function(err,resId){
+exports.add = function(config,callback) {
+    mysql.insert(configModel.tbname , config, function(err,resId){
         if(err){
             logger.errorDB(__filename, err);
             return callback(new DBError());
         }
+        cache.del('sysConfig');
         return callback(null, resId);
     });
-};
+}
 
 exports.delete = function(where, callback){
     mysql.where(where).remove(configModel.tbname,function(err,res){
@@ -28,9 +29,10 @@ exports.delete = function(where, callback){
             logger.errorDB(__filename, err);
             return callback(new DBError());
         };
+        cache.del('sysConfig');
         return callback();
     });
-};
+}
 
 exports.update = function (data, where, callback) {
     mysql.where(where).update(configModel.tbname, data, function(err,res){
@@ -38,9 +40,23 @@ exports.update = function (data, where, callback) {
             logger.errorDB(__filename, err);
             return callback(new DBError());
         };
+        cache.del('sysConfig');
         return callback();
     });
-};
+}
+
+exports.one = function (where, callback) {
+    mysql.where(where).select(configModel.tbname,function(err,rows){
+        if(err){
+            logger.errorDB(__filename, err);
+            return callback(new DBError());
+        }
+        if(!rows[0]) return callback();
+        let row = rows[0];
+        row.extend = row.extend && JSON.parse(_.unescape(row.extend));      
+        return callback(null, row);
+    });
+}
 
 exports.list = function(where, page, callback){
     // 并行无关联
@@ -65,6 +81,7 @@ exports.list = function(where, page, callback){
             logger.errorDB(__filename, error);
             return callback(new DBError());
         }
+        results.list.forEach(item => item.extend = item.extend && JSON.parse(_.unescape(item.extend)));
         let resData = {
             total:results.total || 0,
             pageIndex:page.index,
@@ -76,6 +93,10 @@ exports.list = function(where, page, callback){
 }
 
 exports.listByType = function(type, callback){
+    let sysConfig = cache.get('sysConfig');
+    if(sysConfig && sysConfig[type]){
+        return callback(null, _.cloneDeep(sysConfig[type]));
+    }
     let where = {
         type: type,
         status: CONSTANTS.CONFIG_STATUS.VALID
@@ -85,6 +106,8 @@ exports.listByType = function(type, callback){
             logger.errorDB(__filename, err);
             return callback(new DBError());
         }
+        rows.forEach(item => item.extend = item.extend && JSON.parse(_.unescape(item.extend)));
+        cache.set('sysConfig', { [type]: rows });
         return callback(null, rows);
     });
 }

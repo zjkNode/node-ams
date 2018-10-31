@@ -1,5 +1,8 @@
+/**
+ *  user controller
+ *  createby zjk
+ */
 let async = require('async'),
-	_ = require('lodash'),
 	utils = require('../../lib/utils'),
 	logger = require('../../lib/logger.lib'),
 	CONSTANTS = require('../../config/constants.config'),
@@ -7,12 +10,11 @@ let async = require('async'),
 	userService = require('../../services/sys/user.service'),
 	logService = require('../../services/sys/log.service'),
 	depService = require('../../services/sys/dep.service'),
-	confService = require('../../services/sys/config.service'),
 	roleService = require('../../services/sys/role.service');
 
 const { ComError, ValidationError, DBError} = require('../../models/errors.model');
 
-exports.signIn = function (req,res) {
+exports.signIn = function (req, res) {
 	req.checkBody({
 	'email': {
 	    isNotEmpty: { errorMessage: '帐号不能为空' },
@@ -38,58 +40,73 @@ exports.signIn = function (req,res) {
 					return callback(error);
 				}
 				if(!user){
-					return callback(new ComError('NOT_EXIST_USER','用户名不存在'))
+					return callback(new ComError('NOT_EXIST_USER', '用户名不存在'))
 				}
 				if(user.password !== utils.decrypt(req.body.password)){
-					return callback(new ComError('ERR_USER_OR_PWD','用户名或密码不正确'))
+					return callback(new ComError('ERR_USER_OR_PWD', '用户名或密码不正确'))
 				}
-				delete user.password; // 验证完成，移除密码
+
+				if(user.status === CONSTANTS.USER_STATUS.INVALID){
+					return callback(new ComError('INVALID_USER', '用户已停用，请联系管理员激活'))
+				}
+				user.isAdmin = utils.isAdmin(user);
 				return callback(null, user);
 			});
 		},
 		roles:['user', function(results, callback){
-			if(utils.isAdmin(results.user)){
-				return callback(null, [{ id: 0, name: '超级管理员', mids:[], datas: []}]);
+			if(results.user.isAdmin){
+				results.user.roleids = [];
+				return callback(null, [{ id: 0, name: '超管', mids:[], datas: []}]);
 			}
-			let roleids = results.user.roleids.split(',').map(id => parseInt(id));
-			roleService.list({ id: ['in', roleids]}, function(error, role){
+			results.user.roleids = results.user.roleids.split(',').map(id => parseInt(id));
+			roleService.list({ id: ['in', results.user.roleids]}, function(error, role){
 				return callback(error, role);
 			});
 		}],
 		deps:['user', function(results, callback){
-			if(utils.isAdmin(results.user)){
+			if(results.user.isAdmin){
+				results.user.depids = [];
 				return callback(null, [{ id: 0, name: '系统管理', pid:0 }]);
 			}
-			let depids = results.user.depids.split(',').map(id => parseInt(id));
-			depService.list({ id: ['in', depids]}, function(error, deps){
+			results.user.depids = results.user.depids.split(',').map(id => parseInt(id));
+			depService.list({ id: ['in', results.user.depids]}, function(error, deps){
 				return callback(error, deps);
 			});
 		}]
 	}, function(err, results) {
 		if(err){
-			logService.log(req,'登录失败:'+ err.msg);
+			let param = {
+				originalUrl: req.originalUrl,
+				ip: req.ip,
+				session:{
+					user:{
+						nickname: req.body.email
+					}
+				}
+			}
+			logService.log(param, '登录失败: '+ err.msg);
 			return res.status(err.constructor.status).json(err);
 		}
-
 		let curUser = results.user;
-		curUser.isAdmin = utils.isAdmin(curUser);
 		curUser.depName = results.deps.map(dep => dep.name).join(',');
 		curUser.roleName = results.roles.map(role => role.name).join(',');
 		curUser.mids = [];
-		let tmpActions = {};
-		let tmpMids = [];
+		
+		let tmpActions = {}, tmpAuthDatas = [], tmpMids = [];
+		tmpAuthDatas = results.roles.map(role => role.datas);
+		curUser.datas = [...new Set([].concat(...tmpAuthDatas))];
 		results.roles.forEach(role => {
 			for(let mid in role.actions){
 				tmpActions[mid] = tmpActions[mid] || [];
 				tmpActions[mid] = [...new Set([...tmpActions[mid], ...role.actions[mid]])];
 			}
-			tmpMids = [...curUser.mids,...role.mids];
+			tmpMids = [...tmpMids, ...role.mids];
 		});
 		tmpMids = tmpMids.map(id => Math.abs(id)); // 负值在权限分配时代表半选状态，建菜单树时需要转成正值
 		curUser.mids = [...new Set(tmpMids)];
 		curUser.actions = tmpActions;
 		req.session.user = curUser;
-		logService.log(req,'登录成功:'+ curUser.nickname);
+		logService.log(req, '登录成功');
 		return res.status(200).json({ code:'SUCCESS',  data: curUser });
   });
 }
@@ -99,7 +116,7 @@ exports.signOut = function(req, res){
 	return res.status(200).json({ code:'SUCCESS', msg:'成功退出系统'});
 }
 
-exports.add = function (req,res) {
+exports.add = function (req, res) {
 	req.checkBody(userModel.validation);
 	let vErrors = req.validationErrors();
 	if(vErrors) {
@@ -111,16 +128,18 @@ exports.add = function (req,res) {
 	user.password = utils.decrypt(user.password);
 	userModel.auto(user);
 
-	userService.add(user,function(err,resId) {
+	userService.add(user, function(err, resId) {
 		if(err){
-			logService.log(req, '服务器出错，新增用户失败');
+			logService.log(req, '服务器出错，新增用户失败', user);
         	return res.status(err.constructor.status).json(err);
 		}
+		user.id = resId;
+		logService.log(req, '新增用户成功', user);
 		return res.status(200).json({ code: 'SUCCESS', msg:'新增用户成功'});
 	});
 }
 
-exports.update = function(req,res) {
+exports.update = function(req, res) {
 	req.checkParams({
 	    'id': { isNotEmpty: { options: [true], errorMessage: '用户id 不能为空' }
 	    }
@@ -136,18 +155,23 @@ exports.update = function(req,res) {
 		id: parseInt(req.params.id)
 	};
 	let user = Object.assign({}, req.body, map);
-	user.password = utils.decrypt(user.password);
+	delete user.password;
+	if(user.newPwd){
+		user.password = utils.decrypt(user.newPwd);
+	}
+	delete user.newPwd;
 	userModel.auto(user);
 	userService.update(user, map, function(err){
 		if(err){
-			logService.log(req, '服务器出错，更新用户信息失败');
+			logService.log(req, '服务器出错，更新用户信息失败', user);
         	return res.status(err.constructor.status).json(err);
 		}
+		logService.log(req, '更新用户信息成功', user);
 		return res.status(200).json({code:'SUCCESS', msg:'更新用户信息成功'});
 	});
 }
 
-exports.delete = function(req,res){
+exports.delete = function(req, res){
 	req.checkParams({
 		'id': { isNotEmpty: { errorMessage: '用户id 不能为空'}
 	    }
@@ -163,15 +187,15 @@ exports.delete = function(req,res){
 	};
 	userService.delete(map, function(err){
 		if(err){
-			logService.log(req, '服务器出错，删除用户失败');
-			let status = err.constructor.status;
-        	return res.status(status).json(err);
+			logService.log(req, '服务器出错，删除用户失败', map);
+        	return res.status(err.constructor.status).json(err);
 		}
+		logService.log(req, '删除用户成功', map);
 		return res.status(200).json({code:'SUCCESS', msg:'删除用户成功'});
 	});
 }
 
-exports.list = function(req,res) {
+exports.list = function(req, res) {
 	let where = {};
 	let searchKey = req.query.keys;
 	let page = {
@@ -181,16 +205,11 @@ exports.list = function(req,res) {
 	if(searchKey){
 		where._complex = {
 			_logic: 'or',
-			email: ['like',searchKey],
-			nickname: ['like',searchKey],
-			phone: ['like',searchKey],
+			email: ['like', searchKey],
+			nickname: ['like', searchKey],
+			phone: ['like', searchKey],
 		};
 	}
-	// let curUser = req.session.user;
-
-	// if(!utils.isAdmin(curUser.id)){
-	// 	where.depid = curUser.depid;
-	// }
 
 	async.auto({
 		userData: function(callback){
@@ -199,24 +218,38 @@ exports.list = function(req,res) {
 			});
 		},
 		deps: ['userData', function(results, callback){
-			let depids = _.map(results.userData.list, 'depids').join(',');
-			depids = _.union(depids.split(','));
+			let depids = results.userData.list.map(item => item.depids.split(','));
+			depids = [...new Set([].concat(...depids))];// 去重，转为数组
 			depService.list({ id:['in', depids] }, function(err, rows){
 				return callback(err, rows);
 			});
 		}]
 	}, function(error, results){
 		if(error){
-			logService.log(req, '服务器出错，获取用户列表失败');
+			logService.log(req, '服务器出错，获取用户列表失败', where);
         	return res.status(error.constructor.status).json(error);
 		}
-		results.userData.list.forEach(user => {
-			user.depids = user.depids.split(',').map(id => parseInt(id));
-			let deps = results.deps.filter(dep => user.depids.includes(dep.id));
-			user.depName = _.map(deps, 'name').join(' / ');
-			user.roleids = user.roleids.split(',').map(id => parseInt(id));
-		});
+		let curUser = req.session.user;
+		let depid = curUser.depids.slice(-1)[0];
+		for (let i = 0; i < results.userData.list.length; i++) {
+			let user = results.userData.list[i];
+			// 用户是超管
+			if(utils.isAdmin(user)){
+				user.depids = [];
+				user.roleids = [];
+				user.depName = '系统管理';
+				user.operateAble = curUser.isAdmin ;
+				continue;
+			}
 
+			user.depids = user.depids.split(',').map(id => parseInt(id));
+			user.roleids = user.roleids.split(',').map(id => parseInt(id));
+			let deps = results.deps.filter(dep => user.depids.includes(dep.id));
+			user.depName = deps.map(dep => dep.name).join(' / ');
+			let tmpDepId = user.depids.slice(-1)[0];
+			// 当前登录用户是超管，或用户所在部门 或用户所在部门子部门时，可操作
+			user.operateAble = curUser.isAdmin || user.depids.includes(depid) || tmpDepId === depid;
+		}
 		return res.status(200).json({ code: 'SUCCESS', data: results.userData });
 	});
 }

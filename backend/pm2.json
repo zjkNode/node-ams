@@ -1,6 +1,6 @@
 {
   "apps" : [{
-    "name": "ams-backend",
+    "name": "nodesys-backend",
     "script": "./server.js",
     "instances": 1,
     "watch": true,
@@ -23,8 +23,8 @@
     },
     "autorestart": true,
     "max_memory_restart": "800M",
-    "error_file": "./logs/ams-backend-error.log", //default to $HOME/.pm2/logs/XXXerr.log
-    "out_file": "./logs/ams-backend-out.log",   //default to $HOME/.pm2/logs/XXXout.log
+    "error_file": "./logs/node-backend-error.log", //default to $HOME/.pm2/logs/XXXerr.log
+    "out_file": "./logs/node-backend-out.log",   //default to $HOME/.pm2/logs/XXXout.log
     // "pid_file": "./logs/push-web.pid"
   }]
 }

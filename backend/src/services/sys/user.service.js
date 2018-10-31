@@ -1,3 +1,7 @@
+/**
+ *  user 表
+ *  createBy zjk
+ */
 var async = require('async'),
 	_ = require('lodash'),
 	mysql = require('../../lib/mysqldb.lib'),
@@ -86,7 +90,7 @@ exports.list = function(where, page, callback){
 
 exports.getUsersByDepId = function(depId, callback){
 	let where = {
-		depid: depId
+		depids: depId
 	};
 	mysql.where(where)
 		 .select(userModel.tbname,function(err, rows){

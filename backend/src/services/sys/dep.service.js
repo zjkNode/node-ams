@@ -1,3 +1,7 @@
+/**
+ *  dep 表
+ *  createBy zjk
+ */
 var async = require('async'),
 	mysql = require('../../lib/mysqldb.lib'),
 	logger = require('../../lib/logger.lib'),
@@ -57,6 +61,7 @@ exports.update = function (data, where, callback) {
 exports.delete = function(where, callback){
 	where.tbname = depModel.tbname;
 	mysql.execute(baseService.SQL_deleteCascadeById, where, function(err, res){
+		delete where.tbname;
 		if(err){
 			logger.errorDB(__filename, err);
 			return callback(new DBError());
@@ -77,20 +82,6 @@ exports.list = function(where, callback){
 		});
 }
 
-// exports.allLists = function(callback){
-// 	let where = {
-// 		status:CONSTANTS.DEP_STATUS.NORMAL
-// 	};
-
-// 	mysql.where(where).select(depModel.tbname,function(err,res){
-// 		if(err){
-// 		  logger.errorDB(__filename, err);
-// 		  return callback(new DBError());
-// 		}
-// 		return callback(null,res);
-// 	});
-// }
-
 exports.getChildById = function(depId, callback){
 	let params = {
 		tbname: depModel.tbname,
@@ -105,26 +96,3 @@ exports.getChildById = function(depId, callback){
 		return callback(null, rows);
 	});
 }
-
-exports.getParentsById = function(depId, callback){
-	async.waterfall([
-		function(callback){
-			exports.one({ id: depId }, function(error, dep){
-				return callback(error, dep);
-			});
-		},
-		function(dep, callback){
-			let pids = dep.pids.split(',').map(id => parseInt(id));
-			pids.push(dep.id);
-			exports.list({ id: ['in', pids] }, function(error, deps){
-				return callback(error, deps);
-			})
-		}
-	], function(err, deps){
-		if(err){
-			logger.errorDB(__filename, err);
-			return callback(new DBError());
-		}
-		return callback(null, deps);
-	});
-}	

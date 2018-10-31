@@ -1,9 +1,9 @@
 /**
- *  配置模型
- *  createby susan
+ *  config 
+ *  createby zjk
  */
-var moment = require('moment'),
-    CONSTANTS = require('../../config/constants.config');
+let CONSTANTS = require('../../config/constants.config');
+let utils = require('../../lib/utils');
 
 let validation = {
     'name': {
@@ -17,15 +17,16 @@ let validation = {
     }
 };
 
-let auto = function(configs) {
-    if(!configs){
+let auto = function(config) {
+    if(!config){
         return ;
     }
-    if(!configs.id){ // id 不存在，为新增
-        configs.status = CONSTANTS.CONFIG_STATUS.VALID;
-        configs.create_time = moment().format('YYYY-MM-DD hh:mm:ss');
+    if(!config.id){ // id 不存在，为新增
+        config.status = CONSTANTS.CONFIG_STATUS.VALID;
+        config.create_time = utils.dateFormat();
     } else { // 修改时，默认字段赋值
-        configs.update_time = moment().format('YYYY-MM-DD hh:mm:ss');
+        config.update_time = utils.dateFormat();
+        delete config.create_time;
     }
 };
 module.exports = {

@@ -2,10 +2,10 @@
     <el-form :model="loginForm" :rules="rules" ref="loginForm" @keyup.enter.native="handleSubmit" label-width="0" class="login-container">
         <h3 class="title">系统登录</h3>
         <el-form-item prop="email">
-            <el-input type="text" v-model="loginForm.email" auto-complete="off" placeholder="请输入账号"></el-input>
+            <el-input type="text" v-model="loginForm.email" placeholder="请输入账号"></el-input>
         </el-form-item>
         <el-form-item prop="password">
-            <el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="请输入密码"></el-input>
+            <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-checkbox v-model="isRemember"  class="remember">记住密码</el-checkbox>
         <el-form-item style="width:100%;">
@@ -36,8 +36,10 @@
             };
         },
         mounted() {
-                this.loginForm.email = this.$cookie.get('email') || '';
-                this.loginForm.password = this.$cookie.get('password') || '';
+            let loginData = localStorage.getItem('loginData');
+            if(loginData) {
+                this.loginForm = JSON.parse(loginData);
+            }
         },
         methods:{
             handleSubmit(){
@@ -45,8 +47,8 @@
                     if (!valid) {
                         return false;
                     }
-                    var url = "/api/user/signin";
-                    var params = {
+                    let url = "/api/user/signin";
+                    let params = {
                         email: this.loginForm.email,
                         password: util.encrypt(this.loginForm.password)
                     };
@@ -60,17 +62,13 @@
 
                         this.$store.dispatch('setCurUser', res.data);
                         if(this.isRemember){
-                            this.$cookie.set('email', this.loginForm.email);
-                            this.$cookie.set('password', this.loginForm.password);
+                            localStorage.setItem('loginData', JSON.stringify(this.loginForm))
                         } else {
-                            this.$cookie.delete('email');
-                            this.$cookie.delete('password');
+                            localStorage.removeItem('loginData')
                         }
                         this.$router.push({ path: '/' });
-                    },(error)=>{
+                    }).catch(() => {
                         this.isLoading = false;
-                        this.$message.error(error.message);
-                        console.log(error);
                     });
                 });
             }

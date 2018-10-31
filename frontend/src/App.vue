@@ -15,6 +15,11 @@ html,body{
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+ul, li{
+	padding:0;
+	margin:0;
+	list-style:none;
+}
 
 ::placeholder,
 ::-webkit-input-placeholder,
@@ -33,12 +38,39 @@ html,body{
 .el-table thead th{ background: #f5f7fa; padding:5px 0;}
 .el-table tbody td{ padding:5px 0; }
 .el-form-item{ margin-bottom:20px; }
+.mask {
+    height: 100%;
+    width:100%;
+    background: rgba(0, 0, 0, 0.6);
+    position: absolute;
+    top:0;
+    left:0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    display: none;
+    
+    .modify{
+        font-size: 16px;
+        line-height:20px;
+        color:#fff;
+        position:absolute;
+        background:rgba(0,0,0,0.7);
+        padding:3px 10px;
+        right:0;
+        top:0;
+        i+i{
+            margin-left:10px;
+        }
+    }
+}
 
 ::-webkit-scrollbar{  
     position: absolute;
-    width:1px;  
+    width:4px;  
     right: -1px;
-    height:3px;
+    height:4px;
 }  
 ::-webkit-scrollbar-track{  
     background: #f6f6f6;  

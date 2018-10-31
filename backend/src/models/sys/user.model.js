@@ -1,9 +1,9 @@
 /**
- *
- * 用户模型
+ * user
+ * create by zjk
  */
-var moment = require('moment'),
-	CONSTANTS = require('../../config/constants.config');
+let CONSTANTS = require('../../config/constants.config');
+let utils = require('../../lib/utils');
 
 let validation = {
 	'email': {
@@ -29,10 +29,10 @@ let auto = function(user) {
 		return ;
 	}
 	if(!user.id){ // id 不存在，为新增
-		user.status = CONSTANTS.USER_STATUS.AVAILABLE; // 1有效  2停用
-		user.create_time = moment().format('YYYY-MM-DD hh:mm:ss');
+		user.status = CONSTANTS.USER_STATUS.VALID; // 1有效  2停用
+		user.create_time = utils.dateFormat();
 	} else { // 修改时，默认字段赋值
-		user.update_time = moment().format('YYYY-MM-DD hh:mm:ss');
+		user.update_time = utils.dateFormat();
 		delete user.create_time;
 	}
 };

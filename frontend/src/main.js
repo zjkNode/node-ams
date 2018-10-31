@@ -5,7 +5,6 @@ Vue.use(VueCookie)
 
 import router from './router'
 import './registerServiceWorker'
-import './vue-axios'
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -23,9 +22,11 @@ Vue.use(mixin)
 
 Vue.config.productionTip = false
 
+import './vue-axios'
+
 import App from './App.vue'
 
-new Vue({
+window.vm = new Vue({
   router,
   store,
   render: h => h(App)

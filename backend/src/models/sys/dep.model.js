@@ -1,9 +1,9 @@
 /**
- *
- * 部门模型
+ * dep 
+ * create by zjk
  */
-var moment = require('moment'),
-	CONSTANTS = require('../../config/constants.config');
+let CONSTANTS = require('../../config/constants.config');
+let utils = require('../../lib/utils');
 
 let validation = {
 	'name': {
@@ -20,10 +20,10 @@ let auto = function(dep) {
 		return ;
 	}
 	if(!dep.id){ // id 不存在，为新增
-		dep.status = CONSTANTS.DEP_STATUS.NORMAL; // 1有效  2停用
-		dep.create_time = moment().format('YYYY-MM-DD hh:mm:ss');
+		dep.status = CONSTANTS.DEP_STATUS.VALID; // 1有效  2停用
+		dep.create_time = utils.dateFormat();
 	} else { // 修改时，默认字段赋值
-		dep.update_time = moment().format('YYYY-MM-DD hh:mm:ss');
+		dep.update_time = utils.dateFormat();
 		delete dep.create_time;
 	}
 };

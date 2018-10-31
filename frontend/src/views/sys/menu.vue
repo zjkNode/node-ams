@@ -1,5 +1,5 @@
 <template>
-    <el-row class="menus">
+    <el-row>
         <h2>菜单管理</h2>
         <el-row class="tools">
             <el-col :span="10">
@@ -7,24 +7,25 @@
             </el-col>
             <el-col :span="13" :offset="1">
                 <el-button size="small" type="primary" @click="loadMenus" icon="el-icon-search">查询</el-button>
-                <el-button size="small" type="primary" @click="isFormVisible = true" icon="el-icon-plus"> 新增</el-button>
+                <el-button v-if="authCheck(sysActions.add)" size="small" type="primary" @click="isFormVisible = true" icon="el-icon-plus">新增</el-button>
             </el-col>  
         </el-row>
-        <el-table :data="menuList" stripe v-loading="isLoading" style="width: 100%;" @cell-click="onCellClick">
+        <el-table :data="menuList" stripe v-loading="isLoading" @cell-click="onCellClick">
             <el-table-column fixed type="index" label="" width="60"></el-table-column>
-            <el-table-column fixed prop="name" label="菜单名称" show-overflow-tooltip width="220" :formatter="formatTree" class-name='flat-tree'></el-table-column>
+            <el-table-column fixed prop="name" label="菜单名称" show-overflow-tooltip width="220" :formatter="treeFormat" class-name='flat-tree'></el-table-column>
             <el-table-column prop="alink" label="链接地址" show-overflow-tooltip width="200"></el-table-column>
             <el-table-column prop="sort" label="排序" width="70" align="center"></el-table-column> 
             <el-table-column prop="actions" label="页面功能" min-width="200" show-overflow-tooltip>
-                <template v-if="scope.row.isLeaf" scope="scope">
+                <template v-if="scope.row.isLeaf" slot-scope="scope">
                     <template v-if="scope.row.actions">
                         <el-tag
                           v-if="scope.row.actions && actions"
                           :key="action.id"
                           :offset="1"
+                          :type="actions[action] ? '' : 'warning'"
                           size="small"
                           v-for="action in scope.row.actions.split(',')">
-                          {{actions[action].name}}
+                          {{actions[action] ? actions[action].name : action }}
                         </el-tag>
                     </template>
                     <template v-else>
@@ -32,33 +33,31 @@
                     </template>
                 </template>
             </el-table-column> 
-            <el-table-column prop="status" label="状态" width="80"  filter-placement="bottom-end" align="center">
-                <template scope="scope" >
+            <el-table-column prop="status" label="状态" width="90" align="center">
+                <template slot-scope="scope" >
                     <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="small">
                         {{scope.row.status | statusFilter}}
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="create_time" label="添加时间" align="center" width="200" :formatter="dateFormat" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="create_time" label="添加时间" align="center" width="160" :formatter="dateFormat"></el-table-column>
             <el-table-column fixed="right" label="操作" width="100" >
-                <template scope="scope">
-                    <el-button type="text" size="small" @click="onEditClick(scope.row)">编辑</el-button>
-                    <el-button type="text" size="small" @click="onRemoveClick(scope.$index,scope.row)" style="color: #ff4949;">删除</el-button>
+                <template slot-scope="scope">
+                    <el-button v-if="authCheck(sysActions.edit)" type="text" size="small" @click="onEditClick(scope.row)">编辑</el-button>
+                    <el-button v-if="authCheck(sysActions.delete)" type="text" size="small" @click="onRemoveClick(scope.$index,scope.row)" style="color: #F56C6C;">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
         
-        <el-dialog
-          :title="rowData.name +' -- 功能配置'"
-          :visible.sync="actionVisible">
+        <el-dialog :title="`功能配置 -- ${rowData.name}`" :visible.sync="actionVisible">
             <template v-if="rowData.actions && actions">
                 <el-tag
                   :key="action"
-                  :offset="1"
+                  :type="actions[action] ? '' : 'warning'"
                   v-for="action in rowData.actions"
-                  closable
+                  closable 
                   @close="onUpdateAction(action, 'delete')">
-                  {{ actions[action].name }}
+                  {{actions[action] ? actions[action].name : action }}
                 </el-tag>
             </template>
             <el-dropdown split-button type="primary" size="small" @command="onUpdateAction">
@@ -74,7 +73,7 @@
         </el-dialog>
         
         <el-dialog :title="'菜单 -- '+(title || '新增')" :visible.sync="isFormVisible" @close="onFormClose">
-            <el-form label-width="90px" ref="dgForm" :model="formData" :rules="rules" :show-message="true">
+            <el-form label-width="90px" ref="dgForm" :model="formData" :rules="rules" :show-message="true" @keyup.enter.native="onSubmit" >
                 <el-form-item label="菜单级别" prop="pids" >
                     <el-cascader 
                         change-on-select 
@@ -92,6 +91,12 @@
                 </el-form-item>
                 <el-form-item label="菜单排序" prop="sort">
                     <el-input-number v-model="formData.sort" :min="1"></el-input-number>
+                </el-form-item>
+                <el-form-item v-if="formData.id" label="是否可用" prop="status">
+                    <el-radio-group v-model.number="formData.status">
+                        <el-radio v-bind:label="1">正常</el-radio>
+                        <el-radio v-bind:label="2">停用</el-radio>
+                    </el-radio-group>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -122,9 +127,9 @@
                     id:'',
                     name: '',
                     pid: null,
-                    pids: null,
+                    pids: [],
                     alink:'',
-                    sort: 1
+                    sort:2
                 },
                 rules: {
                     name: [
@@ -204,14 +209,19 @@
                 this.formData.sort = sort + 1;
             },
             onCellClick(row, column){
-                if(column.property == "actions" && row.isLeaf){
-                    this.rowData = Object.assign({}, row);
-                    this.rowData.actions = row.actions ? row.actions.split(',') : [];
-                    for(let key in this.actions){
-                        this.actions[key].disabled = this.rowData.actions.includes(key);
-                    }
-                    this.actionVisible = true;
+                if(column.property !== 'actions' || !row.isLeaf){
+                    return;
                 }
+                if(!this.authCheck(this.sysActions.confAction)){
+                    this.$message.warning('对不起！你没有配置页面功能权限，请联系管理员');
+                    return
+                }
+                this.rowData = Object.assign({}, row);
+                this.rowData.actions = row.actions ? row.actions.split(',') : [];
+                for(let key in this.actions){
+                    this.actions[key].disabled = this.rowData.actions.includes(key);
+                }
+                this.actionVisible = true;
             },
             onRemoveClick(index,row){
                 this.$confirm('级联子菜单将被同步删除，确认删除吗?', '友情提示', { type: 'warning'}) .then(() => {
@@ -247,16 +257,22 @@
                         this.$message.error(res.msg);
                         return;
                     }
+                    this.$store.dispatch('refreshMenuTree');
                     this.$message.success(res.msg);
+                    // to validate 在直接修改this.actions[key].disabled = true | false 时不能同步到页面
+                    let actions = Object.assign({}, this.actions);
                     for(let key in this.actions){
-                        this.actions[key].disabled = tmpActions.includes(key);
+                        actions[key].disabled = tmpActions.includes(key);
                     }
+                    this.actions = actions;
                     this.menuList.find(item => item.id === this.rowData.id).actions = params.actions;
                 });
             },
             onEditClick(row){
+                this.title = "编辑";
                 this.formData = Object.assign({}, row);
                 this.formData.pids = this.formData.pids.split(',').map(id => parseInt(id));
+                this.$options.filters.disableItem(this.menuTree, [row.id]);
                 this.isFormVisible = true;
             },
             onFormClose(){
@@ -270,6 +286,7 @@
                 };
                 this.title = "";
                 this.$refs.dgForm.resetFields();
+                this.$options.filters.disableItem(this.menuTree);
             },
             onSubmit(){
                 if(this.formData.id){
@@ -319,3 +336,6 @@
         }
     }
 </script>
+<style lang="scss" scope>
+    
+</style>

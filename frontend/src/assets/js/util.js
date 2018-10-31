@@ -2,22 +2,11 @@
  * Created by zjk on 18/8/13.
  * 
  */
+ /* eslint-disable */
  var jsencrypt = require('jsencrypt'),
     md5 = require('md5'),
     moment = require('moment');
 export default  {
-    px2rem(px){
-        px = px +'';
-        if(px.indexOf('px') > -1){
-            px = px.substring(0, px.indexOf('px'));
-        }
-        px = parseInt(px);
-        if(isNaN(px)){
-            return '';
-        }
-        let baseSize= 108;
-        return (px/baseSize*1).toFixed(2) + 'rem';
-    },
 	isMobile(mobile){
         let mobileRegex = /^[1][3-8]\d{9}$/;
         return mobileRegex.test(mobile);
@@ -40,6 +29,28 @@ export default  {
             return "0";
         }
         return (value / 100).toFixed(2);
+    },
+    toCleanHtml(html){
+        // 将word格式里面的特殊样式清除，保留基本标签
+        html = html.replace(/<\/?\w+:[^>]*>/gi, "") ; // Replace the &nbsp; 
+        // Remove Tags with XML namespace declarations: <o:p></o:p> 
+        html = html.replace(/<\\?\?xml[^>]*>/gi, "") ; 
+        html = html.replace(/<head>[\s\S]*?<\/head>/gi, ""); 
+        html = html.replace(/<(script|style).*?[^>]>.*?<\/(script|style)>/img,'');
+        html = html.replace(/<!\[if.*?[^>]>.*?<!\[endif\]>/img,'');
+        html = html.replace(/<\!--[^>]*>.*?-->/ig, '');// remove <!--[if supportFields]>...<![endif]-->
+        //Remove all SPAN div tags 
+        html = html.replace(/<\/?(SPAN|DIV)[^>]*>/gi, "" ); 
+        html = html.replace(/\n|\t|\r/g,'');
+        html = html.replace(/&nbsp;/ig, " " ); 
+        // var re = new RegExp("<P[^>]*>(.*?)<\/P>","gi") ;// Different because of a IE 5.0 error 
+        html = html.replace(/<P[^>]*>(.*?)<\/P>/gim, "<p>$1</p>" ) ;
+        // Remove Class style lang title attributes 
+        html = html.replace(/<(\w[^>]*)(class|style|lang|title)=([^ |>]*)([^>]*)/gi, "<$1$4") ; 
+        html = html.replace(/<table[^>]*>(.*?)<\/table>/gim, "<table>$1</table>" ) ;
+        html = html.replace(/<tr[^>]*>(.*?)<\/tr>/gim, "<tr>$1</tr>" ) ;
+        // html = html.replace(/<td[^>]*>(.*?)<\/td>/gim, "<td>$1</td>" ) ;
+        return html;
     },
     getImageWH(imgPath){
         return new Promise(function(resolve, reject){
