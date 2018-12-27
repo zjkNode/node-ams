@@ -94,7 +94,7 @@ exports.list = function(req,res) {
 
     let curUser = req.session.user;
     if(!curUser.isAdmin){
-        where.confid = ['in', curUser.datas];// datas 包含数据业务权限的Id集合
+        where.confid = ['in', curUser.datas.length === 0 ? [-1] : curUser.datas ];// datas 包含数据业务权限的Id集合
     }
     
     async.waterfall([
@@ -141,12 +141,13 @@ exports.list = function(req,res) {
     });
 }
 
-exports.treeList = function(req, res) {
+exports.tree = function(req, res) {
     let where = {
         status: CONSTANTS.CONTRACT_TYPE_STATUS.VALID,
     };
-    if(req.query.confid){
-        where.confid = req.query.confid
+    let curUser = req.session.user;
+    if(!curUser.isAdmin){
+        where.confid = ['in', curUser.datas.length === 0 ? [-1] : curUser.datas];
     }
     cTypeService.list(where, function(err,row){
         if(err){

@@ -9,8 +9,8 @@
             </p>
         </div>
         <template v-else>
-            <el-form label-width="70px">
-                <el-form-item label="内容宽高">
+            <el-form label-width="40px" size="small">
+                <el-form-item label="宽高">
                     <el-col :span="7">
                         <el-input size="small" v-model="comData.wrap.style.width" placeholder="宽 px"></el-input>
                     </el-col>

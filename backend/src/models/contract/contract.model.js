@@ -8,7 +8,7 @@ let utils = require('../../lib/utils');
 let validation = {
     'title': {
         isNotEmpty: { errorMessage: '合同标题 不能为空' },
-        isLength: { options: [0,50], errorMessage: '新闻标题不能超过50个字符'}},
+        isLength: { options: [0,50], errorMessage: '合同标题不能超过50个字符'}},
     'content': {
         isNotEmpty: { errorMessage: '合同内容 不能为空' }
     },

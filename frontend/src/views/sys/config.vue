@@ -88,7 +88,7 @@
                 title="扩展属性根据实现情况，对系统配置进行扩展"
                 type="warning" :closable='false' style="margin-top:-30px">
             </el-alert>
-            <el-tabs v-model="curExtendTab">
+            <el-tabs v-model="curExtendTab" :before-leave='beforeTabSwitch'>
                 <el-tab-pane label="数据统计" name="thirdCode">
                     <el-alert
                         title="对页面埋点，统计页面的PV、UV及按钮的点击。应用在活动、合同管理"
@@ -133,7 +133,7 @@
                             {{ curOSS.name }}<i class="el-icon-caret-bottom el-icon--right"></i>
                           </span>
                           <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item :command="item" v-for="item in ossList" >{{ item.name }}</el-dropdown-item>
+                            <el-dropdown-item :command="item" :key="item.id" v-for="item in ossList" >{{ item.name }}</el-dropdown-item>
                           </el-dropdown-menu>
                         </el-dropdown>
                         <el-input size="small" v-model="extend.oss[curOSS.key].accessKeyId" placeholder="请输入accessKeyId">
@@ -219,6 +219,12 @@
             this.bindConfigs();
         },
         methods:{
+            beforeTabSwitch(activeName){
+                if(activeName === 'oss' && !this.curUser.isAdmin){
+                    this.$alert('OSS配置为敏感数据，请联系管理员修改?', '友情提示', { type: 'warning'}).catch(()=>{});
+                    return false;
+                }
+            },
             bindConfigs(){
                 let url = '/api/config';
                 let params = {

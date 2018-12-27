@@ -94,6 +94,7 @@ exports.one = function(where,callback){
         }
         let row = rows[0];
         row.content = _.unescape(row.content);
+        row.title = _.unescape(row.title);
         row.typeids = row.typeids.split(',').map(id => parseInt(id));
         return callback(null,row);
     });

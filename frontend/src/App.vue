@@ -30,7 +30,7 @@ ul, li{
 .flex{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;
 -webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;}
 
-.flex-center-v {display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;display: flex; flex-direction: column; 
+.flex-center-v {display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex; flex-direction: column; 
 -webkit-box-pack:justify;-ms-flex-pack:justify;-webkit-justify-content:center;justify-content:center;justify-content: center; }
 
 .overflow-ellipsis > div{ white-space: nowrap !important; }

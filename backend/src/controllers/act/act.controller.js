@@ -100,7 +100,6 @@ exports.publish = function(req, res, next) {
     actData.extend = JSON.stringify(actData.extend);
    
     let tplData = JSON.stringify(req.body.data);
-
     let actPublishPath = utils.getPublishPath(),
         actPathCode = `${actData.confid}_${actData.code}`; // confid_actCode
 
@@ -179,10 +178,9 @@ exports.publish = function(req, res, next) {
             // 5、 更新 page data数据 /temp/act.uuid/ and /preview/activity/${actPathCode}/${pageDir}/img/ to  ./img/
             tplData = tplData.replace(new RegExp(`/temp/${actData.uuid}/`, 'g'), `./img/`);
             // 编辑时，把./img/ 改为相对目录，所以在保存时需要再改回来
-            tplData = tplData.replace(new RegExp(`/preview/.*/img/`, 'g'), `./img/`);
+            tplData = tplData.replace(new RegExp(`/preview/((?!img).)+/img/`, 'g'), `./img/`);
             // 用解析后的文件覆盖模板文件
             actData.data = tplData;
-
             // 6、准备模板引擎的数据，并生成页面
             let contentData = JSON.parse(tplData);
             // {baidu:'', gio:'', abTest:'', ....} 前端直接使用，所以转为对象
@@ -310,12 +308,16 @@ exports.delete = function(req, res, next) {
             });
         }, 
         function(actData, callback){
-            if(actData.status === CONSTANTS.ACT_STATUS.DELETED){
+            if(actData.status === CONSTANTS.ACT_STATUS.DELETED || 
+               actData.status === CONSTANTS.ACT_STATUS.DRAFT){
                 return callback(null, actData); // 彻底删除
             }
             let actAbsDir = actData.url.split('/').splice(-4, 3).join('/')
             let actPageDir = path.join(utils.getPublishPath(), actAbsDir);
-            fs.renameSync(actPageDir, `${actPageDir}_del`);
+            // fs.renameSync(actPageDir, `${actPageDir}_del`);
+            fs.rename(actPageDir, `${actPageDir}_del`, (err)=>{
+                logger.error(__filename, '删除文件失败:'+ actPageDir);
+            });
             // 开发环境，直接移动至已删除文件夹
             if(process.env.NODE_ENV === 'dev'){ 
                 return callback(null, actData);
@@ -336,7 +338,8 @@ exports.delete = function(req, res, next) {
             });
         },
         function(actData, callback){
-            if(actData.status === CONSTANTS.ACT_STATUS.DELETED){ // 彻底删除
+            if(actData.status === CONSTANTS.ACT_STATUS.DELETED || 
+                actData.status === CONSTANTS.ACT_STATUS.DRAFT){ // 彻底删除
                 actService.delete(where, function(err){
                     return callback(err);
                 });
@@ -432,7 +435,7 @@ exports.recover = function(req, res, next){
             logService.log(req, '恢复活动失败: '+ err.msg, where);
             return res.status(err.constructor.status).json(err);
         }
-        logService.log(req, '恢复活动成功: '+ err.msg, where);
+        logService.log(req, '恢复活动成功', where);
         return res.status(200).json({ code: 'SUCCESS', msg:'恢复活动成功'});
     });
 }
@@ -618,7 +621,11 @@ exports.list = function(req, res, next) {
     let curUser = req.session.user;
     if(!curUser.isAdmin){
         where.status = ['!=', CONSTANTS.ACT_STATUS.DELETED];
-        where.confid = ['in', curUser.datas];// datas 包含数据业务权限的Id集合
+        where._complex = { // 因为活动 草稿状态时， 它不属于任何一条业务线，所以只靠confid是查不出来的
+            _logic: 'or',
+            confid: ['in', curUser.datas.length === 0 ? [-1] : curUser.datas ],
+            user_id: curUser.id
+        };
     }
     if(searchKey){
         where._complex = {
@@ -627,13 +634,36 @@ exports.list = function(req, res, next) {
             code: ['like', searchKey]
         }
     }
-    actService.list(where, page, function(err, result){
-        if(err){
-            logService.log(req, '服务器出错，获取活动列表失败');
-            return res.status(err.constructor.status).json(err);
+    async.parallel({
+        buConfigs: function(callback){
+            configService.listByType('authData', function(err, rows){
+                return callback(err, rows);
+            });
+        },
+        actList: function(callback){
+            actService.list(where, page, function(err, result){
+                return callback(err, result);
+            });
         }
-        return res.status(200).json({ code: 'SUCCESS', data: result });
+    }, function(error, result){
+        if(error){
+            logService.log(req, '服务器出错，获取活动列表失败');
+            return res.status(error.constructor.status).json(error);
+        }
+        result.actList.list.forEach(item => {
+            let config = result.buConfigs.find(row => row.id === item.confid);
+            item.buConfig = config || { status: CONSTANTS.CONFIG_STATUS.INVALID, name:'无效业务' }
+            delete item.buConfig.extend; // 删除敏感信息
+        });
+        return res.status(200).json({ code: 'SUCCESS', data: result.actList });
     });
+    // actService.list(where, page, function(err, result){
+    //     if(err){
+    //         logService.log(req, '服务器出错，获取活动列表失败');
+    //         return res.status(err.constructor.status).json(err);
+    //     }
+    //     return res.status(200).json({ code: 'SUCCESS', data: result });
+    // });
 }
 
 /***************** private methods *****************/

@@ -89,7 +89,7 @@ module.exports = {
         '/contract':{
             '/type':{
                 '/tree':{
-                    get: 'contract.type.treeList'
+                    get: 'contract.type.tree'
                 },
                 get: 'contract.type.list',
                 post: 'contract.type.add',

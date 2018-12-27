@@ -21,7 +21,7 @@ function OSSClient(ossConf, bucketKey){
             // logger.info(localFile +' ====> '+ ossObjKey);
             // logger.info(res.url);
         }).catch( err => {
-            logger.error(__filename, '上传oss文件失败', localFile);
+            logger.error(__filename, '上传oss文件失败: '+localFile, err);
         });
     }
 

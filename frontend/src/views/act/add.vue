@@ -350,8 +350,6 @@
                     }
                     let tmpDomains = [];
                     for(let key in res.data){
-                        let item = res.data[key];
-                        item.disabled = !this.curUser.datas.includes(item.id);
                         tmpDomains.push(res.data[key]);
                     }
                     if(tmpDomains.length === 0){

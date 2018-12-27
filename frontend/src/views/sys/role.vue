@@ -69,7 +69,7 @@
                 <el-tab-pane label="系统数据权限" name='authData' style="margin:15px 0;">
                     <el-checkbox-group v-model="roleData.datas">
                         <el-checkbox
-                            v-for="(item, key) in authConf[curAuthTab]" 
+                            v-for="item in authConf[curAuthTab]" 
                             :label="item.id" 
                             :key="item.id">{{ item.name }}</el-checkbox>
                     </el-checkbox-group>  

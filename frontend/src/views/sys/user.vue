@@ -34,7 +34,7 @@
             <el-table-column fixed="right" label="操作" width="100">
               <template v-if="scope.row.operateAble" slot-scope="scope">
                 <el-button v-if="authCheck(sysActions.edit)" @click="onEditClick(scope.row)" type="text" size="small">编辑</el-button>
-                <el-button v-if="authCheck(sysActions.delete)" @click="onRemoveClick(scope.$index,scope.row)" type="text" size="small" style="color: #F56C6C;">删除</el-button>
+                <el-button v-if="authCheck(sysActions.delete)" @click="onRemoveClick(scope.$index,scope.row)" type="text" size="small" :disabled='curUser.id === scope.row.id' style="color: #F56C6C;">删除</el-button>
               </template>
             </el-table-column>
         </el-table>
@@ -50,16 +50,14 @@
 
         <el-dialog :title="'用户 -- '+ (title || '新增')" :visible.sync="isVisible" @close="onDialogClose">
           <el-form :model="formData" :rules="rules" ref="dialogForm" label-width="80px" @keyup.enter.native="onSubmit">
-            <el-form-item label="所在部门" prop="depids">
+            <el-form-item v-if="!formData.isAdmin" label="所在部门" prop="depids">
               <el-cascader 
-                change-on-select 
-                expand-trigger="hover" 
                 :options="depTree"  
                 :props="props"
                 v-model="formData.depids" >
               </el-cascader>
             </el-form-item>
-            <el-form-item label="角色" prop="roleids" >
+            <el-form-item v-if="!formData.isAdmin" label="角色" prop="roleids" >
               <el-select 
                 v-model="formData.roleids" 
                 multiple
@@ -74,7 +72,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="用户名" prop="email">
-              <el-input v-model="formData.email" name="email" placeholder="登录用户名"></el-input>
+              <el-input v-model="formData.email" :disabled="!!formData.id" name="email" placeholder="登录用户名"></el-input>
             </el-form-item>
             <el-form-item v-if="!formData.id" label="密码" prop="password">
               <el-input v-model="formData.password" type="password" name="password" placeholder="登录密码"></el-input>
@@ -135,7 +133,11 @@ export default {
                     { required: true, message: '请输入用户名', trigger: 'blur' },
                 ],
                 password:[
-                    { required: true, message: '请输入登录密码', trigger: 'blur' }
+                    { required: true, message: '请输入登录密码', trigger: 'blur' },
+                    { min: 6,  message: '密码不能小于 6 位', trigger: 'blur' }
+                ],
+                newPwd:[
+                    { min: 6,  message: '密码不能小于 6 位', trigger: 'blur' }
                 ],
                 nickname:[
                     { required:true, message:'请输入真实姓名',trigger:'blur'}
@@ -211,7 +213,7 @@ export default {
                         this.$message.error(res.msg);
                         return;
                     }
-                    this.userList.splice(index,1);
+                    this.bindUsers();
                 });
             }).catch(() => {});
         },
@@ -239,12 +241,18 @@ export default {
             this.title = "编辑";
             let tmpData = Object.assign({}, row);
             tmpData.newPwd = '';
-            if(!tmpData.depName){ // 部门为空，编辑时，重置部门ids
-              tmpData.depids = [];
+            if(tmpData.isAdmin){
+              tmpData.depids = [0];
+              tmpData.roleids = [0];
+            } else {
+              if(!tmpData.depName){ // 部门为空，编辑时，重置部门ids
+                tmpData.depids = [];
+              }
+              // 过滤出未删除的角色
+              let roles = this.roles.filter(item => tmpData.roleids.includes(item.id));
+              tmpData.roleids = roles.map(item => item.id); 
             }
-            // 过滤出未删除的角色
-            let roles = this.roles.filter(item => tmpData.roleids.includes(item.id));
-            tmpData.roleids = roles.map(item => item.id); 
+            
             this.formData = tmpData;
             this.isVisible = true;
         },

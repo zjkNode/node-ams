@@ -68,7 +68,7 @@ exports.upload = function(req, res, next){
         let file = files.file;
         if(!(/.zip$/g.test(file.name))) {
             logger.error(__filename, '请上传组件zip压缩包');
-            fs.unlinkSync(file.path);
+            removeFile(file.path);
             return res.status(ValidationError.status).json(new ValidationError('UPLOAD_FAILED', '请上传组件zip压缩包'));
         }
 
@@ -77,24 +77,33 @@ exports.upload = function(req, res, next){
         let _file = localFiles.filter( item => item === fileName);
 
         if(fields.type === 'add' && _file.length > 0){ // 新增时，组件名称重复
-            fs.unlinkSync(file.path);
+            removeFile(file.path);
             return res.status(ComError.status).json(new ComError('UPLOAD_FAILED', '组件名称重复，请重新命令组件'));
         }
         if(fields.type === 'update'){ // 修改时 
             if(fields.fileName !== fileName){ // 文件名称不致
-                fs.unlinkSync(file.path);
+                removeFile(file.path);
                 return res.status(ComError.status).json(new ComError('UPLOAD_FAILED', '组件名不匹配，请重新选择组件更新'));
             }
             if(_file.length === 0){ //附件名称不存在
-                fs.unlinkSync(file.path);
+                removeFile(file.path);
                 return res.status(ComError.status).json(new ComError('UPLOAD_FAILED', '组件不存在，请上传直接上传'));
             }
         }
         // unzip file
         let distDir = path.join(form.uploadDir, fileName);
         let extract = unzip.Extract({ path: distDir });
-        fs.createReadStream(file.path).pipe(extract);
-        fs.unlinkSync(file.path);
+        let stream = fs.createReadStream(file.path).pipe(extract);
+        stream.on('close', ()=>{
+            removeFile(file.path);
+            removeFile(path.join(distDir, file.name));
+        });
         return res.status(200).json({ code: 'SUCCESS', msg:'组件上传成功'});
+    });
+}
+
+function removeFile(filePath){
+    fs.unlink(filePath, (err) => {
+        err && logger.error(__filename, '删除文件失败: '+ filePath, err);
     });
 }

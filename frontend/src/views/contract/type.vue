@@ -20,7 +20,7 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="name" label="类别名称" :formatter="treeFormat" class-name='flat-tree'></el-table-column>
+                <el-table-column prop="name" label="类型名称" :formatter="treeFormat" class-name='flat-tree'></el-table-column>
                 <el-table-column prop="status" label="状态" width="90" align="center">
                     <template slot-scope="scope" >
                         <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="small">
@@ -132,8 +132,6 @@
                         return;
                     }
                     for(let key in res.data){
-                        let item = res.data[key];
-                        item.disabled = !this.curUser.datas.includes(item.id);
                         this.buTypes.push(res.data[key]);
                     }
                 });

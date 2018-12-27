@@ -93,6 +93,9 @@
                     email:[
                         { required: true, message: '请输入邮箱地址', trigger: 'blur' },
                     ],
+                    newPwd:[
+                        { min: 6,  message: '密码不能小于 6 位', trigger: 'blur' }
+                    ],
                     nickname:[
                         { required:true, message:'请输入用户别名',trigger:'blur'}
                     ]
@@ -134,6 +137,10 @@
                     let params = Object.assign({}, this.formData);
                     if(params.newPwd && params.newPwd.trim()){
                         params.newPwd = util.encrypt(params.newPwd.trim());
+                    }
+                    if(this.curUser.isAdmin){
+                        params.depids = [0];
+                        params.roleids = [0];
                     }
                     this.$http.put(apiUrl, params).then((res)=>{
                         this.isDoing = false;

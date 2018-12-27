@@ -12,6 +12,13 @@
         </el-row>
         <el-table stripe v-loading="isLoading" :data="actList">
             <el-table-column type="index" label="" width="60"></el-table-column>
+            <el-table-column prop="confid" label="业务类型" width="100" align="center">
+                <template slot-scope="scope" >
+                    <el-tag :type="scope.row.buConfig.status === 2 ? 'info' : ''" size="small">
+                        {{ scope.row.buConfig.name }}
+                    </el-tag>
+                </template>
+            </el-table-column>
             <el-table-column prop="name" label="活动名称" show-overflow-tooltip align="center" width="200"></el-table-column>
             <el-table-column prop="code" label="活动代码" align="center"  width="100"></el-table-column>
             <el-table-column prop="url" label="活动访问Url" align="center" min-width="300"></el-table-column>

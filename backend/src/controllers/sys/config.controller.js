@@ -113,6 +113,7 @@ exports.listByType = function(req, res){
         logger.error(__filename, '参数验证失败', vErrors);
         return res.status(ValidationError.status).json(vErrors);
     }
+    let curUser = req.session.user;
     let type = req.query.type.trim();
     configService.listByType(type, function(err, configs){
         if(err){
@@ -122,6 +123,7 @@ exports.listByType = function(req, res){
         let result = {};
         configs.forEach(item => {
             delete item.extend;
+            item.disabled = curUser.isAdmin ? false : !curUser.datas.includes(item.id);
             result[item.key] = item;
         });
         return res.status(200).json({ code: 'SUCCESS', data: result });

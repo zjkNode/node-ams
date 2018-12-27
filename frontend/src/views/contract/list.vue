@@ -12,7 +12,7 @@
         </el-row>
         <el-table :data="dataList" stripe v-loading="isLoading">
             <el-table-column type="index" label="" width="60"></el-table-column>
-            <el-table-column prop="status" label="业务类型" width="100" align="center">
+            <el-table-column prop="confid" label="业务类型" width="100" align="center">
                 <template slot-scope="scope" >
                     <el-tag :type="scope.row.buConfig.status === 2 ? 'info' : ''" size="small">
                         {{ scope.row.buConfig.name }}
@@ -136,13 +136,15 @@
             },
             handleDownLoad(command){
                 let row = command.row;
+                let url = row.url.substring(row.url.indexOf('/contract/'));
+                url = '/preview'+ url;
                 if(command.name == "vm"){
-                    this.download(row.url, `${row.title}.vm`);
+                    this.download(url, `${row.title}.vm`);
                     return;
                 }
                 
                 if(command.name == "html"){
-                    this.download(row.url, `${row.title}.html`);
+                    this.download(url, `${row.title}.html`);
                     return;
                 }
 

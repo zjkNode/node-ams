@@ -1,19 +1,22 @@
 <template>
     <div v-popover:registerForm-pop class="regFormWrapper flex-center-v">
         <el-popover ref="registerForm-pop" placement="right" width="400" trigger="click">
-           <el-form label-width="90px" :model="comData">
-            <el-form-item label="组件宽高" >
+           <el-form label-width="90px" :model="comData" size="small">
+                <el-form-item label="组件宽高" >
                     <el-col :span="7">
-                        <el-input  v-model="comData.wrap.style.width" placeholder="宽px"></el-input>
+                        <el-input v-model="comData.wrap.style.width" placeholder="宽px"></el-input>
                     </el-col>
                     <el-col :span="7" :offset="1">
-                        <el-input  v-model="comData.wrap.style.height" placeholder="高px"></el-input>
+                        <el-input v-model="comData.wrap.style['padding-top']" placeholder="顶距px"></el-input>
                     </el-col>
-                    <el-col :span="6" :offset="1">(单位：px)</el-col>
+                    <el-col :span="7" :offset="1">
+                        <el-input v-model="comData.wrap.style['padding-bottom']" placeholder="底距px"></el-input>
+                    </el-col>
                 </el-form-item>
-               <el-form-item label="组件背景">
+                <el-form-item label="组件背景">
                     <el-col :span="7">
-                       <el-input  placeholder="背景（如#000000）" v-model="comData.wrap.style['background-color']"></el-input>
+                       <el-input placeholder="#000000
+                       " v-model="comData.wrap.style['background-color']"></el-input>
                     </el-col>
                     <el-col :span="7" :offset="1" v-show="comData.wrap.style['background-image']">
                         <el-select v-model="comData.wrap.style['background-repeat']" placeholder="请选择">
@@ -36,52 +39,52 @@
                             :multiple = "false"
                             :auto-upload="true"
                             list-type="text">
-                        <el-button size="small" type="primary">上传</el-button>
+                        <el-button type="primary">上传</el-button>
                         </el-upload>
                     </el-col>
-               </el-form-item>
-               <el-form-item label="表单样式" >
-                    <el-col :span="9">
-                        间隙&nbsp;<el-switch v-model="comData.content.space">
-                        </el-switch>
-                   </el-col>
-                   <el-col :span="9" :offset="1">
-                        圆角&nbsp;<el-switch v-model="comData.content.radius">
-                        </el-switch>
-                   </el-col>
-               </el-form-item>
+                </el-form-item>
                <el-form-item label="表单定位" >
-                    <el-col :span="6">
-                        <el-input  v-model="comData.content.style.width" placeholder="宽px"></el-input>
+                    <el-col :span="7">
+                        <el-input v-model="comData.content.style.width" placeholder="宽px"></el-input>
                     </el-col>
-                    <el-col :span="6" :offset="1">
-                        <el-input  v-model="comData.content.style.height" placeholder="高px"></el-input>
+                    <el-col :span="7" :offset="1">
+                        <el-input v-model="comData.content.style.height" placeholder="高px"></el-input>
                     </el-col>
-                    <el-col :span="6" :offset="1">
-                        <el-input  v-model="comData.content.style['margin-top']" placeholder="顶px"></el-input>
+                    <el-col :span="7" :offset="1">
+                       间隙&nbsp;<el-switch v-model="comData.content.space">
+                        </el-switch>
                     </el-col>
                 </el-form-item>
                <el-form-item label="颜色">
-                   <el-col :span="6">
-                        <el-input  v-model="tmpBorderColor" placeholder="边框"></el-input>
+                   <el-col :span="7">
+                        <el-input v-model="tmpBorderColor" placeholder="边框"></el-input>
                     </el-col>
-                    <el-col :span="6" :offset="1">
-                        <el-input  v-model="comData.btnCode.style.color" placeholder="验证码"></el-input>
+                    <el-col :span="7" :offset="1">
+                        <el-input v-model="comData.btnCode.style.color" placeholder="验证码"></el-input>
                     </el-col>
-                    <el-col :span="6" :offset="1">
-                        <el-input  v-model="comData.label.style.color" placeholder="协议"></el-input>
+                    <el-col :span="7" :offset="1">
+                        圆角&nbsp;<el-switch v-model="comData.content.radius">
+                        </el-switch>
                     </el-col>
                </el-form-item>
                <el-form-item label="协议">
+                    <el-row>
+                        <el-col :span="15">
+                            <el-input placeholder="协议名称" v-model="comData.agreement.name"></el-input>
+                        </el-col>
+                        <el-col :span="8" :offset='1'>
+                            <el-input v-model="comData.label.style.color" placeholder="颜色"></el-input>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                       <el-input placeholder="协议地址" v-model="comData.agreement.link"></el-input>
+                    </el-row>
                    <el-col :span="10">
-                       <el-input placeholder="协议名称" v-model="comData.agreement.name"></el-input>
                    </el-col>
                    <el-col :span="10" :offset="1">
-                       <el-input placeholder="协议地址" v-model="comData.agreement.link"></el-input>
                    </el-col>
                </el-form-item>
                <el-form-item label="验证码弹框">
-                    <el-col :span="20">
                     <el-select v-model="tempCodeAlert" ref="codeAlert" placeholder="选择弹框">
                        <el-option v-for="item in alertsOptions"
                                   :data-key="item.value"
@@ -90,27 +93,26 @@
                                   :value="item.value">
                        </el-option>
                    </el-select>
-                   </el-col>
                 </el-form-item>
                 <el-form-item label="按钮定位" style="margin-bottom:5px;">
-                    <el-col :span="10">
-                        <el-input 
-                        v-model="btnSpace" 
+                    <el-col :span="7">
+                        <el-input v-model="btnSpace" 
                         :placeholder="(comData.buttons.orientH ? '左右':'上下')+'(px)'" 
                        ></el-input>
                     </el-col>
-                    <el-col :span="10" :offset="1">
-                        <el-switch
-                        active-text="水平"
-                        @change="onBtnsChanged"
+                    <el-col :span="7" :offset="1">
+                        <el-switch active-text="水平" @change="onBtnsChanged"
                         v-model="comData.buttons.orientH"></el-switch>
+                    </el-col>
+                    <el-col :span="7" :offset="1">
+                        
                     </el-col>
                 </el-form-item>
                 <el-form-item>
                     <template v-for="(item, index) in tempBtns">
                         <rmable_button :ref="'rmableBtn_'+ index" :key="index" :originData="comData.buttons.items[index]" :index="index" @onRemove="onBtnRemove"></rmable_button>
                     </template>
-                    <el-button type="text" size="small" plain icon="el-icon-circle-plus" @click="addButton" style="margin-left: 10px;">添加</el-button>
+                    <el-button type='text' icon="el-icon-circle-plus" @click="addButton">添加</el-button>
                 </el-form-item>
            </el-form>
         </el-popover>
@@ -128,13 +130,6 @@
                     <input type="tel" placeholder="请输入验证码" class="reg_code"/>
                     <button class="btn_code" :style="comData.btnCode.style | formatStyle">获取验证码</button>
                 </p>
-                <label :style="comData.label.style | formatStyle" class="checked">
-                    <span class="rd-input">
-                        <span class='rd-input-inner'></span>
-                    </span>
-                    <span class='rd-label'>同意《<a :href="comData.agreement.link">{{comData.agreement.name}}</a>》</span>
-                </label>
-                <label class='right' :style="comData.label.style | formatStyle">已有帐户，点击登录</label>
             </div>
             <div class="formBottom">
                 <ul :class="comData.buttons.orientH ? 'flex' : 'flex-center-v'">
@@ -143,6 +138,12 @@
                     </li>
                 </ul>
             </div>
+            <label :style="comData.label.style | formatStyle" class="checked">
+                <span class="rd-input">
+                    <span class='rd-input-inner'></span>
+                </span>
+                <span class='rd-label'>同意《<a :href="comData.agreement.link">{{comData.agreement.name}}</a>》</span>
+            </label>
         </div>
     </div>
 </template>
@@ -359,7 +360,6 @@
             line-height:17px;
             &.space{
                 height: auto;
-                p{ border:none; }
                 p+p{
                     margin-top:10px;
                 }
@@ -368,10 +368,10 @@
                     padding-top:2px;
                     &:before{
                         position:absolute;
-                        top:15px;
+                        top:13px;
                         left:0;
                         width:0;
-                        height:12px;
+                        height:20px;
                         content:' ';
                         border:1px solid #b2b2b2;
                         border-color:inherit;
@@ -402,8 +402,8 @@
                 p{ border-radius:6px; overflow:hidden;}
             }
             input{
-                line-height:17px;
-                padding: 12px 18px;
+                line-height:22px;
+                padding: 13px 18px;
                 display: inline-block;
                 vertical-align: middle;
                 font-size: 14px;
@@ -417,7 +417,7 @@
                 right:0px;top:0px;
                 font-size: 14px;
                 width:100px;
-                line-height:41px;
+                line-height:44px;
                 border:none;
                 border-left:1px solid #b2b2b2;
                 background: transparent;
@@ -437,8 +437,8 @@
         }
         .formBottom{
             margin:0 auto;
-            width:90%;
             text-align: center;
+            line-height:15px;
             .btn{
                 max-width: 100%;
                 line-height:0;
@@ -446,7 +446,7 @@
             }
         }
         label{
-            line-height:40px;
+            line-height:25px;
             font-size: 12px;
             a{
                 text-decoration: none;

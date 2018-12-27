@@ -55,7 +55,7 @@ exports.add = function(req,res){
     ], function(error, result){
         if(error){
             logService.log(req, '服务器出错，新增合同失败');
-            return res.status(error.constructor.status).end(error);
+            return res.status(error.constructor.status).json(error);
         }
         logService.log(req, '服务器出错，新增合同失败');
         return res.status(200).json({ code: 'SUCCESS', msg:'新增合同成功'});
@@ -140,7 +140,7 @@ exports.update = function(req,res) {
     ], function(error){
         if(error){
             logService.log(req, '服务器出错，编辑合同失败');
-            return res.status(error.constructor.status).end(error);
+            return res.status(error.constructor.status).json(error);
         }
         return res.status(200).json({ code: 'SUCCESS', msg:'编辑合同成功'});
     });
@@ -161,16 +161,12 @@ exports.list = function(req,res) {
     }
     let curUser = req.session.user;
     if(!curUser.isAdmin){
-        where.confid = ['in', curUser.datas];// datas 包含数据业务权限的Id集合
+        where.confid = ['in', curUser.datas.length === 0 ? [-1] : curUser.datas ];// datas 包含数据业务权限的Id集合
     }
     async.auto({
         buConfigs: function(callback){
             configService.listByType('authData', function(error, rows){
-                if(error){
-                    return callback(error);
-                }
-                rows.forEach(row => delete row.extend ); // 删除敏感信息
-                return callback(null, rows);
+                return callback(error, rows);
             });
         },
         cList: function(callback){
@@ -191,11 +187,13 @@ exports.list = function(req,res) {
             return res.status(error.constructor.status).json(error);
         }
         results.cList.list.forEach(item => {
+            item.title = _.unescape(item.title);
             item.content = _.unescape(item.content);
             item.typeids = item.typeids.split(',').map(id => parseInt(id));
             item.typeName = results.cTypes.filter(type => item.typeids.includes(type.id)).map(type => type.name).join(' / ');
             item.typeName = item.typeName || "类型已删除";
             let config = results.buConfigs.find(row => row.id === item.confid);
+            delete config.extend; // 删除敏感信息
             item.buConfig = config || { status: CONSTANTS.CONFIG_STATUS.INVALID, name:'无效业务' }
         });
         return res.status(200).json({ code: 'SUCCESS', data: results.cList, msg:'' });
@@ -274,7 +272,7 @@ exports.online = function(req, res){
 
             let ossClient = new aliOSS.Client(ossConf);
             let localFile = path.join(util.getPublishPath(), tmpUrl);
-            ossClient.upload(contract.url, localFile);
+            ossClient.upload(tmpUrl, localFile);
             
             return callback(null, contract)
         },
@@ -407,7 +405,7 @@ function upload2TestOSS(contract, callback) {
 //     contractService.one(where,function(err,row){
 //         if(err){
 //             logService.log(req, '服务器出错，获取合同失败');
-//             return res.status(500).end(err);
+//             return res.status(500).json(err);
 //         }
 //         row.content = _.unescape(row.content);
 //         var pdf = new nodePDF('temp/pdf/contract.pdf', 'temp/pdf/contract.pdf', {

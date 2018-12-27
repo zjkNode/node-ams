@@ -2,52 +2,51 @@
 	<div class="alertsWrapper flex-center-v" v-show="wrapShow" ref="alertsWrapper">
         <div class="mask"></div>
         <el-popover ref="alerts-pop" placement="right" width="400" trigger="click">
-            <el-form label-width="70px">
+            <el-form label-width="70px" size="small">
                 <el-form-item label="弹框宽高" >
                     <el-col :span="7">
-                        <el-input v-model="comData.wrap.style.width" placeholder="宽"></el-input>
+                        <el-input v-model="comData.wrap.style.width" placeholder="宽px"></el-input>
                     </el-col>
-                    <el-col :span="7" :push="1">
-                        <el-input v-model="comData.wrap.style.height" placeholder="高"></el-input>
+                    <el-col :span="7" :offset="1">
+                        <el-input v-model="comData.wrap.style.height" placeholder="高px"></el-input>
+                    </el-col>
+                    <el-col :span="7" :offset="1">
+                        圆角&nbsp;<el-switch v-model="comData.wrap.radius">
+                        </el-switch>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="弹框背景">
-                    <el-row>
-                        <el-col :span="7">
-                            <el-input v-model="comData.wrap.style['background-color']" placeholder="色值（以#开头）"></el-input>
-                        </el-col>
-                        <el-col :span="7" :push="1">
-                            <el-select v-model="comData.wrap.style['background-repeat']" placeholder="请选择" v-show="comData.wrap.style['background-image']" style="padding-right:10px;">
-                                <el-option v-for="item in bgImgOptions"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </el-col>
-                        <el-col :span="7" :push="1">
-                            <el-upload action="/api/act/upload"
-                                :data="uploadData"
-                                :limit="1"
-                                :file-list="bgList"
-                                accept="image/gif,image/jpeg,image/png"
-                                :on-exceed= "handleBgExceed"
-                                :on-remove="handleBgRemove"
-                                :on-success = "handleBgSuccess"
-                                :multiple = "false"
-                                :auto-upload="true"
-                                list-type="text">
-                            <el-button size="small" type="primary">上传背景图</el-button>
-                            </el-upload>
-                        </el-col>
-                    </el-row>
-                </el-form-item>
-                <el-form-item label="弹框圆角">
-                    <el-switch v-model="comData.wrap.radius"></el-switch>
+                    <el-col :span="7">
+                        <el-input v-model="comData.wrap.style['background-color']" placeholder="#000000"></el-input>
+                    </el-col>
+                    <el-col :span="7" :offset="1">
+                        <el-select v-model="comData.wrap.style['background-repeat']" placeholder="请选择" v-show="comData.wrap.style['background-image']" style="padding-right:10px;">
+                            <el-option v-for="item in bgImgOptions"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="7" :offset="1">
+                        <el-upload action="/api/act/upload"
+                            :data="uploadData"
+                            :limit="1"
+                            :file-list="bgList"
+                            accept="image/gif,image/jpeg,image/png"
+                            :on-exceed= "handleBgExceed"
+                            :on-remove="handleBgRemove"
+                            :on-success = "handleBgSuccess"
+                            :multiple = "false"
+                            :auto-upload="true"
+                            list-type="text">
+                        <el-button type="primary">上传背景</el-button>
+                        </el-upload>
+                    </el-col>
                 </el-form-item>
                 <el-form-item label="关闭按钮">
                     <el-col :span="7">
-                        <el-select clearable size="small" v-model="comData.closeBtn.position" placeholder="位置">
+                        <el-select clearable v-model="comData.closeBtn.position" placeholder="位置">
                             <el-option v-for="item in closePosition"
                                         :key="item.value"
                                         :label="item.label"
@@ -55,7 +54,7 @@
                             </el-option>
                         </el-select>
                     </el-col>
-                    <el-col :span="16" :push="1">
+                    <el-col :span="16" :offset="1">
                         <el-upload action="/api/act/upload"
                                 :data="uploadData"
                                 :limit="1"
@@ -67,13 +66,13 @@
                                 :multiple = "false"
                                 :auto-upload="true"
                                 list-type="text">
-                            <el-button size="small" type="primary">上传图片</el-button>
+                            <el-button type="primary">上传按钮</el-button>
                         </el-upload>
                     </el-col>
                     
                 </el-form-item>
                 <el-form-item label="弹框内容" >
-                    <el-col :span="15">
+                    <el-row>
                         <el-select v-model="tempContent" placeholder="请选择弹框类型">
                             <el-option v-for="item in contentTypes"
                                         :key="item.value"
@@ -81,30 +80,31 @@
                                         :value="item">
                             </el-option>
                         </el-select>
-                    </el-col>
-                    <el-col style="border: 1px solid #d8dce5; margin-top: 10px; padding:10px; border-radius: 6px;">
+                    </el-row>
+                    <el-row class="edit_content">
                         <div v-bind:is="tempContent.key" :ref="tempContent.value+'_'+index" :originData="comData.content"></div>
-                    </el-col>
+                    </el-row>
                 </el-form-item>
-                
-                <el-form-item label="弹框按钮" style="margin-bottom:5px;">
-                    <el-col :span="10">
-                        <el-input 
-                        v-model="btnSpace" 
-                        :placeholder="(comData.buttons.orientH ? '左右':'上下')+'(px)'"></el-input>
-                    </el-col>
-                    <el-col :span="10" :push="1">
-                        <el-switch
-                        active-text="水平"
-                        @change="onBtnsChanged"
-                        v-model="comData.buttons.orientH"></el-switch>
-                    </el-col>
-                </el-form-item>
-                <el-form-item>
-                    <template v-for="(item, index) in tempBtns">
-                        <rmable_button :ref="'rmableBtn_'+ index" :originData="comData.buttons.items[index]" :index="index" @onRemove="onBtnRemove" :key="index"></rmable_button>
-                    </template>
-                    <el-button type="text" size="small" plain icon="el-icon-circle-plus" @click="addButton" style="margin-left: 10px;">添加</el-button>
+                <el-form-item label="弹框按钮">
+                    <el-row>
+                        <el-col :span="7">
+                            <el-input 
+                            v-model="btnSpace" 
+                            :placeholder="(comData.buttons.orientH ? '左右':'上下')+'(px)'"></el-input>
+                        </el-col>
+                        <el-col :span="7" :offset="1">
+                            <el-switch
+                            active-text="水平"
+                            @change="onBtnsChanged"
+                            v-model="comData.buttons.orientH"></el-switch>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <template v-for="(item, index) in tempBtns">
+                            <rmable_button :ref="'rmableBtn_'+ index" :originData="comData.buttons.items[index]" :index="index" @onRemove="onBtnRemove" :key="index"></rmable_button>
+                        </template>
+                        <el-button type="text" icon="el-icon-circle-plus" @click="addButton">添加</el-button>
+                    </el-row>
                 </el-form-item>
             </el-form>
         </el-popover>
@@ -214,9 +214,9 @@
                     { value:'vcode', label: '验证码弹框', key:'vcode_content' }
                 ],
                 closePosition:[
-                    {value:'top_right', label:'右上' },
-                    {value:'bottom_center', label:'下中' },
-                    {value:'bottom_right', label:'右下' },
+                    { value:'top_right', label:'上右' },
+                    { value:'bottom_center', label:'下中' },
+                    { value:'bottom_right', label:'下右' },
                 ]
             }
             
@@ -349,6 +349,14 @@
         z-index:1;
         &:hover .mask{
             display: flex;
+        }
+    }
+    .edit_content{
+        border: 1px solid #d8dce5; 
+        margin-top: 3px; 
+        padding:10px; border-radius: 6px;
+        .el-form-item.el-form-item--small{
+            margin-bottom:2px;
         }
     }
     .altBtn{

@@ -78,6 +78,7 @@ exports.signIn = function (req, res) {
 			let param = {
 				originalUrl: req.originalUrl,
 				ip: req.ip,
+				headers: req.headers,
 				session:{
 					user:{
 						nickname: req.body.email
@@ -238,7 +239,8 @@ exports.list = function(req, res) {
 				user.depids = [];
 				user.roleids = [];
 				user.depName = '系统管理';
-				user.operateAble = curUser.isAdmin ;
+				user.operateAble = curUser.isAdmin;
+				user.isAdmin = utils.isAdmin(user);
 				continue;
 			}
 
@@ -249,6 +251,7 @@ exports.list = function(req, res) {
 			let tmpDepId = user.depids.slice(-1)[0];
 			// 当前登录用户是超管，或用户所在部门 或用户所在部门子部门时，可操作
 			user.operateAble = curUser.isAdmin || user.depids.includes(depid) || tmpDepId === depid;
+			user.isAdmin = utils.isAdmin(user);
 		}
 		return res.status(200).json({ code: 'SUCCESS', data: results.userData });
 	});

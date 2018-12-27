@@ -28,6 +28,14 @@ Global.utility = {
         return ua.match(/sudaixiong_android/i) == 'sudaixiong_android' ||
             ua.match(/sudaixiong_ios/i) == 'sudaixiong_ios';
     },
+    isIOS: function(){
+        var userAgent = window.navigator.userAgent;
+        return /iPhone|iPad|iPod/i.test(userAgent);
+    },
+    isAndroid: function(){
+        var userAgent = window.navigator.userAgent;
+        return /Android|HTC/i.test(userAgent) || /Linux/i.test(window.navigator.platform + "");
+    },
     getQueryParams: function(name) {
         var r = new RegExp("(\\?|#|&)" + name + "=([^&#]*)(&|#|$)");
         var m = location.href.match(r);
@@ -65,6 +73,19 @@ Global.utility = {
             $sender.html('重新获取('+currentTime + 's)');
         }, 1000);
     },
+    scheme: function(e) {
+        var t = document.createElement("iframe");
+        t.src = e,
+        t.style.width = t.style.height = 0,
+        t.style.visibility = "hidden",
+        document.documentElement.appendChild(t),
+        setTimeout(function() {
+            t.style.display = "none"
+        }, 0),
+        t.onload = t.onerror = t.oncancel = function() {
+            this.parentNode.removeChild(this)
+        }
+    },
     download: function () {
         console.log('download')
         Global.downUrl = Global.downUrl || {};
@@ -86,20 +107,21 @@ Global.utility = {
             window.location.href = download_ymb;
             return;
         }
-        if (userAgent.match(/Android/i) == "Android") {
+        if (this.isAndroid()) {
             if(!download_android) return;
 
-            var  t = 1000, hasApp = true;
+            var hasApp = true, dlDelay = 2000;
+            if(!open_android){
+                hasApp = false;
+                dlDelay = 100;
+            }
             setTimeout(function () {
-                if (hasApp) {
-                    location.href = open_android;
-                } else {
-                    location.href = download_android;
-                }
-                document.body.removeChild(ifr);
-            }, 2000);
+                location.href = hasApp ? open_android : download_android +"?t="+ new Date().getTime();
+                ifr && document.body.removeChild(ifr);
+            }, dlDelay);
 
-            var t1 = Date.now();
+            if(!open_android) return;
+            var t = 1000, t1 = Date.now();
             var ifr = document.createElement("iframe");
             ifr.setAttribute('src', open_android);
             ifr.setAttribute('style', 'display:none');
@@ -112,12 +134,15 @@ Global.utility = {
             }, t);
             return;
         }
-        if (userAgent.match(/iPhone/i) == "iPhone") {
-            if(!open_ios) return;
-            location.href = open_ios;
+        if (this.isIOS()) {
+            if(open_ios){
+                window.location.href = open_ios;
+            }
+            if(!download_ios) return;
+            var delay = open_ios ? 2000 : 100;
             setTimeout(function () {
                 window.location.href = download_ios;
-            }, 2000);
+            }, delay);
             return;
         }
     },
