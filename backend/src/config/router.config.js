@@ -120,8 +120,10 @@ module.exports = {
                 delete: 'contract.contract.delete'
             }
         }
+    },
+    '/test':{
+        post:'sys.user.test'
     }
-    
 }
 
 
