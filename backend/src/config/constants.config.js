@@ -22,6 +22,10 @@ module.exports = {
 	// 活动管理
 	ACT_STATUS: { DRAFT: 1, ONLINE: 2, MODIFY: 3, OFFLINE: 4, TEST:5, DELETED:6}, //活动: 1草稿 2上线 3修改 4下线, 5测试环境, 6已删除
 	
+	// banner管理
+	BANNER_STATUS:{ONLINE: 1, OFFLINE: 2}, // APP Banner 状态： 1、上架   2、下架
+
+
 	PUBLISH_PATH: '/www/nodesystem', // 相对操作系统根目录路径
 	ACT_COMPONENTS_PATH: 'activity/components',
 }
