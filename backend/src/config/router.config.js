@@ -135,7 +135,7 @@ module.exports = {
             },
         },
         '/plugin':{
-            get: 'chrome.plugin.list'
+            post: 'chrome.plugin.list'
         },
         '/demo':{
             '/user':{
