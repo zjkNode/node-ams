@@ -25,6 +25,9 @@ var routes = [
   { title:'合同列表', name:'contList', path:'/contract/list', view:'contract/list'},
   { title:'新增合同', name:'contAdd', path:'/contract/add', view:'contract/add'},
   { title:'编辑合同', name:'contEdit', path:'/contract/edit', view:'contract/add'},
+
+  { title:'chrmoe插件', name:'blocker', path:'/chrome/blocker', view:'chrome/blocker'},
+
 ];
 
 
