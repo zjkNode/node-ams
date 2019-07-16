@@ -61,6 +61,7 @@ var controllers = requireAll({
         }
       }
 
+      // console.log(controllers)
       var routeTarget = controllers[subdir] || controllers;
       routeTarget = routeTarget[controller] || routeTarget;
       routeTarget = routeTarget[action] || routeTarget;
@@ -69,6 +70,7 @@ var controllers = requireAll({
       // console.log(route) // /api/test/index
       // console.log(routeTarget.toString()) // function(){}
       // console.log(router) // app
+      // console.log(router[key].toString())
       router[key](route, routeTarget);
       // if (action) {
       //   router[key](route, controllers[controller][action]);

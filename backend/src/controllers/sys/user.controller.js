@@ -14,14 +14,6 @@ let async = require('async'),
 
 const { ComError, ValidationError, DBError} = require('../../models/errors.model');
 
-exports.test = function(req, res){
-	let data = {
-		whiteList:['*haikr.com.cn*','*baidu.com*'],
-		blackList:[]
-	};
-	return res.status(200).json({ code:'SUCCESS',  data: data });
-}
-
 exports.signIn = function (req, res) {
 	req.checkBody({
 	'email': {
