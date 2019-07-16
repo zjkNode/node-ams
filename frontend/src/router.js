@@ -25,6 +25,13 @@ var routes = [
   { title:'合同列表', name:'contList', path:'/contract/list', view:'contract/list'},
   { title:'新增合同', name:'contAdd', path:'/contract/add', view:'contract/add'},
   { title:'编辑合同', name:'contEdit', path:'/contract/edit', view:'contract/add'},
+
+  { title:'banner管理', name:'zyBanner', path:'/yz/banner', view:'youzhu/banner'},
+  { title:'产品管理', name:'zyProduct', path:'/yz/product', view:'youzhu/product'},
+  { title:'消息管理', name:'zyMessage', path:'/yz/message', view:'youzhu/message'},
+  { title:'我的收藏', name:'zyStar', path:'/yz/star', view:'youzhu/star'},
+  { title:'用户管理', name:'zyUser', path:'/yz/user', view:'youzhu/user'},
+
 ];
 
 
