@@ -146,7 +146,7 @@
             uploadData: 'getUploadData'
         }),
         watch: {
-            btnConfig(val, oldVal){
+            btnConfig(val){
                 if(!val) return;
                 this.comData.buttons.items.forEach(item => {
                     if(item.uuid === val.uuid){
@@ -215,8 +215,7 @@
                 this.tmpPrizes.push(prize);
             }
             let wrapBgImg = this.comData.wrap.style['background-image'],
-                boxBgImg = this.comData.box.style['background-image'],
-                maskBgImg = this.comData.mask.img;
+                boxBgImg = this.comData.box.style['background-image'];
             if(wrapBgImg){
                 this.bgList.push({ name: wrapBgImg.split('/').pop(), url: wrapBgImg });
             }

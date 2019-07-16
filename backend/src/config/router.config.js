@@ -1,5 +1,8 @@
 module.exports = {
     '/api':{
+        '/plugin':{
+            get: 'chrome.plugin.list'
+        },
         '/menu':{
             get:'sys.menu.list',
             post: 'sys.menu.add',
@@ -134,14 +137,11 @@ module.exports = {
                 }
             },
         },
-        '/plugin':{
-            post: 'chrome.plugin.list'
-        },
+        
         '/demo':{
             '/user':{
                 post:'demo.user.add'
             }
         }
     },
-    
 }

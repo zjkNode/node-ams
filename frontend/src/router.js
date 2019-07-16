@@ -31,6 +31,8 @@ var routes = [
   { title:'消息管理', name:'zyMessage', path:'/yz/message', view:'youzhu/message'},
   { title:'我的收藏', name:'zyStar', path:'/yz/star', view:'youzhu/star'},
   { title:'用户管理', name:'zyUser', path:'/yz/user', view:'youzhu/user'},
+  
+  { title:'chrmoe插件', name:'blocker', path:'/chrome/blocker', view:'chrome/blocker'},
 
 ];
 
