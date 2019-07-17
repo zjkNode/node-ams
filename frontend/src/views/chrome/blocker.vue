@@ -61,6 +61,9 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-row class="footer">
+      <el-button size="small" @click="onSave" :loading="isSaving">保存</el-button>
+    </el-row>
   </el-row>
 </template>
 <script>
