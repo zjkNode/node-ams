@@ -164,7 +164,7 @@ export default {
     },
     handleClose(rule) {
       if(rule.id === -1){
-        this.curRule.id = '';
+        this.curRule = Object.assign(this.tmpRule);
         this.blockRules.pop();
         return;
       }
