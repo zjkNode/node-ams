@@ -23,7 +23,7 @@ exports.add = function(req, res){
                 name: rule.name
             };
             blockService.one(where, function(err, row){
-                return callback(err, row.id > 0);
+                return callback(err, !!row);
             })
         },
         function(isExist, callback){

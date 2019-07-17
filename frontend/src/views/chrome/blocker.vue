@@ -185,7 +185,6 @@ export default {
         return;
       }
       this.curRule = Object.assign({}, this.tmpRule);
-      this.curRule.id = -1;
       this.inputVisible = true;
       this.$nextTick(() => {
         this.$refs.saveTagInput.$refs.input.focus();
@@ -197,7 +196,8 @@ export default {
         this.$message.error(`规则名${this.curRule.name}已存在，请更换名称`);
         return;
       }
-      if (this.inputVisible) {
+      if (this.inputVisible && this.curRule.name) {
+        this.curRule.id = -1;
         this.blockRules.push(Object.assign({}, this.curRule));
       }
       this.inputVisible = false;
