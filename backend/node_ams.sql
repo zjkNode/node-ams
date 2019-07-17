@@ -17,6 +17,24 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
+--  Table structure for `block_rule`
+-- ----------------------------
+DROP TABLE IF EXISTS `block_rule`;
+CREATE TABLE `block_rule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) NOT NULL COMMENT '规则名称',
+  `white_list` varchar(1024) NOT NULL DEFAULT '' COMMENT '白名单： 以,分隔',
+  `black_list` varchar(1024) NOT NULL DEFAULT '' COMMENT '黑名单 以,分隔',
+  `whiteable` tinyint(1) DEFAULT '0' COMMENT '白名单是否有效',
+  `blackable` tinyint(1) DEFAULT '0' COMMENT '黑名单是否有效',
+  `status` int(11) NOT NULL DEFAULT '2' COMMENT '当前规则是否生效：1生效 2不生效  一个用户只有一个规则生效',
+  `user_id` int(11) NOT NULL COMMENT '用户Id',
+  `create_time` datetime DEFAULT NULL COMMENT '规则添加时间',
+  `update_time` datetime DEFAULT NULL COMMENT '规则更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 --  Table structure for `act`
 -- ----------------------------
 DROP TABLE IF EXISTS `act`;

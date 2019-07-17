@@ -1,12 +1,24 @@
 var async = require('async'),
     mysql = require('../../lib/mysqldb.lib'),
     logger = require('../../lib/logger.lib'),
-    pluginModel = require('../../models/chrome/plugin.model.js');
+    blockModel = require('../../models/plugin/block.model.js');
 
 const { DBError } = require('../../models/errors.model');
 
-exports.add = function(config,callback) {
-    mysql.insert(pluginModel.tbname , config, function(err,resId){
+exports.one = function(where,callback) {
+    mysql.where(where)
+         .select(blockModel.tbname , function(err,rows){
+        if(err){
+            logger.errorDB(__filename, err);
+            return callback(new DBError());
+        }
+        if(!rows) return callback();
+		return callback(null,rows[0]);
+    });
+}
+
+exports.add = function(rule,callback) {
+    mysql.insert(blockModel.tbname , rule, function(err,resId){
         if(err){
             logger.errorDB(__filename, err);
             return callback(new DBError());
@@ -16,7 +28,7 @@ exports.add = function(config,callback) {
 }
 
 exports.delete = function(where, callback){
-    mysql.where(where).remove(pluginModel.tbname,function(err,res){
+    mysql.where(where).remove(blockModel.tbname,function(err,res){
         if(err){
             logger.errorDB(__filename, err);
             return callback(new DBError());
@@ -26,7 +38,7 @@ exports.delete = function(where, callback){
 }
 
 exports.update = function (data, where, callback) {
-    mysql.where(where).update(pluginModel.tbname, data, function(err,res){
+    mysql.where(where).update(blockModel.tbname, data, function(err,res){
         if(err){
             logger.errorDB(__filename, err);
             return callback(new DBError());
@@ -35,9 +47,9 @@ exports.update = function (data, where, callback) {
     });
 }
 
-exports.list = function(where, callback){
+exports.rules = function(where, callback){
     mysql.where(where)
-        .select(pluginModel.tbname, function(err,rows){
+        .select(blockModel.tbname, function(err,rows){
             return callback(err,rows);
         });
 }

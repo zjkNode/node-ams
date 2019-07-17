@@ -25,6 +25,8 @@ module.exports = {
 	// banner管理
 	BANNER_STATUS:{ONLINE: 1, OFFLINE: 2}, // APP Banner 状态： 1、上架   2、下架
 
+	BLOCK_RULE_STATUS: { VALID: 1, INVALID: 2 }, // chrome屏蔽插件规则状态：1正常 2停用
+
 
 	PUBLISH_PATH: '/www/nodesystem', // 相对操作系统根目录路径
 	ACT_COMPONENTS_PATH: 'activity/components',

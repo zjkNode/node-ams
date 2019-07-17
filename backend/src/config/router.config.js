@@ -1,7 +1,14 @@
 module.exports = {
     '/api':{
         '/plugin':{
-            get: 'chrome.plugin.list'
+            '/blockRule':{
+                get: 'plugin.block.rules',
+                post: 'plugin.block.add',
+                '/:id':{
+                    put: 'plugin.block.update',
+                    delete: 'plugin.block.delete'
+                }
+            }
         },
         '/menu':{
             get:'sys.menu.list',
