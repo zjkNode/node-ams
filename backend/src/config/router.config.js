@@ -8,6 +8,9 @@ module.exports = {
                     put: 'plugin.block.update',
                     delete: 'plugin.block.delete'
                 }
+            },
+            '/block':{
+                get: 'plugin.block.one'
             }
         },
         '/menu':{

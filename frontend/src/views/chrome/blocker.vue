@@ -4,6 +4,7 @@
     <el-row class="tools">
       <el-tag
         :effect="curRule.id === rule.id ? 'dark': 'plain'"
+        :type="rule.status === 1 ? 'success': ''"
         :key="index"
         v-for="(rule, index) in blockRules"
         closable
@@ -60,6 +61,8 @@
       </el-col>
     </el-row>
     <el-row class="footer">
+      <el-button v-if="curRule.status === 2" size="small" @click="onStatusChange" :loading="isDoing" type="success">启用</el-button>
+      <el-button v-else size="small" @click="onStatusChange" :loading="isDoing" type="danger">禁用</el-button>
       <el-button size="small" @click="onSave" :loading="isSaving" type="primary">保存</el-button>
     </el-row>
   </el-row>
@@ -79,6 +82,7 @@ export default {
       },
       tmpRule:{},
       isSaving: false,
+      isDoing: false,
       inputVisible: false,
     }
   },
@@ -123,6 +127,24 @@ export default {
       }
       this.onAdd();
     },
+    onStatusChange(){
+      let url = '/api/plugin/blockRule/'+ this.curRule.id;
+      let params = {
+        status: this.curRule.status === 1 ? 2 : 1
+      }
+      this.isDoing = true;
+      this.$http.put(url, params).then(res => {
+        this.isDoing = false;
+        if(res.code !== 'SUCCESS'){
+          this.$message.error(res.msg);
+          return;
+        }
+        this.$message.success('保存成功，10分钟内配置生效');
+        this.bindData();
+      }).catch(() => {
+        this.isDoing = false;
+      });
+    },
     onEdit(){
       let url = '/api/plugin/blockRule/'+ this.curRule.id;
       let rule = Object.assign({}, this.curRule);
@@ -140,7 +162,6 @@ export default {
       }).catch(() => {
         this.isSaving = false;
       });
-      return;
     },
     onAdd(){
       // 新增

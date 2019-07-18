@@ -3,7 +3,8 @@ var async = require('async'),
     blockService = require('../../services/plugin/block.service.js');
     logService = require('../../services/sys/log.service');
 
-    const { ComError, ValidationError} = require('../../models/errors.model');
+let CONSTANTS = require('../../config/constants.config');
+const { ComError, ValidationError} = require('../../models/errors.model');
 
 exports.rules = function (req, res) {
     let curUser = req.session.user;
@@ -47,18 +48,33 @@ exports.add = function(req, res){
 
 exports.update = function(req, res){
     let where = {
-		id: parseInt(req.params.id)
-	};
+        id: parseInt(req.params.id)
+    };
     let rule = Object.assign({}, req.body, where);
-	blockModel.auto(rule);
-	blockService.update(rule, where, function(err, resId) {
-		if(err){
+    blockModel.auto(rule);
+
+    async.waterfall([function(callback){
+        let cond = {
+            user_id: req.session.user.id
+        }
+        let param = {
+            status: CONSTANTS.BLOCK_RULE_STATUS.INVALID
+        }
+        blockService.update(param,cond, function(err, resId){
+            return callback(err)
+        })
+    },function(callback){
+        blockService.update(rule, where, function(err, resId) {
+            return callback(err);
+        });
+    }], function(err, result){
+        if(err){
 			logService.log(req, '服务器出错，更新chrome屏蔽规则失败', rule);
         	return res.status(err.constructor.status).json(err);
 		}
 		logService.log(req, '更新chrome屏蔽规则成功', rule);
 		return res.status(200).json({ code: 'SUCCESS', msg:'更新chrome屏蔽规则成功'});
-	});
+    })
 }
 
 exports.delete = function(req, res){
@@ -83,4 +99,18 @@ exports.delete = function(req, res){
 		logService.log(req, '删除规则成功', where);
 		return res.status(200).json({code:'SUCCESS', msg:'删除规则成功'});
 	});
+}
+
+exports.one = function(req, res){
+    let where = {
+        user_id: req.session.user.id,
+    }
+    blockService.one(where, function(err, row){
+        if(err){
+			logService.log(req, '服务器出错，获取规则失败: '+ err.msg, where);
+    		return res.status(err.constructor.status).json(err);
+		}
+		logService.log(req, '获取规则成功', where);
+		return res.status(200).json({code:'SUCCESS', data: row, msg:'获取规则成功'});
+    })
 }
