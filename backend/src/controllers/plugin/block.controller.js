@@ -115,3 +115,7 @@ exports.one = function(req, res){
 		return res.status(200).json({code:'SUCCESS', data: row, msg:'获取规则成功'});
     })
 }
+
+exports.active = function(req, res){
+    
+}
