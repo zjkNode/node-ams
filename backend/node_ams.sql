@@ -32,7 +32,7 @@ CREATE TABLE `block_rule` (
   `create_time` datetime DEFAULT NULL COMMENT '规则添加时间',
   `update_time` datetime DEFAULT NULL COMMENT '规则更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='chrome block 插件 规则 表';
 
 
 -- ----------------------------
