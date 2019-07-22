@@ -61,9 +61,9 @@
       </el-col>
     </el-row>
     <el-row class="footer">
-      <el-button v-if="curRule.status === 2" size="small" @click="onStatusChange" :loading="isDoing" type="success">启用</el-button>
-      <el-button v-else size="small" @click="onStatusChange" :loading="isDoing" type="danger">禁用</el-button>
-      <el-button size="small" @click="onSave" :loading="isSaving" type="primary">保存</el-button>
+      <el-button v-if="curRule.status === 2" size="small" @click="onStatusChange" :loading="isDoing" :disabled="!curRule.id" type="success">启用</el-button>
+      <el-button v-else size="small" @click="onStatusChange" :loading="isDoing" :disabled="!curRule.id" type="danger">禁用</el-button>
+      <el-button size="small" @click="onSave" :loading="isSaving" :disabled="!curRule.id" type="primary">保存</el-button>
     </el-row>
   </el-row>
 </template>
@@ -77,6 +77,7 @@ export default {
         name:'',
         white_list:'',
         black_list:'',
+        status: 2,
         whiteable: false,
         blackable: false
       },
@@ -107,8 +108,8 @@ export default {
           return;
         }
         this.curRule = tmpRule 
-        this.curRule.white_list = this.curRule.white_list.replace(/,/ig , '\r\n');
-        this.curRule.white_list = this.curRule.black_list.replace(/,/ig ,'\r\n');
+        this.curRule.white_list = this.curRule.white_list.replace(/,/ig , '\n');
+        this.curRule.black_list = this.curRule.black_list.replace(/,/ig ,'\n');
       }).catch(() => { });
     },
     bindEvents(){
@@ -140,6 +141,7 @@ export default {
           return;
         }
         this.$message.success('保存成功，10分钟内配置生效');
+        this.curRule = Object.assign(this.tmpRule);
         this.bindData();
       }).catch(() => {
         this.isDoing = false;
