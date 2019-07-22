@@ -12,7 +12,7 @@ const { DBError } = require('../../models/errors.model');
 
 //添加;
 exports.log = function (req, msg, content) {
-    let curUser = req.session.user;
+    let curUser = req.session.user || {};
     let log = {
         desc: msg || '',
         content: _.isString(content) ? content : JSON.stringify(content),

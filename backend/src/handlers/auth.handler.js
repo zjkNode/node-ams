@@ -7,8 +7,6 @@ let _ = require('lodash');
 const { AuthError } = require('../models/errors.model');
 
 module.exports = function (req, res, next) {
-	next();
-	return;
  	// 已登录
  	if(req.session.user){
  		next();

@@ -103,7 +103,8 @@ exports.delete = function(req, res){
 
 exports.one = function(req, res){
     let where = {
-        user_id: req.session.user.id,
+        user_id: 1,
+        status: CONSTANTS.BLOCK_RULE_STATUS.VALID
     }
     blockService.one(where, function(err, row){
         if(err){
