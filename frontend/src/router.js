@@ -32,7 +32,8 @@ var routes = [
   { title:'我的收藏', name:'zyStar', path:'/yz/star', view:'youzhu/star'},
   { title:'用户管理', name:'zyUser', path:'/yz/user', view:'youzhu/user'},
   
-  { title:'chrmoe插件', name:'blocker', path:'/chrome/blocker', view:'chrome/blocker'},
+  { title:'block 规则', name:'pluginBlock', path:'/plugin/block', view:'plugin/block'},
+  { title:'block 激活码', name:'pluginActive', path:'/plugin/active', view:'plugin/active'},
 
 ];
 

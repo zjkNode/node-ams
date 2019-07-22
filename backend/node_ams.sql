@@ -34,6 +34,27 @@ CREATE TABLE `block_rule` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+-- ----------------------------
+--  Table structure for `block_active`
+-- ----------------------------
+DROP TABLE IF EXISTS `block_active`;
+CREATE TABLE `block_active` (
+  `id` int(11) NOT NULL,
+  `active_code` varchar(255) NOT NULL COMMENT '激活码',
+  `user_id` int(11) NOT NULL COMMENT '用户Id',
+  `user_phone` varchar(255) DEFAULT NULL COMMENT '用户手机号，登录帐号',
+  `payment` int(11) DEFAULT NULL COMMENT '本次缴费金额',
+  `pay_num` int(11) DEFAULT NULL COMMENT '缴费次数',
+  `amount` int(11) DEFAULT NULL COMMENT '缴费总额',
+  `start_time` datetime DEFAULT NULL COMMENT '有效期起始时间',
+  `end_time` datetime DEFAULT NULL COMMENT '有效期截止时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '最后一次更新',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='chrome block 插件 激活码 表';
+
+
 -- ----------------------------
 --  Table structure for `act`
 -- ----------------------------

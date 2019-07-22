@@ -8,6 +8,14 @@ module.exports = {
                     put: 'plugin.block.update',
                     delete: 'plugin.block.delete'
                 }
+            },
+            '/blockActive':{
+                get: 'plugin.active.list',
+                post: 'plugin.active.add',
+                '/:id':{
+                    put: 'plugin.active.update',
+                    delete: 'plugin.active.delete'
+                }
             }
         },
         '/menu':{
