@@ -163,6 +163,9 @@ module.exports = {
         '/block':{
             get: 'plugin.block.one',
             post: 'plugin.block.one'
+        },
+        '/active':{
+            post:'plugin.active.active'
         }
     }
 }

@@ -117,5 +117,6 @@ exports.one = function(req, res){
 }
 
 exports.active = function(req, res){
-    
+    console.log(req.body)
+    return res.status(200).json({ code: 'SUCCESS', data: req.body, msg:'' });
 }

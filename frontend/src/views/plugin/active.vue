@@ -12,9 +12,10 @@
         </el-row>
         <el-table :data="dataList" stripe v-loading="isLoading" >
             <el-table-column type="index" width="60"></el-table-column>
-            <el-table-column prop="name" label="激活码"></el-table-column>
-            <el-table-column prop="user_phone" label="手机号"></el-table-column>
-            <el-table-column prop="payment" label="缴费费金额"></el-table-column>
+            <el-table-column prop="code" label="激活码"></el-table-column>
+            <el-table-column prop="phone" label="手机号"></el-table-column>
+            <el-table-column prop="payment" label="缴费金额"></el-table-column>
+            <el-table-column prop="client_num" label="最大生效终端数"></el-table-column>
             <el-table-column prop="pay_num" label="缴费次数"></el-table-column>
             <el-table-column prop="amount" label="总金额"></el-table-column>
             <el-table-column prop="status" label="状态" width="90">
@@ -36,14 +37,21 @@
 
       <el-dialog :title="'激活码 -- '+ (title || '新增')" :visible.sync="isDialogVisible" @close="onFormClose">
         <el-form :model="formData" :rules="rules" ref="dialogForm" label-width="90px" @keyup.enter.native="onSubmit">
-          <el-form-item label="激活码" prop="active_code">
-            <el-input v-model="formData.active_code" name="active_code" placeholder="激活码"></el-input>
+          <el-form-item label="激活码" prop="code">
+            <el-input v-model="formData.code" :readonly="true" name="code" placeholder="激活码"></el-input>
           </el-form-item>
-          <el-form-item label="手机号" prop="user_phone">
-            <el-input v-model="formData.user_phone" name="user_phone" placeholder="手机号"></el-input>
+          <el-form-item label="手机号" prop="phone">
+            <el-input v-model="formData.phone" name="phone" placeholder="手机号"></el-input>
           </el-form-item>
           <el-form-item label="缴费金额" prop="payment">
             <el-input v-model="formData.payment" name="payment" placeholder="缴费金额"></el-input>
+          </el-form-item>
+          <el-form-item label="是否可用" prop="status">
+            <el-radio-group v-model.number="formData.status">
+              <el-radio v-bind:label="1">有效</el-radio>
+              <el-radio v-bind:label="2">未激活</el-radio>
+              <el-radio v-bind:label="3">已失效</el-radio>
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="有效期(起)" prop="start_time">
             <el-input v-model="formData.start_time" name="start_time" placeholder="有效期(起)"></el-input>
@@ -60,6 +68,7 @@
     </el-row>
 </template>
 <script>
+import util from '@/assets/js/util';
 export default {
   data() {
     return {
@@ -70,29 +79,26 @@ export default {
       keys: "",
       title: "",
       formData: {
-        active_code: "",
-        user_phone: '',
+        code: util.getRandomCode(5),
+        phone: '',
         payment: "",
+        status: 2, // 未激活
         start_time: '',
         end_time:''
       },
       rules: {
-        user_phone: [
+        phone: [
           { required: true, message: "用户手机号不能为空", trigger: "blur" },
         ]
       }
     };
   },
   created(){
-
+    this.bindDataList();
   },
   mounted() {
-    this.refreshData();
   },
   methods: {
-    refreshData() {
-      this.bindDataList();
-    },
     bindDataList() {
       let url = "/api/plugin/blockActive";
       let params = {
@@ -111,10 +117,6 @@ export default {
         });
     },
     onFormClose() {
-      this.formData = {
-        pids: this.curUser.depids,
-        name: ""
-      };
       this.title = "";
       this.$refs.dialogForm.resetFields();
     },
