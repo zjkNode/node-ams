@@ -1,4 +1,6 @@
 var async = require('async'),
+    utils = require('../../lib/utils'),
+    moment = require("moment"),
     activeModel = require('../../models/plugin/active.model.js'),
     activeService = require('../../services/plugin/active.service.js');
     logService = require('../../services/sys/log.service');
@@ -117,6 +119,49 @@ exports.one = function(req, res){
 }
 
 exports.active = function(req, res){
-    console.log(req.body)
+    
+    async.auto({
+        activeModel: (callback) => {
+            // 检查 code 是否存在，
+            let where = {
+                code: req.body.code
+            };
+            activeService.one(where, (err, row) => {
+                if(err) return callback(err);
+
+                if(row.status === CONSTANTS.BLOCK_ACTIVE_STATUS.UNACTIVE){
+                    row
+                }
+                    
+                return callback(err, row);
+            })
+            // 未激活，更新状态为状态，并生成起止时间，已激活不做处理
+        },
+        updateStatus:['activeModel', (results,callback) => {
+            if(results.activeModel.status !== CONSTANTS.BLOCK_ACTIVE_STATUS.UNACTIVE){
+                return callback();
+            }
+            let data = Object.assign({}, results.activeModel);
+            data.status = CONSTANTS.BLOCK_ACTIVE_STATUS.VALID;
+            data.start_time = utils.dateFormat(moment());
+            data.end_time = utils.dateFormat(moment().add(data.period, 'M'));
+            activeModel.auto(data);
+            activeService.update(data,{ id: data.id }, (err, resId) => {
+                return callback(err,resId)
+            })
+        }],
+        addRecord:['activeModel', (results, callback) => {
+            
+        }]
+    }, (err, results) => {
+        if(err){
+			logService.log(req, '服务器出错，激活失败: '+ err.msg, where);
+    		return res.status(err.constructor.status).json(err);
+		}
+        logService.log(req, '激活成功', where);
+        let tokenStr = results.activeModel.phone + '_' + results.activeModel.code;
+		return res.status(200).json({code:'SUCCESS', data:'', msg:'激活成功'});
+    })
+
     return res.status(200).json({ code: 'SUCCESS', data: req.body, msg:'' });
 }
