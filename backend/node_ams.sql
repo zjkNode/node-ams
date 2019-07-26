@@ -46,6 +46,7 @@ CREATE TABLE `block_active` (
   `status` tinyint(4) NOT NULL DEFAULT '2' COMMENT '激活码状态：1有效  2未激活 3已失效',
   `payment` int(11) DEFAULT NULL COMMENT '本次缴费金额',
   `client_num` int(11) DEFAULT NULL COMMENT '最大生效终端数',
+  `period` int(11) DEFAULT NULL COMMENT '有效期：N月',
   `pay_num` int(11) DEFAULT NULL COMMENT '缴费次数',
   `amount` int(11) DEFAULT NULL COMMENT '缴费总额',
   `start_time` datetime DEFAULT NULL COMMENT '有效期起始时间',
