@@ -34,7 +34,6 @@ CREATE TABLE `block_rule` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='chrome block 插件 规则 表';
 
-
 -- ----------------------------
 --  Table structure for `block_active`
 -- ----------------------------
@@ -42,20 +41,42 @@ DROP TABLE IF EXISTS `block_active`;
 CREATE TABLE `block_active` (
   `id` int(11) NOT NULL,
   `code` varchar(255) NOT NULL COMMENT '激活码',
+  `uid` int(11) NOT NULL COMMENT '用户id',
   `phone` varchar(255) DEFAULT NULL COMMENT '用户手机号，登录帐号',
   `status` tinyint(4) NOT NULL DEFAULT '2' COMMENT '激活码状态：1有效  2未激活 3已失效',
-  `payment` int(11) DEFAULT NULL COMMENT '本次缴费金额',
   `client_num` int(11) DEFAULT NULL COMMENT '最大生效终端数',
-  `period` int(11) DEFAULT NULL COMMENT '有效期：N月',
-  `pay_num` int(11) DEFAULT NULL COMMENT '缴费次数',
-  `amount` int(11) DEFAULT NULL COMMENT '缴费总额',
   `start_time` datetime DEFAULT NULL COMMENT '有效期起始时间',
   `end_time` datetime DEFAULT NULL COMMENT '有效期截止时间',
-  `user_id` int(11) NOT NULL COMMENT '用户Id',
+  `user_id` int(11) NOT NULL COMMENT '添加人Id',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '最后一次更新',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='chrome block 插件 激活码 表';
+
+-- ----------------------------
+--  Table structure for `block_active_record`
+-- ----------------------------
+DROP TABLE IF EXISTS `block_active_record`;
+CREATE TABLE `block_active_record` (
+  `id` int(11) NOT NULL,
+  `code` varchar(255) NOT NULL COMMENT '激活码',
+  `mac_addr` varchar(255) NOT NULL COMMENT '终端mac地址',
+  `create_time` datetime DEFAULT NULL COMMENT '添加时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='插件激活记录表';
+
+-- ----------------------------
+--  Table structure for `block_pay_record`
+-- ----------------------------
+DROP TABLE IF EXISTS `block_pay_record`;
+CREATE TABLE `block_pay_record` (
+  `id` int(11) NOT NULL,
+  `code` varchar(255) NOT NULL COMMENT '激活码',
+  `payment` varchar(255) DEFAULT NULL COMMENT '支付金额',
+  `periods` varchar(255) DEFAULT NULL COMMENT '周期，单位：月',
+  `create_time` datetime DEFAULT NULL COMMENT '支付时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `act`

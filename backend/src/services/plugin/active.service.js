@@ -53,3 +53,13 @@ exports.list = function(where, callback){
             return callback(err,rows);
         });
 }
+
+exports.addActiveRecord = function(record, callback){
+    mysql.insert('block_active_record', record, function(err, resId){
+        if(err){
+            logger.errorDB(__filename, err);
+            return callback(new DBError());
+        }
+        return callback(null, resId);
+    })
+}

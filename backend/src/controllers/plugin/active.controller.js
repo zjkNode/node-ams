@@ -1,8 +1,10 @@
 var async = require('async'),
     utils = require('../../lib/utils'),
+    _ = require('lodash'),
     moment = require("moment"),
     activeModel = require('../../models/plugin/active.model.js'),
     activeService = require('../../services/plugin/active.service.js');
+	userService = require('../../services/sys/user.service');
     logService = require('../../services/sys/log.service');
 
 let CONSTANTS = require('../../config/constants.config');
@@ -16,36 +18,49 @@ exports.list = function (req, res) {
 }
 
 exports.add = function(req, res){
-    let rule = Object.assign({}, req.body);
-    rule.user_id = req.session.user.id;
-    activeModel.auto(rule);
+    let activeInfo = Object.assign(req.body);
     async.waterfall([
         function(callback){
             let where = {
-                user_id: req.session.user.id,
-                name: rule.name
-            };
-            activeService.one(where, function(err, row){
-                return callback(err, !!row);
-            })
-        },
-        function(isExist, callback){
-            if(isExist){
-                return callback(new ComError('RULE_EXIST_ERROR', '规则名称已存在'))
+                email: activeInfo.phone
             }
-            activeService.add(rule, function(err, resId) {
-                return callback(err, resId);
+            userService.one(where, function(error, user){
+				return callback(error, user);
             });
+        },
+        function(user, callback){
+            if(user){
+                return callback(null, user.id);
+            }
+            let userInfo = {
+                email: activeInfo.phone,
+                password: utils.decrypt(activeInfo.password),
+                nickname: activeInfo.phone,
+                depids:'',
+                roleids:'',
+                phone: activeInfo.phone,
+                status:CONSTANTS.USER_STATUS.VALID,
+                create_time: utils.dateFormat()
+            }
+            userService.add(userInfo, function(error, resId){
+                return callback(error, resId);
+            });
+        },
+        function(userId, callback){
+            activeInfo.code = randomCode(5, userId);
+            activeModel.auto(activeInfo);
+            activeService.add(activeInfo, function(error, resId){
+                return callback(error, resId);
+            })
         }
-    ], function(err,result){
+    ], function(err, result){
         if(err){
-            logService.log(req, '服务器出错，新增chrome屏蔽规则失败', rule);
+            logService.log(req, '服务器出错，新增激活码失败', rule);
             return res.status(err.constructor.status).json(err);
         }
-        rule.id = result;
-        logService.log(req, '新增chrome屏蔽规则成功', rule);
-        return res.status(200).json({ code: 'SUCCESS', msg:'新增chrome屏蔽规则成功'});
-    })
+        logService.log(req, '新增新增激活码成功', rule);
+        return res.status(200).json({ code: 'SUCCESS', msg:'新增新增激活码成功'});
+    });
 }
 
 exports.update = function(req, res){
@@ -127,20 +142,16 @@ exports.active = function(req, res){
                 code: req.body.code
             };
             activeService.one(where, (err, row) => {
-                if(err) return callback(err);
-
-                if(row.status === CONSTANTS.BLOCK_ACTIVE_STATUS.UNACTIVE){
-                    row
-                }
-                    
                 return callback(err, row);
             })
             // 未激活，更新状态为状态，并生成起止时间，已激活不做处理
         },
         updateStatus:['activeModel', (results,callback) => {
+            // 已激活 不做处理
             if(results.activeModel.status !== CONSTANTS.BLOCK_ACTIVE_STATUS.UNACTIVE){
                 return callback();
             }
+            // 未激活 更新激活状态，并生成起止时间
             let data = Object.assign({}, results.activeModel);
             data.status = CONSTANTS.BLOCK_ACTIVE_STATUS.VALID;
             data.start_time = utils.dateFormat(moment());
@@ -164,4 +175,18 @@ exports.active = function(req, res){
     })
 
     return res.status(200).json({ code: 'SUCCESS', data: req.body, msg:'' });
+}
+
+// 生成随机码
+function randomCode(length = 5, suffix = ''){
+    var data = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+    var nums = "";
+    for (var i = 0; i < length; i++) {
+        var r = parseInt(Math.random() * 61);
+        nums += data[r];
+    }
+    if(suffix){
+        suffix = _.padStart(suffix, 3,'0');
+    }
+    return nums+suffix;
 }
