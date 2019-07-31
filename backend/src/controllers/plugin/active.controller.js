@@ -50,15 +50,16 @@ exports.add = function(req, res){
             activeInfo.code = randomCode(5, userId);
             activeModel.auto(activeInfo);
             activeService.add(activeInfo, function(error, resId){
-                return callback(error, resId);
+                activeInfo.id = resId;
+                return callback(error, activeInfo);
             })
         }
     ], function(err, result){
         if(err){
-            logService.log(req, '服务器出错，新增激活码失败', rule);
+            logService.log(req, '服务器出错，新增激活码失败', result);
             return res.status(err.constructor.status).json(err);
         }
-        logService.log(req, '新增新增激活码成功', rule);
+        logService.log(req, '新增新增激活码成功', result);
         return res.status(200).json({ code: 'SUCCESS', msg:'新增新增激活码成功'});
     });
 }
@@ -96,7 +97,7 @@ exports.update = function(req, res){
 
 exports.delete = function(req, res){
     req.checkParams({
-        'id': { isNotEmpty: {  errorMessage: '规则id 不能为空'}
+        'id': { isNotEmpty: {  errorMessage: '激活码id 不能为空'}
         }
 	});
 
@@ -110,11 +111,11 @@ exports.delete = function(req, res){
 	};
 	activeService.delete(where, function(err, callback){
 		if(err){
-			logService.log(req, '服务器出错，删除规则失败: '+ err.msg, where);
+			logService.log(req, '服务器出错，删除激活码失败: '+ err.msg, where);
     		return res.status(err.constructor.status).json(err);
 		}
-		logService.log(req, '删除规则成功', where);
-		return res.status(200).json({code:'SUCCESS', msg:'删除规则成功'});
+		logService.log(req, '删除激活码成功', where);
+		return res.status(200).json({code:'SUCCESS', msg:'删除激活码成功'});
 	});
 }
 
