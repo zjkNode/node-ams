@@ -19,6 +19,7 @@ exports.list = function (req, res) {
 
 exports.add = function(req, res){
     let activeInfo = Object.assign(req.body);
+    console.log(activeInfo)
     async.waterfall([
         function(callback){
             let where = {
@@ -48,6 +49,8 @@ exports.add = function(req, res){
         },
         function(userId, callback){
             activeInfo.code = randomCode(5, userId);
+            activeInfo.uid = userId;
+            activeInfo.user_id = req.session.user.id;
             activeModel.auto(activeInfo);
             activeService.add(activeInfo, function(error, resId){
                 activeInfo.id = resId;

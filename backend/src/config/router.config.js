@@ -16,6 +16,9 @@ module.exports = {
                     put: 'plugin.active.update',
                     delete: 'plugin.active.delete'
                 }
+            },
+            '/blockPay':{
+                post:'plugin.active.pay'
             }
         },
         '/menu':{

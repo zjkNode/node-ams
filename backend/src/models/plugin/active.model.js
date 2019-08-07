@@ -10,11 +10,13 @@ let auto = function(model) {
 		return ;
 	}
 	if(!model.id){ // id 不存在，为新增
-		rule.create_time = utils.dateFormat();
+		model.create_time = utils.dateFormat();
 	} else { // 修改时，默认字段赋值
-		rule.update_time = utils.dateFormat();
-		delete rule.create_time;
+		model.update_time = utils.dateFormat();
+		delete model.create_time;
 	}
+	!model.start_time && delete model.start_time;
+	!model.end_time && delete model.end_time;
 };
 
 module.exports = {

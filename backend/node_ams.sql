@@ -39,7 +39,7 @@ CREATE TABLE `block_rule` (
 -- ----------------------------
 DROP TABLE IF EXISTS `block_active`;
 CREATE TABLE `block_active` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) NOT NULL COMMENT '激活码',
   `uid` int(11) NOT NULL COMMENT '用户id',
   `phone` varchar(255) DEFAULT NULL COMMENT '用户手机号，登录帐号',
