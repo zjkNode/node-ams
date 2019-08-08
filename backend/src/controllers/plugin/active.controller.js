@@ -138,12 +138,12 @@ exports.one = function(req, res){
 }
 
 exports.active = function(req, res){
-    
+    let recordInfo = Object.assign({}, req.body);
     async.auto({
         activeModel: (callback) => {
             // 检查 code 是否存在，
             let where = {
-                code: req.body.code
+                code: recordInfo.code
             };
             activeService.one(where, (err, row) => {
                 return callback(err, row);
@@ -159,14 +159,17 @@ exports.active = function(req, res){
             let data = Object.assign({}, results.activeModel);
             data.status = CONSTANTS.BLOCK_ACTIVE_STATUS.VALID;
             data.start_time = utils.dateFormat(moment());
-            data.end_time = utils.dateFormat(moment().add(data.period, 'M'));
+            data.end_time = utils.dateFormat(moment().add(data.period || 1, 'M'));
             activeModel.auto(data);
             activeService.update(data,{ id: data.id }, (err, resId) => {
                 return callback(err,resId)
             })
         }],
         addRecord:['activeModel', (results, callback) => {
-            
+            recordInfo.create_time = utils.dateFormat(moment());
+            activeService.addActiveRecord(recordInfo, (err, recordId) => {
+                return callback(err, recordId)
+            })
         }]
     }, (err, results) => {
         if(err){
@@ -174,11 +177,9 @@ exports.active = function(req, res){
     		return res.status(err.constructor.status).json(err);
 		}
         logService.log(req, '激活成功', where);
-        let tokenStr = results.activeModel.phone + '_' + results.activeModel.code;
-		return res.status(200).json({code:'SUCCESS', data:'', msg:'激活成功'});
+        let tokenStr = utils.encrypt(results.activeModel.phone + '_' + results.activeModel.code);
+		return res.status(200).json({code:'SUCCESS', data: tokenStr, msg:'激活成功'});
     })
-
-    return res.status(200).json({ code: 'SUCCESS', data: req.body, msg:'' });
 }
 
 // 生成随机码

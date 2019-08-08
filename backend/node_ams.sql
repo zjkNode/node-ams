@@ -58,7 +58,7 @@ CREATE TABLE `block_active` (
 -- ----------------------------
 DROP TABLE IF EXISTS `block_active_record`;
 CREATE TABLE `block_active_record` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) NOT NULL COMMENT '激活码',
   `mac_addr` varchar(255) NOT NULL COMMENT '终端mac地址',
   `create_time` datetime DEFAULT NULL COMMENT '添加时间',
@@ -70,7 +70,7 @@ CREATE TABLE `block_active_record` (
 -- ----------------------------
 DROP TABLE IF EXISTS `block_pay_record`;
 CREATE TABLE `block_pay_record` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(255) NOT NULL COMMENT '激活码',
   `payment` varchar(255) DEFAULT NULL COMMENT '支付金额',
   `periods` varchar(255) DEFAULT NULL COMMENT '周期，单位：月',
