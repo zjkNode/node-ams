@@ -169,6 +169,9 @@ module.exports = {
         },
         '/active':{
             post:'plugin.active.active'
+        },
+        '/status':{
+            post: 'plugin.active.one'
         }
     }
 }

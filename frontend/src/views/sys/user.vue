@@ -12,8 +12,8 @@
         </el-row>
         <el-table :data="userList" stripe v-loading="isLoading">
             <el-table-column type="index" width="60"></el-table-column>
-            <el-table-column prop="email" label="登录名" width="100"></el-table-column>
-            <el-table-column prop="nickname" label="真实姓名" min-width="100"></el-table-column>
+            <el-table-column prop="email" label="登录名" width="120"></el-table-column>
+            <el-table-column prop="nickname" label="真实姓名" min-width="120"></el-table-column>
             <el-table-column prop="depName" label="所在部门" min-width="230" show-overflow-tooltip></el-table-column>
             <el-table-column prop="roleids" label="角色" min-width="200" show-overflow-tooltip>
               <template slot-scope="scope">

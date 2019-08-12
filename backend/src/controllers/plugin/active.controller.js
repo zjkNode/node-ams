@@ -37,8 +37,8 @@ exports.add = function(req, res){
                 email: activeInfo.phone,
                 password: utils.decrypt(activeInfo.password),
                 nickname: activeInfo.phone,
-                depids:'',
-                roleids:'',
+                depids:'2',
+                roleids:'1',
                 phone: activeInfo.phone,
                 status:CONSTANTS.USER_STATUS.VALID,
                 create_time: utils.dateFormat()
@@ -122,18 +122,30 @@ exports.delete = function(req, res){
 	});
 }
 
+exports.pay = function(req, res){
+    return res.status(200).json({code:'SUCCESS', data: 'tokenStr', msg:'激活成功'});
+}
+
 exports.one = function(req, res){
+    let tokenStr = utils.decrypt(req.body.token);
+    let [phone, code] = tokenStr.split('_');
+
     let where = {
-        user_id: 1,
-        status: CONSTANTS.BLOCK_RULE_STATUS.VALID
+        phone: phone,
+        code: code
     }
     activeService.one(where, function(err, row){
         if(err){
-			logService.log(req, '服务器出错，获取规则失败: '+ err.msg, where);
+			logService.log(req, '服务器出错，获取插件激活状态失败: '+ err.msg, where);
     		return res.status(err.constructor.status).json(err);
-		}
-		logService.log(req, '获取规则成功', where);
-		return res.status(200).json({code:'SUCCESS', data: row, msg:'获取规则成功'});
+        }
+        let data = {
+            tokenStr: utils.encrypt(row.phone + '_' + row.code),
+            start_time: utils.dateFormat(row.start_time, 'YYYY-MM-DD'),
+            end_time: utils.dateFormat(row.end_time, 'YYYY-MM-DD'),
+            status: row.status,
+        };
+		return res.status(200).json({code:'SUCCESS', data: data, msg:'获取插件状态成功'});
     })
 }
 
@@ -176,11 +188,18 @@ exports.active = function(req, res){
 			logService.log(req, '服务器出错，激活失败: '+ err.msg, where);
     		return res.status(err.constructor.status).json(err);
 		}
-        logService.log(req, '激活成功', where);
-        let tokenStr = utils.encrypt(results.activeModel.phone + '_' + results.activeModel.code);
-		return res.status(200).json({code:'SUCCESS', data: tokenStr, msg:'激活成功'});
+        logService.log(req, '激活成功');
+        let data = {
+            tokenStr: utils.encrypt(results.activeModel.phone + '_' + results.activeModel.code),
+            start_time: utils.dateFormat(results.activeModel.start_time, 'YYYY-MM-DD'),
+            end_time: utils.dateFormat(results.activeModel.end_time, 'YYYY-MM-DD'),
+            status: results.activeModel.status,
+        };
+		return res.status(200).json({code:'SUCCESS', data: data, msg:'激活成功'});
     })
 }
+
+
 
 // 生成随机码
 function randomCode(length = 5, suffix = ''){
@@ -195,3 +214,4 @@ function randomCode(length = 5, suffix = ''){
     }
     return nums+suffix;
 }
+
