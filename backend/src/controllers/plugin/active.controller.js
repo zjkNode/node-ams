@@ -128,8 +128,13 @@ exports.pay = function(req, res){
 
 exports.one = function(req, res){
     let tokenStr = utils.decrypt(req.body.token);
+    if(!tokenStr){
+        let data = {
+            status: CONSTANTS.BLOCK_ACTIVE_STATUS.UNACTIVE
+        }
+		return res.status(200).json({code:'SUCCESS', data: data,  msg:'token 为空'});
+    }
     let [phone, code] = tokenStr.split('_');
-
     let where = {
         phone: phone,
         code: code
@@ -145,6 +150,9 @@ exports.one = function(req, res){
             end_time: utils.dateFormat(row.end_time, 'YYYY-MM-DD'),
             status: row.status,
         };
+        if(moment() > moment(row.end_time)){
+            data.status = CONSTANTS.BLOCK_ACTIVE_STATUS.INVAILD;
+        }
 		return res.status(200).json({code:'SUCCESS', data: data, msg:'获取插件状态成功'});
     })
 }

@@ -1,6 +1,9 @@
 var async = require('async'),
+    utils = require('../../lib/utils'),
+    moment = require("moment"),
     blockModel = require('../../models/plugin/block.model.js'),
     blockService = require('../../services/plugin/block.service.js');
+    activeService = require('../../services/plugin/active.service.js');
     logService = require('../../services/sys/log.service');
 
 let CONSTANTS = require('../../config/constants.config');
@@ -102,8 +105,46 @@ exports.delete = function(req, res){
 }
 
 exports.one = function(req, res){
+    let tokenStr = utils.decrypt(req.body.token);
+    if(!tokenStr){
+        return res.status(ComError.status).json({code:'FAILED', msg:'token 为空'});
+    }
+    let [phone, code] = tokenStr.split('_');
+
+    async.waterfall([
+        function(callback){
+            let where = {
+                phone: phone,
+                code: code
+            }
+            activeService.one(where, function(err, row){
+                if(err){
+                    return callback(err);
+                }
+                if(row.status === CONSTANTS.BLOCK_ACTIVE_STATUS.INVAILD || moment() > moment(row.end_time)){
+                    return callback(new ComError('CODE_INVAILD','激活码已失效'));
+                }
+                if(row.status === CONSTANTS.BLOCK_ACTIVE_STATUS.UNACTIVE){
+                    return callback(new ComError('CODE_UNACTIVE', '未激活'));
+                }
+                return callback(null, row);
+            })
+        },
+        function(activeData, callback){
+            let where = {
+                user_id:
+            }
+        }
+    ], function(error, result){
+
+    })
+
+
+
+
+    let userId = parseInt(code.substr(-3));
     let where = {
-        user_id: 1,
+        user_id: userId,
         status: CONSTANTS.BLOCK_RULE_STATUS.VALID
     }
     blockService.one(where, function(err, row){
