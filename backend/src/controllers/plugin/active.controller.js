@@ -19,7 +19,6 @@ exports.list = function (req, res) {
 
 exports.add = function(req, res){
     let activeInfo = Object.assign(req.body);
-    console.log(activeInfo)
     async.waterfall([
         function(callback){
             let where = {

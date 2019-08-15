@@ -105,7 +105,9 @@ exports.delete = function(req, res){
 }
 
 exports.one = function(req, res){
+    console.log(req.body.token)
     let tokenStr = utils.decrypt(req.body.token);
+    console.log(tokenStr)
     if(!tokenStr){
         return res.status(ComError.status).json({code:'FAILED', msg:'token 为空'});
     }
@@ -124,35 +126,24 @@ exports.one = function(req, res){
                 if(row.status === CONSTANTS.BLOCK_ACTIVE_STATUS.INVAILD || moment() > moment(row.end_time)){
                     return callback(new ComError('CODE_INVAILD','激活码已失效'));
                 }
-                if(row.status === CONSTANTS.BLOCK_ACTIVE_STATUS.UNACTIVE){
-                    return callback(new ComError('CODE_UNACTIVE', '未激活'));
-                }
                 return callback(null, row);
             })
         },
         function(activeData, callback){
             let where = {
-                user_id:
+                user_id:activeData.uid,
+                status: CONSTANTS.BLOCK_RULE_STATUS.VALID
             }
+            blockService.one(where, function(err, row){
+                return callback(err, row);
+            })
         }
     ], function(error, result){
-
-    })
-
-
-
-
-    let userId = parseInt(code.substr(-3));
-    let where = {
-        user_id: userId,
-        status: CONSTANTS.BLOCK_RULE_STATUS.VALID
-    }
-    blockService.one(where, function(err, row){
-        if(err){
-			logService.log(req, '服务器出错，获取规则失败: '+ err.msg, where);
-    		return res.status(err.constructor.status).json(err);
-		}
-		logService.log(req, '获取规则成功', where);
-		return res.status(200).json({code:'SUCCESS', data: row, msg:'获取规则成功'});
+        if(error){
+			logService.log(req, '服务器出错，获取规则失败: '+ error.msg);
+    		return res.status(error.constructor.status).json(error);
+        }
+        logService.log(req, '获取规则成功');
+		return res.status(200).json({code:'SUCCESS', data: result, msg:'获取规则成功'});
     })
 }
