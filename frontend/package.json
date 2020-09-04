@@ -26,7 +26,7 @@
     "jsencrypt": "^3.0.0-rc.1",
     "md5": "^2.2.1",
     "moment": "^2.22.2",
-    "node-sass": "^4.9.0",
+    "node-sass": "^4.13.1",
     "sass-loader": "^7.0.1",
     "vue-cookie": "^1.1.4",
     "vue-template-compiler": "^2.5.16"
