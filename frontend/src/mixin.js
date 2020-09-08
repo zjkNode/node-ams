@@ -51,7 +51,7 @@ export default {
                         this.$store.dispatch('refreshMenuTree');
                         this.$cookie.delete('nodesyscookie');
             			// 强制刷新页面，清除vuex 对变量的缓存，否则重新登录后，系统菜单加载不出来
-                        window.location.replace('/login');
+                        // window.location.replace('/login');
                         // this.$router.push({ path: '/login'});
                     }).catch(() => { }); 
 				}
