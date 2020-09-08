@@ -36,7 +36,7 @@ axios.interceptors.response.use(response => {
             duration: 1000,
             onClose(){
                 // 强制刷新页面，清除vuex 对变量的缓存，否则重新登录后，系统菜单加载不出来
-                window.location.replace('/login'); 
+                // window.location.replace('/login'); 
             }
         });
         // vm.$router.push({ path: '/login' });
@@ -70,7 +70,7 @@ axios.interceptors.response.use(response => {
             // 401 清除token信息并跳转到登录页面
             vm.$cookie.delete('nodesyscookie');
             // 强制刷新页面，清除vuex 对变量的缓存，否则重新登录后，系统菜单加载不出来
-            window.location.replace('/login');
+            // window.location.replace('/login');
             // vm.$router.push({ path: '/login' });
             break;
     }
