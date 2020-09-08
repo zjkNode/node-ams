@@ -13,7 +13,7 @@ let path = require('path'),
 
 module.exports.init = function (req, res, next) {
 	tempDirLink();
-	actCompDirLink();
+	// actCompDirLink();
 }
 
 // 组件因为每次发布会从Git上拉取代码，组件会丢失，所以软连接到某个公共目录

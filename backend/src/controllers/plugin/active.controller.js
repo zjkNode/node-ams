@@ -37,7 +37,7 @@ exports.add = function(req, res){
                 password: utils.decrypt(activeInfo.password),
                 nickname: activeInfo.phone,
                 depids:'2',
-                roleids:'1',
+                roleids:'3',
                 phone: activeInfo.phone,
                 status:CONSTANTS.USER_STATUS.VALID,
                 create_time: utils.dateFormat()

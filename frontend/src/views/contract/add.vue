@@ -75,7 +75,7 @@
 
             // 修改
             this.title = '编辑';
-            this.loadData(id);
+            // this.loadData(id);
         },
         methods:{
             initEditor(){
@@ -106,11 +106,12 @@
                 });
             },
             onSubmit(){
-                if(this.formData.id){
-                    this.onEditSubmit();
-                    return;
-                }
-                this.onAddSubmit();
+                console.log(this.formData.content);
+                // if(this.formData.id){
+                //     this.onEditSubmit();
+                //     return;
+                // }
+                // this.onAddSubmit();
             },
             onAddSubmit(){
                 this.$refs.conForm.validate((valid) => {
