@@ -42,6 +42,7 @@ exports.signIn = function (req, res) {
 				if(!user){
 					return callback(new ComError('NOT_EXIST_USER', '用户名不存在'))
 				}
+				console.log('输入密码:'+ utils.decrypt(req.body.password))
 				if(user.password !== utils.decrypt(req.body.password)){
 					return callback(new ComError('ERR_USER_OR_PWD', '用户名或密码不正确'))
 				}
