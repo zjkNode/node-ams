@@ -67,13 +67,13 @@ let router =  new Router({
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || 'zjk管理系统'
   // next();
-  if(Vue.cookie.get('cmsnodessid')){
+  if(Vue.cookie.get('nodesyscookie')){
     next();
     return;
   }
 
   localStorage.clear();
-  Vue.cookie.delete('cmsnodessid');
+  Vue.cookie.delete('nodesyscookie');
 
   if(to.path == '/login'){
     next();
