@@ -107,11 +107,11 @@
             },
             onSubmit(){
                 console.log(this.formData.content);
-                // if(this.formData.id){
-                //     this.onEditSubmit();
-                //     return;
-                // }
-                // this.onAddSubmit();
+                if(this.formData.id){
+                    this.onEditSubmit();
+                    return;
+                }
+                this.onAddSubmit();
             },
             onAddSubmit(){
                 this.$refs.conForm.validate((valid) => {

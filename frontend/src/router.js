@@ -65,21 +65,21 @@ let router =  new Router({
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title || '互联网信贷管理系统'
-  next();
-  // if(Vue.cookie.get('cmsnodessid')){
-  //   next();
-  //   return;
-  // }
+  document.title = to.meta.title || 'zjk管理系统'
+  // next();
+  if(Vue.cookie.get('cmsnodessid')){
+    next();
+    return;
+  }
 
-  // localStorage.clear();
-  // Vue.cookie.delete('cmsnodessid');
+  localStorage.clear();
+  Vue.cookie.delete('cmsnodessid');
 
-  // if(to.path == '/login'){
-  //   next();
-  //   return;
-  // }
-  // next({ path: '/login'});
+  if(to.path == '/login'){
+    next();
+    return;
+  }
+  next({ path: '/login'});
 })
 
 router.afterEach((to, from) => {
