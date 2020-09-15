@@ -16,6 +16,10 @@ module.exports = {
 	CONTRACT_TYPE_STATUS: {VALID: 1, INVALID: 2},// 合同类型状态 1有效  2无效
 	CONTRACTS_VM: {VALID: 1, INVALID: 2},// 合同占位符状态 1有效  2无效
 
+
+	PRO_STATUS:{TEST: 1, ONLINE: 2, OFFLINE: 3, UPDATE:4},// 合同内容状态 1草稿 2上线 3下线 4已更新
+	PRO_TYPE_STATUS:{VALID: 1, INVALID: 2},// 产品类型状态 1有效  2无效
+
 	// 附件管理
 	FILE_TYPE_STATUS: { VALID: 1, INVALID: 2 }, // 附件类型状态：1有效 2无效
 

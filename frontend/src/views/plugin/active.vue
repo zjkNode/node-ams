@@ -222,7 +222,7 @@ export default {
     onPayCofirm(){
       let url = '/api/plugin/blockPay';
       this.$http.post(url,this.payData).then(res => {
-
+        console.log(res)
       }).catch(() => {});
     }
   }

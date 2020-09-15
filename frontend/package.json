@@ -1,6 +1,6 @@
 {
-  "name": "node-frontend",
-  "version": "0.1.0",
+  "name": "node-front",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "dev": "vue-cli-service serve",
@@ -9,13 +9,14 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "babel-loader": "^8.0.6",
     "element-ui": "^2.10.1",
-    "eslint-loader": "^2.2.1",
-    "register-service-worker": "^1.0.0",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",
+    "md5": "^2.2.1",
+    "jsencrypt": "^3.0.0-rc.1",
+    "moment": "^2.22.2",
     "vuex": "^3.0.1",
+    "vue-cookie": "^1.1.4",
     "wangeditor": "^3.1.1"
   },
   "devDependencies": {
@@ -23,12 +24,10 @@
     "@vue/cli-plugin-eslint": "^3.0.0-rc.5",
     "@vue/cli-plugin-pwa": "^3.0.0-rc.5",
     "@vue/cli-service": "^3.0.0-rc.5",
-    "jsencrypt": "^3.0.0-rc.1",
-    "md5": "^2.2.1",
-    "moment": "^2.22.2",
+    "register-service-worker": "^1.0.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
-    "vue-cookie": "^1.1.4",
+    "script-loader": "^0.7.2",
     "vue-template-compiler": "^2.5.16"
   }
 }

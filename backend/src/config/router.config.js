@@ -141,6 +141,35 @@ module.exports = {
                 delete: 'contract.contract.delete'
             }
         },
+        '/pro':{
+          '/type':{
+              '/tree':{
+                  get: 'product.type.tree'
+              },
+              get: 'product.type.list',
+              post: 'product.type.add',
+              '/:id':{
+                  put: 'product.type.update',
+                  delete: 'product.type.delete'
+              }
+          },
+          '/online':{
+              post: 'product.product.online'
+          },
+          '/offline':{
+              post: 'product.product.offline'
+          },
+          '/upload': {
+              post: 'product.product.upload'
+          },
+          get: 'product.product.list',
+          post: 'product.product.add',
+          '/:id':{
+              get: 'product.product.one',
+              put: 'product.product.update',
+              delete: 'product.product.delete'
+          }
+      },
 
         '/yz':{
             '/banner':{
