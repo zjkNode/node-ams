@@ -1,0 +1,108 @@
+{% extends "partials/layout.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/swiper2.7.6.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/auth.css" />
+{% endblock %}
+
+{% block content %}
+<div class="auth-content">
+    <div class="auth-wrapper">
+        <p class="auth-header">
+            18210189999
+        </p>
+        <ul class="auth-infor">
+            <li>
+                <img src="../static/img/jc.png" class="infor-icon"/>
+                <span>基本信息</span>
+                <span class="spe" id="jb-store">未认证</span>
+            <span class="infor-btn">
+                <button data-for="jb-infor-mask">立即认证</button>
+            </span>
+            </li>
+            <li>
+                <img src="../static/img/sf.png" class="infor-icon" style="margin-right: 15px"/>
+                <span>身份信息</span>
+                <span class="spe" id="sf-store">未认证</span>
+            <span class="infor-btn">
+                <button data-for="sf-infor-mask">立即认证</button>
+            </span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="auth-mask">
+    <div class="auth-wrapper" id="sf-infor-mask">
+        <span class="auth-close">
+            <img src="../static/img/auth-close.png" />
+        </span>
+        <p class="auth-mask-header">
+            身份信息
+        </p>
+        <div class="auth-photo">
+            <p>
+                <input type="file"  class="photo-input" name="up"/>
+                <input type="file" class="photo-input1" name="down"/>
+            </p>
+            <p>
+                <span class="file-img">
+                    <img src="" class="fileImg"/>
+                    <img src="../static/img/auth-sf.png" class="fileIcon"/>
+                    上传身份证(人像面)
+                </span>
+                <span class="file-img" style="margin-right: 0">
+                    <img src="" class="fileImg"/>
+                    <img src="../static/img/auth-sf1.png" style="margin-top: 48px;" class="fileIcon"/>
+                    上传身份证(国徽面)
+                </span>
+            </p>
+
+            <button class="auth-sf-btn">确认提交</button>
+        </div>
+    </div>
+    <div class="auth-wrapper" id="jb-infor-mask">
+        <span class="auth-close">
+            <img src="../static/img/auth-close.png" />
+        </span>
+        <p class="auth-mask-header">
+            基本信息
+        </p>
+        <div class="auth-jb-content">
+            <p class="auth-input">
+                <label for="">姓名</label>
+                <input  type="text"  name="nameId" autofocus/>
+            </p>
+            <p class="auth-input">
+                <label for="">身份证号码</label>
+                <input  type="text"  name="cardNo" />
+            </p>
+            <p class="auth-input">
+                <label for="">手机号</label>
+                <input  type="tel"  name="mobile"/>
+            </p>
+            <p class="auth-input">
+                <label for="">家庭住址</label>
+                <input  type="tel"  name="address"/>
+            </p>
+            <p class="auth-input">
+                <label for="">婚姻状态</label>
+            <span class="married">
+                <input  type="checkbox" value="married" name="married"/>
+                已婚
+            </span>
+            <span class="unmarried">
+                <input  type="checkbox" value="unmarried"/>
+                未婚
+            </span>
+            </p>
+            <button class="auth-input-btn">确认提交</button>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="/static/js/auth.js"></script>
+{% endblock %}

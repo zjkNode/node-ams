@@ -1,0 +1,323 @@
+.content{
+	/*margin-top: 118px;*/
+	min-height: 1018px;
+	position: relative;
+}
+.personalContainer{
+	width: 1240px;
+  margin: 0 auto;
+  position: relative;
+  color:#999;
+  font-size: 14px;
+  font-weight: 600;
+  padding-top: 59px;
+}
+.title{
+	color:#68686a;
+	font-size: 18px;
+	margin: 0 0 10px 20px;
+	font-weight: 700;
+}
+.personalBox{
+	width: 1240px;
+	border: 1px solid #e5e5e5;
+	position: relative;
+}
+.right{
+	float: right;
+}
+.address,.payModel,.total{
+	width: 1202px;
+	height: 95px;
+	margin: 0 auto 28px;
+	border-bottom: 1px solid #e5e5e5;
+
+}
+.addAddress{
+	font-size: 12px;
+	color:#528ec6;
+	margin-top:23px;
+	cursor: pointer;
+}
+.addressTitle,.payModelTitle,.totalTitle{
+	font-size: 16px;
+	color:#333;
+	font-weight: 500;
+	margin:20px 0 12px 0;
+	display: inline-block;
+}
+.payModel{
+	height: 122px;
+}
+.payModelTitle,.totalTitle{
+	margin-top:0;
+}
+
+.details_pay,.details_time {
+	font-size: 14px;
+	color:#333;
+	font-weight: normal;
+}
+.details_pay select {
+  width: 84px;
+  height: 27px;
+  color: #333;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  margin-left: 15px;
+}
+
+.details_time {
+  margin-top:12px;
+}
+
+.details_time span {
+  display: inline-block;
+  width: 83px;
+  height: 27px;
+  text-align: center;
+  line-height: 27px;
+  vertical-align: middle;
+  border: 1px solid #e5e5e5;
+  font-size: 14px;
+  color: #333;
+  margin-right: 20px;
+}
+.details_time span:first-child { 
+  margin-left: 15px;
+}
+.details_time span.active{
+  border: 1px solid #fda5a5;
+  background: #FFBA7A;
+  color:#fff;
+}
+/*---*/
+.total{
+	height: 120px;
+	border: 0;
+}
+.total img{
+	width: 100%;
+	display: inline-block;
+}
+.totalList{
+	width: 100%;
+	height: 92px;
+	position: relative;
+}
+.listImg{
+	width: 92px;
+	height: 92px;
+	display: inline-block;
+}
+.listIntro{
+	width: 600px;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 14px;
+	color:#333;
+	position: absolute;
+	top:10px;
+	left:122px;
+}
+.infor{
+	color: #999;
+	top:35px;
+	font-weight: 500;
+}
+.listNum{
+	color: #333;
+	font-size: 16px
+	font-weight:700;
+	position: absolute;
+	top:33px;
+	right: 343px;
+}
+.listPrice{
+	color: #ff7b00;
+	font-size: 16px;
+	font-weight:700;
+	position: absolute;
+	top:33px;
+	right: 0;
+}
+.payReal{
+	height: 60px;
+	background: #f3f3f3;
+	font-size: 14px;
+	color:#333;
+}
+.payNum{
+	color: #ff7b00;
+	font-size: 24px;
+	margin:12px 20px 0 0;
+}
+
+.payW{
+	margin:20px 10px 0 0;
+}
+.btnPay{
+	width: 136px;
+	height: 36px;
+	color: #fff;
+	background: #FD7B23;
+	text-align: center;
+	line-height: 36px;
+	border-radius: 2px;
+	vertical-align: middle;
+	margin-top: 15px;
+}
+/*地址弹窗*/
+.modelAddress,.modelPay{
+	display: none;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.66);
+	float: left;
+	position: absolute;
+	top:-118px;
+	left: 0;
+	z-index: 100;
+}
+.close{
+	cursor: pointer;
+}
+.addressItem{
+	width: 690px;
+	height: 426px;
+	margin:228px auto 0;
+	background: #fff;
+}
+
+.modelTitle,.payTitle{
+	width: 100%;
+	height: 56px;
+	background: #f3f3f3;
+	color: #999;
+	font-size: 20px;
+	padding: 14px 20px;
+	box-sizing: border-box;
+}
+.addressInfo{
+	margin:30px 0 0 20px;
+}
+
+.addressInfo>.item{
+	margin-bottom: 20px;
+}
+.itemLeft{
+	width: 70px;
+	height: 27px;
+	line-height: 27px;
+	vertical-align: middle;
+	display: inline-block;
+	text-align: right;
+	margin-right: 20px;
+	color: #333;
+	font-size: 14px;
+}
+.itemLeft>span{
+	color: #FF3F3F;
+}
+.addressChoose{
+	width: 95px;
+	height: 27px;
+	margin-right: 22px;
+	border: 1px solid #D2D2D2;
+	font-size: 14px;
+	color:#333;
+}
+.addressDetail{
+	width: 345px;
+	height: 60px;
+	resize:none;
+	border: 1px solid #D2D2D2;
+	box-sizing: border-box;
+	padding: 6px;
+	font-size: 14px;
+	color:#333;
+
+}
+.ipt{
+	width: 242px;
+	height: 27px;
+	border: 1px solid #D2D2D2;
+	box-sizing: border-box;
+	padding: 6px;
+	font-size: 14px;
+	color:#333;
+}
+.bg3{
+	width: 50px;
+	height: 27px;
+	display: inline-block;
+	border: 1px solid #d2d2d2;
+	border-radius: 2px;
+	color:#8f9195;
+	font-size: 12px;
+	text-align: center;
+	line-height: 27px;
+	vertical-align: middle;
+	background: #f3f3f3;
+	margin-right: 15px;
+	font-weight: 600;
+	box-sizing: border-box;
+}
+.phone>input,.mobile>input{
+	width: 172px;
+}
+.btnSave{
+	width: 68px;
+	height: 28px;
+	background: #FD7B23;
+	text-align: center;
+	line-height: 28px;
+	vertical-align: middle;
+	font-size: 14px;
+	color: #fff;
+	font-weight: 700;
+	display: inline-block;
+	cursor: pointer;
+}
+.isPay{
+	width: 510px;
+	height: 210px;
+	margin: 274px auto 0;
+	background: #fff;
+}
+.payInfor{
+	color:#999;
+	font-size: 16px;
+	margin:40px 0 25px;
+	text-align: center;
+}
+.orderNum{
+	color: #707070;
+	font-size: 18px;
+}
+.btnP{
+	width: 136px;
+	height: 36px;
+	color:#999;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 36px;
+	vertical-align: middle;
+	text-align: center;
+	border: 1px solid #d2d2d2;
+	display: inline-block;
+	cursor: pointer;
+}
+.btnPayNo{
+	margin:0 40px 0 95px;
+}
+.btnPayYes{
+	background: #FD7B23;
+	color:#fff;
+	border: 1px solid #fda5a5;
+}
+
+
+

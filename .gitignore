@@ -1,6 +1,7 @@
 npm-debug.log
 backend/node_modules
 frontend/node_modules
+*/node_modules
 .DS_Store
 *.css.map
 !backend/src/static/css/*

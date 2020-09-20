@@ -1,0 +1,122 @@
+.content{
+	/*margin-top: 118px;*/
+	min-height: 918px;
+	position: relative;
+}
+.myOrderContainer{
+	width: 1240px;
+  margin: 0 auto;
+  position: relative;
+  color:#999;
+  font-size: 14px;
+  font-weight: 600;
+  padding-top: 59px;
+  margin-bottom: 100px;
+}
+
+.title{
+	color:#68686a;
+	font-size: 18px;
+	margin: 0 0 10px 20px;
+	font-weight: 700;
+}
+.myOrderBox,.myOrderNo{
+	width: 1240px;
+	/*min-height: 500px;*/
+	border: 1px solid #e5e5e5;
+	position: relative;
+	display: none;
+}
+.myOrderNo{
+	display: none;
+}
+.orderNum{
+	margin-left: 30px;
+}
+.orderNum>span{
+	color:#333; 
+}
+.myOrderContainer img{
+  width:100%;
+  display: block;
+}
+.right{
+	float: right;
+}
+.orderItem{
+	width: 1202px;
+	height: 145px;
+	margin: 0 auto 28px;
+	border-bottom: 1px solid #e5e5e5;
+	/*background: #aaa;*/
+	padding: 20px 0 30px;
+
+}
+.orderItem:last-child{
+	border: none;
+}
+.total{
+	height: 120px;
+	border: 0;
+}
+.totalList{
+	width: 100%;
+	height: 70px;
+	position: relative;
+	margin-top: 13px;
+}
+.listImg{
+	width: 70px;
+	height: 70px;
+	display: inline-block;
+}
+.listIntro{
+	width: 500px;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	font-size: 14px;
+	color:#333;
+	position: absolute;
+	top:7px;
+	left:99px;
+}
+.infor{
+	color: #999;
+	top:32px;
+	font-weight: 500;
+}
+.listNum{
+	color: #333;
+	font-size: 16px;
+	font-weight:600;
+	position: absolute;
+	top:26px;
+	left: 683px;
+}
+.listPrice{
+	color: #ff7b00;
+	font-size: 16px;
+	font-weight:600;
+	position: absolute;
+	top:26px;
+	left: 844px;
+}
+.btnPay{
+	width: 62px;
+	height: 26px;
+	color: #FF7B00;
+	border: 1px solid #FF7B00;
+	border-radius: 2px;
+	font-weight: normal;
+	text-align: center;
+	line-height: 26px;
+	vertical-align:middle;
+	position: absolute;
+	top:20px;
+	right: 0;
+}
+
+

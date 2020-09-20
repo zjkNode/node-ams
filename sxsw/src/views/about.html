@@ -1,0 +1,30 @@
+{% extends "partials/layout.html" %}
+
+
+{% block content %}
+<style type="text/css">
+  .about{margin-top: -50px;}
+  .about .banner{width: 100%;height: 100%;}
+  .about h1{font-size: 24px;line-height: 88px;text-align: center;position: relative;margin: 30px 0;}
+  .about h1:before, .about h1:after{content: ' '; width: 80px;height: 1px;background-color: #e5e5e5;position: absolute;top: 42px;}
+  .about h1:before{left: 400px;}
+  .about h1:after{right: 400px;}
+
+  .about .section{padding: 20px 60px 20px;font-size: 14px;}
+  .about .section img{float: left; width: 420px; height: 260px; margin-right: 20px;}
+  .about .section p{line-height: 35px;margin-top: 15px;text-indent: 2em; color: #999;}
+</style>
+<div class="about">
+  <img class="banner" src="/static/img/about_banner.png" />
+  <div class="container section">
+    <h1>企业简介</h1>
+    <img src="/static/img/env1.png" alt="" />
+    <p>杭州尚炫生物科技有限公司（简称“公司”）成立于2016年，公司业务主要包括分析仪器、实验室设备、试剂、耗材等，旨在推广国内外先进的生命科学及材料化工类产品及技术，为客户提供最全面的生物样本处理方案及最高品质的产品和服务，长期业务覆盖各大高校、科研机构、医院、研发型企业等。</p>
+    <p>我们与国内外各大品牌厂家及代理商都有保持长期的沟通与合作，可以及时提供专业的厂家技术支持及售后，折扣及促销信息与厂家保持一致，消除客户的后顾之忧。</p>
+    <p>我们的技术服务合作平台主要为金唯智、生工、汉恒、中科新生命、复旦大学、上海交通大学医学院、上海师范大学等，我们的合作模式灵活，可以根据您的实验要求定制，常规的实验服务主要是引物合成、基因合成、质粒构建、病毒包装、稳转细胞株筛选、电镜扫描、Q-PCR检测服务、WesternBlot实验、NGS、及特色服务RNA甲基化测序等。</p>
+    <p>我们一直在细胞培养、动物模型、微生物相关的分子生物学、蛋白质研究、免疫学、材料科学及化工类研究等方面努力，了解掌握各大品牌产品的优势，推广各大平台的特色技术服务，目前已经与上海交通大学、复旦大学、海军军医大学、上海交通大学医学院附属瑞金医院、上海交通大学医学院附属第九人民医院、复旦大学附属华山医院、浙江大学医学院附属第一医院、浙江医院、湖州市第一人民医院等高校及医院展开合作。</p>
+    <p>未来，公司将致力于高通量技术在疾病研究等方面的推广，致力于为国内科研用户提供国际先进的高通量检测系统解决方案，同时为体内体外课题研究提供优质的产品和专业的服务。公司将一直专注样本处理与样本检测！</p>
+    
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "partials/layout.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/register.css" />
+{% endblock %}
+
+{% block content %}
+<div class="container register">
+	<h3>注册新用户</h3>
+	<div class="form">
+		<div class="form-item phone">
+			<label>手机号码</label><input type="text" name="" placeholder="手机号"  autocomplete="off"/><span></span>
+			<br/><label></label><div class="button">免费获取动态验证码</div>
+		</div>
+		<div class="form-item smsCode">
+			<label>短信验证码</label><input type="text" name="" placeholder="短信验证码"  autocomplete="off"/><span></span>
+		</div>
+		<div class="form-item pwd1">
+			<label>创建密码</label><input type="password" name="" placeholder="6~16位数字、字母"  autocomplete="off"/><span></span>
+		</div>
+		<div class="form-item pwd2">
+			<label>确认密码</label><input type="password" name="" placeholder="6~16位数字、字母"  autocomplete="off"/><span></span>
+		</div>
+		<div class="form-item mark err">
+			<label></label><input type="checkbox" name="" />已阅读并同意<a href="/agreement.html" target="_blank">火山商城网站注册协议</a>
+		</div>
+		<a class="btn">注册</a><br/>
+		<span class="jump">恭喜您！注册成功！3秒后自己跳转<a href="/login.html">登录</a>页</span>
+	</div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="/static/js/register.js"></script>
+{% endblock %}

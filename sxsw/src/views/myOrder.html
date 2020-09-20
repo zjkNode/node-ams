@@ -1,0 +1,25 @@
+{% extends "partials/layout.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/myOrder.css"/>
+{% endblock %}
+    
+{% block content %}
+
+<div class="myOrderContainer">
+    <p class="title">我的订单信息</p>
+    <div class="myOrderBox">
+    </div>
+    <div class="myOrderNo">
+      <img src="../static/img/noOrder.png" alt="">
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+
+{% block js %}
+  <script type="text/javascript" src="/static/js/myOrder.js"></script>
+{% endblock %}

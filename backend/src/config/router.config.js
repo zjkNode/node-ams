@@ -169,8 +169,18 @@ module.exports = {
               put: 'product.product.update',
               delete: 'product.product.delete'
           }
-      },
+        },
 
+        '/qizhi':{
+          '/student':{
+            get:'qizhi.student.list',
+            post:'qizhi.student.add',
+            '/:id':{
+              put:'qizhi.student.update',
+              delete:'qizhi.student.delete'
+            }
+          }
+        },
         '/yz':{
             '/banner':{
                 get:'youzhu.banner.list',
@@ -202,5 +212,18 @@ module.exports = {
         '/status':{
             post: 'plugin.active.one'
         }
+    },
+
+    '/qizhi':{
+      '/user':{
+        '/signIn':{ 
+          post:'qizhi.user.signIn'
+        }
+      },
+      '/study':{
+        '/checkIn':{
+          post: 'qizhi.study.checkIn'
+        }
+      }
     }
 }

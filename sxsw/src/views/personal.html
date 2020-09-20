@@ -1,0 +1,131 @@
+{% extends "partials/layout.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/personal.css"/>
+{% endblock %}
+    
+{% block content %}
+
+<div class="personalContainer">
+    <p class="title">填写并核对订单信息  </p>
+    <div class="personalBox">
+      <div class="address">
+          <p class="right addAddress">+新增收货地址</p>
+          <p class="addressTitle">收货人信息</p>
+          <p class="addressNo">暂无收货人信息</p>
+      </div>
+      <div class="payModel">
+          <p class="payModelTitle">支付方式</p>
+          <div class="details_mask">
+            <p class="details_pay">选择首付比例 :
+              <select>
+                <option value="0">零首付</option>
+                <option value="0.1">10%</option>
+                <option value="0.2">20%</option>
+                <option value="0.3">30%</option>
+                <option value="0.4">40%</option>
+                <option value="0.5">50%</option>
+              </select>
+            </p>
+            <p class="details_time"> &nbsp;&nbsp;&nbsp;&nbsp;选择分期数 :
+              <span data-value="0">不分期</span>
+              <span data-value="3">3个月</span>
+              <span data-value="6">6个月</span>
+              <span data-value="9">9个月</span>
+              <span data-value="12">12个月</span>
+            </p>
+          </div>
+      </div>
+      <div class="total">
+          <p class="totalTitle">送货清单</p>
+          <div class="totalList">
+              <div class="listImg">
+                <img   src="" alt="">
+              </div>
+              <p class='listIntro'></p>
+              <p class='listIntro infor'></p>
+              <p class="listNum">X 1</p>
+              <p class="listPrice"></p>
+          </div>
+      </div>
+    </div>
+    <div class="payment">
+      <div class="payReal">
+        <span class= "payNum right" id='payNum'></span>
+        <span class="payW right">实付款：</span>
+
+      </div>
+      <div class="btnPay right">
+        立即支付
+      </div>
+    </div>      
+</div>
+<div class="modelAddress">
+  <div class="addressItem">
+      <p class="modelTitle">
+        <span class='close right'>X</span>新增收货人信息
+      </p>
+      <div class="addressInfo">
+        <div class="item ">
+          <p class="itemLeft"><span>* </span>所在地区</p>
+          <select name="省份"  data-next='chengshi' class="addressChoose" id="shengfen">
+            <option value="请选择">请选择</option>
+          </select>
+          <select name="城市" data-next="diqu" class="addressChoose" id="chengshi">
+            <option value="请选择">请选择</option>
+          </select>
+          <select name="地区" class="addressChoose" id="diqu">
+            <option value="请选择">请选择</option>
+          </select>
+        </div>
+        <div class="item ">
+          <p class="itemLeft"><span>* </span>详细地址</p>
+          <textarea class="addressDetail" name=""></textarea>
+        </div>
+    
+        <div class="item">
+          <p class="itemLeft"><span>* </span>收货人</p>
+          <input class="consignee ipt" type="text">
+        </div>
+        <div class="item phone">
+          <p class="itemLeft"><span></span>手机号码</p>
+          <p class='bg3'>0086</p>
+          <input class='ipt' type="text">
+        </div>
+        <div class="item mobile">
+          <p class="itemLeft">固定电话</p>
+          <p class='bg3'>0086</p>
+          <input class="ipt" type="text">
+        </div>
+        <div class="item save">
+          <p class="itemLeft"></p>
+          <div class="btnSave">保存</div>
+        </div>
+      </div>
+  </div>      
+</div>
+<div class="modelPay">
+  <div class="isPay">
+    <p class="payTitle">
+      确认订单信息
+    </p> 
+    <p  class="payInfor">您的订单号为 
+      <span class='orderNum'> 12345678 </span> 购买此商品你需要支付：<span class='realPay'>958.11</span>元
+    </p>
+    <div class="btnPayNo btnP">
+      暂不支付
+    </div>
+    <div class="btnPayYes btnP">
+      立即支付
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+
+{% block js %}
+  <script type="text/javascript" src="/static/js/data.js"></script>
+  <script type="text/javascript" src="/static/js/area.js"></script>
+  <script type="text/javascript" src="/static/js/personal.js"></script>
+{% endblock %}

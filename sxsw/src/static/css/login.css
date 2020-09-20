@@ -1,0 +1,21 @@
+.header .noLogin{display: none;}
+
+.login{text-align: left;padding-top: 20px;}
+.login img{float: left;}
+
+.form{width: 280px; height: 270px;position: absolute; top: 20px; right: 130px;text-align: left;}
+.form label{margin-bottom: 10px; color: #333;font-size: 14px;}
+.form .form-item{margin: 25px 0; position: relative;}
+.form .form-item input{border:1px solid #ccc;padding: 8px 15px 8px 45px; background-color: transparent; display: block; width: 220px;background-repeat: no-repeat;background-position: left center;}
+.form .form-item span{position: absolute;font-size: 12px;color: #e94643;background-repeat: no-repeat;background-position: left 3px;background-size: 12px;padding-left: 20px; display: none;}
+.form .form-item.user input{background-image: url(/static/img/user_gray.jpg);}
+.form .form-item.user input:focus{border-color: #ff7b00;background-image: url(/static/img/user_org.jpg);}
+.form .form-item.user.err input{border-color: #e94643;background-image: url(/static/img/user_red.jpg);}
+.form .form-item.pwd input{background-image: url(/static/img/lock_gray.jpg);}
+.form .form-item.pwd input:focus{border-color: #ff7b00;background-image: url(/static/img/lock_org.jpg);}
+.form .form-item.pwd.err input{border-color: #e94643;background-image: url(/static/img/lock_red.jpg);}
+.form .err span{display: inherit;background-image: url(/static/img/ic_err.png);}
+
+
+.form span{font-size: 12px;color:#666;}
+.form span a{color: #ff7b00;}

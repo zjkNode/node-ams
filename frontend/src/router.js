@@ -40,6 +40,8 @@ var routes = [
   { title:'block 规则', name:'pluginBlock', path:'/plugin/block', view:'plugin/block'},
   { title:'block 激活码', name:'pluginActive', path:'/plugin/active', view:'plugin/active'},
 
+  { title:'学员管理', name:'student', path:'/qizhi/student', view:'qizhi/student'},
+
 ];
 
 

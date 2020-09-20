@@ -197,12 +197,8 @@
         border:none;
     }
 }
-.el-cascader, .el-select{
-    width:100%;
-}
-.el-pagination{
-    margin-top:10px;
-}
+.el-cascader, .el-select{width:100%;}
+.el-pagination{margin-top:10px;}
 
 .el-tag, .el-tag + .el-dropdown {
     margin-right: 10px;

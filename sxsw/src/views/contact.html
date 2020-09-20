@@ -1,0 +1,32 @@
+{% extends "partials/layout.html" %}
+
+{% block content %}
+<style type="text/css">
+  .contact{margin-top: -50px;}
+  .contact .banner{width: 100%;height: 100%;}
+  .contact h1{font-size: 24px;line-height: 88px;text-align: center;position: relative;margin: 30px 0;}
+  .contact h1:before, .contact h1:after{content: ' '; width: 80px;height: 1px;background-color: #e5e5e5;position: absolute;top: 42px;}
+  .contact h1:before{left: 400px;}
+  .contact h1:after{right: 400px;}
+
+  .contact .section{padding: 20px 60px 20px;font-size: 16px;}
+  .contact .section img{float: left; height: 260px;margin-left: 100px;margin-top: -70px;}
+  .contact .section p{line-height: 35px;}
+  .contact .section .info{display: inline-block; width: 440px;margin-left: 100px;}
+</style>
+<div class="box contact">
+  <img class="banner" src="/static/img/contact_banner.png" />
+  <div class="container section">
+        <h1>联系我们</h1>
+        <img src="/static/img/contact_ico.png" alt="" />
+      <div class="info">
+        <p>公司：尚炫生物科技有限公司</p>
+        <p>地址：浙江省杭州市余杭区临平镇东湖北路都市港湾</p>
+        <p>电话：（+86）177-7270-8857</p>
+        <p>QQ：252865381</p>
+        <p>E-mail：info@hzsxbio.com</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

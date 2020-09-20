@@ -25,7 +25,7 @@
         <el-table stripe v-loading="isLoading" :data="componentsLists">
             <el-table-column type="index" label="" width="60"></el-table-column>
             <el-table-column prop="name" label="组件名称" align="center"  min-width="200"></el-table-column>
-            <el-table-column prop="time" label="更新时间" width="160" align="center" :formatter="formatDate" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column prop="time" label="更新时间" width="160" align="center" :formatter="dateFormat" sortable show-overflow-tooltip></el-table-column>
             <el-table-column fixed="right" label="操作" width="100" align="center">
                 <template slot-scope="scope">
                     <el-button v-if="authCheck(sysActions.update)" type="text" size="small" @click="onEdit(scope.row)">更新</el-button>
@@ -69,9 +69,6 @@
                 }).catch(() => {
                     this.isLoading = false;
                 });
-            },
-            formatDate(row, column, value){
-                return this.$options.filters.formatDate(value);
             },
             onEdit(row){
                 this.uploadData.type = 'update';

@@ -7,6 +7,13 @@
     md5 = require('md5'),
     moment = require('moment');
 export default  {
+    dateFormat(value, format){
+      if(!value){
+        return '--';
+      }
+      format = format || 'YYYY-MM-DD HH:mm:ss';
+      return moment(value).format(format);
+    },
 	isMobile(mobile){
         let mobileRegex = /^[1][3-8]\d{9}$/;
         return mobileRegex.test(mobile);
@@ -96,14 +103,14 @@ export default  {
         }
         return sizestr;
     },
-    encrypt(plainText){
+    encrypt(plainText, isMD5 = true){
         var pk = `-----BEGIN PUBLIC KEY-----
             MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIY9/ZRirUo7bcnjr939dpJu3yjh+TNe
             Jhjn1Y4LMWhaNalE7A95pNLRupvQfEVAHAFGwJeJtmXcJcmPN+xuvP8CAwEAAQ==
             -----END PUBLIC KEY-----`;
         var encrypt = new jsencrypt.JSEncrypt();
         encrypt.setPublicKey(pk);
-        var encrypted = encrypt.encrypt(md5(plainText));
+        var encrypted = isMD5 ? encrypt.encrypt(md5(plainText)) : encrypt.encrypt(plainText);
         return encrypted;
     },
     uuid(){

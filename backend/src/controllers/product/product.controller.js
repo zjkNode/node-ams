@@ -184,8 +184,8 @@ exports.list = function(req,res) {
             });
         },
         cList: function(callback){
-            proService.list(where, page, function(err, result){
-                return callback(err, result);
+            proService.list(where, page, function(error, result){
+                return callback(error, result);
             });
         },
         cTypes:['cList', function(results, callback){

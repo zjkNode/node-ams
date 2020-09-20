@@ -1,0 +1,25 @@
+.register{padding-top: 30px; text-align: left;}
+
+h3{font-size: 14px;color: #333;padding-left: 8px;border-left:4px solid #ff7b00; height: 12px;line-height: 12px;}
+.form{margin-left: 12px;}
+.form .form-item{margin:20px 0;font-size: 14px;}
+.form .form-item label{display: inline-block; width: 120px; color: #333; text-align: right;padding-right: 10px;line-height: 37px; }
+.form .form-item span{display: none;height: 37px; line-height: 37px; background-repeat: no-repeat;background-position: left 12px;background-size: 12px; color: #666;font-size: 12px;padding-left: 20px;}
+.form .form-item input{width: 240px;height: 37px; padding-left: 10px; line-height: 37px;border:1px solid #ccc;color: #333; margin-right: 10px;}
+.form .form-item input:focus{border-color: #ff7b00;}
+.form .form-item.err input{border-color: #e94643;}
+.form .form-item.success span{display: inline-block;background-image: url(/static/img/ic_success.png);}
+.form .form-item.err span{display: inline-block;background-image: url(/static/img/ic_err.png); color:#e94643;}
+.form .form-item.notice span{display: inline-block;background-image: url(/static/img/ic_notice.png);}
+
+.form .form-item .button{width: 129px;height: 30px;line-height: 30px;font-size: 12px;color: #333;border:1px solid #ccc;background-color: #ececec;margin-top: 5px;margin-bottom: -20px;display: inline-block;text-align: center;}
+.form .button.disabled{color: #999;}
+
+.form .btn{letter-spacing: 0; display: inline-block;width: 250px;margin-left: 120px;margin-top: 0;}
+.form .jump{margin-left: 120px; font-size: 12px;color: #333;display: none;}
+.form .jump a{color: #ff7b00;}
+
+.form .mark{ font-size: 12px; color: #ff7b00; margin-bottom: 30px;}
+.form .mark input{height: 12px;width: 12px; margin-right: 8px;}
+.form .mark a{color: #333;}
+

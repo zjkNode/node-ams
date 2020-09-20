@@ -1,0 +1,45 @@
+{% extends "partials/layout.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/swiper2.7.6.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/detail.css"/>
+{% endblock %}
+
+{% block content %}
+<div class="container detail" id="infor_data">
+
+</div>
+<div id="infors" style="display: none">
+    <div class="top">
+      <div class="swiper-container slider">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" style="background-image: url('${banner1}')"></div>
+          <div class="swiper-slide" style="background-image: url('${banner2}')"></div>
+          <div class="swiper-slide" style="background-image: url('${banner3}')"></div>
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+      <div class="right">
+        <p class="title">${describe_1}</p>
+        <p class="remark">${describe_2}</p>
+        <p class="origin">原价 : <i>¥${market_price}</i></p>
+        <p class="price">现价 : <span><i>¥</i>${price}</span></p>
+        <!-- <p class="stock">库存 : 仅剩<span>${stock}</span>件</p> -->
+        <p class="btn">立即咨询</p>
+      </div>
+    </div>
+
+    <ul class="tabs">
+      <li class="on">产品参数</li>
+    </ul>
+    <div class="box">
+      <div class="tab-content">${info_param}</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="/static/js/swiper2.7.6.min.js"></script>
+<script type="text/javascript" src="/static/js/data.js"></script>
+<script type="text/javascript" src="/static/js/detail.js"></script>
+{% endblock %}

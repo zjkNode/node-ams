@@ -11,7 +11,8 @@ let pool = mysql.createPool({
     user:      dbconfig.user,   
     password:  dbconfig.pwd,    
     database:  dbconfig.dbname,    
-    port:      dbconfig.port
+    port:      dbconfig.port,
+    timezone:   dbconfig.timezone
 });
 
 let _this = this;
@@ -46,6 +47,7 @@ function _execute(sql, params, callback){
             //释放连接    
             conn.release();    
             //事件驱动回调 
+            console.log(rows)
             callback(qerr,rows,fields);
 
         }); 

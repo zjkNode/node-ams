@@ -1,0 +1,112 @@
+{% extends "partials/layout.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/swiper2.7.6.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/index.css"/>
+{% endblock %}
+
+{% block content %}
+<div class="box swiper-container banner">
+  <div class="swiper-wrapper">
+    <div class="swiper-slide" style="background-image: url(/static/img/banner1.jpg);"></div>
+  </div>
+  <div class="swiper-pagination"></div>
+</div>
+<div class="box about">
+  <div class="container">
+    <div class="info">
+      <div class="title">关于我们</div>
+      <p class="name">尚炫生物科技有限公司</p>
+      <p class="remark">
+        杭州尚炫生物科技有限公司（简称“公司”）成立于2016年，公司业务主要包括分析仪器、实验室设备、试剂、耗材等，旨在推广国内外先进的生命科学及材料化工类产品及技术，为客户提供最全面的生物样本处理方案及最高品质的产品和服务，长期业务覆盖各大高校、科研机构、医院、研发型企业等。<br/>
+        我们与国内外各大品牌厂家及代理商都有保持长期的沟通与合作，可以及时提供专业的厂家技术支持及售后，折扣及促销信息与厂家保持一致，消除客户的后顾之忧。
+      </p>
+    </div>
+    <div class="env">
+      <img src="/static/img/env1.png" class="env1"/>
+      <img src="/static/img/env2.png" class="env2"/>
+      <img src="/static/img/env3.png" class="env3"/>
+      <img src="/static/img/env4.png" class="env4"/>
+    </div>
+  </div>
+</div>
+
+<div class="box product">
+  <div class="container">
+    <div class="title"><span>热卖产品</span></div>
+    <div class="item">
+      <img src="/static/img/pro1.jpg" />
+      <p class="name">DNA甲基化检测</p>
+      <p class="desc">DNA甲基化检测</p>
+    </div>
+    <div class="item">
+      <img src="/static/img/pro1.jpg" />
+      <p class="name">DNA甲基化检测</p>
+      <p class="desc">DNA甲基化检测</p>
+    </div>
+    <div class="item">
+      <img src="/static/img/pro1.jpg" />
+      <p class="name">DNA甲基化检测</p>
+      <p class="desc">DNA甲基化检测</p>
+    </div>
+    <div class="item">
+      <img src="/static/img/pro1.jpg" />
+      <p class="name">DNA甲基化检测</p>
+      <p class="desc">DNA甲基化检测</p>
+    </div>
+    <a href="/product.html" class="more">查看更多 >></a>
+  </div>
+</div>
+
+<div class="box service">
+  <div class="container">
+    <div class="title"><span>技术服务</span></div>
+    <ul>
+      <li>
+        <img src="/static/img/service1.png" />
+        <p class="name">产品丰富</p>
+        <p class="desc">生化/其他试剂盒<br/>检测服务</p>
+      </li>
+      <li>
+        <img src="/static/img/service2.png" />
+        <p class="name">定制方案</p>
+        <p class="desc">生化/其他试剂盒<br/>检测服务</p>
+      </li>
+      <li>
+        <img src="/static/img/service3.png" />
+        <p class="name">服务专业</p>
+        <p class="desc">生化/其他试剂盒<br/>检测服务</p>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="box partner">
+  <div class="container">
+    <div class="title"><span>合作伙伴</span></div>
+      <a href="http://www.bioer.com.cn/" target="_bank"><img src="/static/img/partner/博日科技.jpg" alt="博日科技"/></a>
+      <a href="https://www.tiangen.com/" target="_bank"><img src="/static/img/partner/天根.jpg" alt="天根"/></a>
+      <a href="https://www.novoprotein.com.cn/" target="_bank"><img src="/static/img/partner/近岸.jpg" alt="近岸"/></a>
+      <a href="https://www.takarabiomed.com.cn/" target="_bank"><img src="/static/img/partner/Takara.jpg" alt="Takara"/></a>
+      <a href="https://www.zymoresearch.com/" target="_bank"><img src="/static/img/partner/ZYMO RESEARCH.jpg" alt="ZYMO RESEARCH"/></a>
+      <a href="https://www.bio-rad.com/zh-cn/life-science-research?ID=1100" target="_bank"><img src="/static/img/partner/Bio-Rad.jpg" alt="Bio-Rad"/></a>
+      <a href="http://www.gelifesciences.com.cn/CNLS/jsp/Brand/Hyclone.html" target="_bank"><img src="/static/img/partner/Hyclone.jpg" alt="Hyclone"/></a>
+      <a href="https://www.newzerum.com/" target="_bank"><img src="/static/img/partner/Newzerum.jpg" alt="Newzerum"/></a>
+      <a href="" target="_bank"><img src="/static/img/partner/天杭.jpg" alt="四季青（天杭）"/></a>
+      <a href="https://www.peprotech.com/zh/" target="_bank"><img src="/static/img/partner/Peprotech.jpg" alt="Peprotech"/></a>
+      <a href="http://www.liankebio.com/" target="_bank"><img src="/static/img/partner/联科生物.jpg" alt="联科生物"/></a>
+      <a href="" target="_bank"><img src="/static/img/partner/Merck Millipore.jpg" alt="Merck Millipore"/></a>
+      <a href="http://www.engibody.com/" target="_bank"><img src="/static/img/partner/Engibody.jpg" alt="Engibody"/></a>
+      <a href="http://www.ptgcn.com/" target="_bank"><img src="/static/img/partner/Proteintech.jpg" alt="Proteintech"/></a>
+      <a href="http://www.nbs-bio.com/" target="_bank"><img src="/static/img/partner/欣博盛.jpg" alt="欣博盛"/></a>
+      <a href="http://www.senbeijia.com/" target="_bank"><img src="/static/img/partner/森贝伽.jpg" alt="森贝伽"/></a>
+      <a href="https://www.thermofisher.com/cn" target="_bank"><img src="/static/img/partner/Thermofisher.jpg" alt="Thermofisher"/></a>
+      <a href="http://www.kirgen.com/newchn/index.asp" target="_bank"><img src="/static/img/partner/Kirgen.jpg" alt="Kirgen"/></a>
+      <a href="https://www.corning.com/cn/zh/products/life-sciences/resources/brands/corning-brand-products.html" target="_bank"><img src="/static/img/partner/Corning.jpg" alt="Corning"/></a>
+      <a href="https://www.corning.com/cn/zh/products/life-sciences/resources/brands/axygen-brand-products.html" target="_bank"><img src="/static/img/partner/Axygen.jpg" alt="Axygen"/></a>
+      <a href="https://www.eppendorf.com/CN-zh/" target="_bank"><img src="/static/img/partner/Eppendorf.jpg" alt="Eppendorf"/></a>
+  </div>
+</div>
+
+<script type="text/javascript" src="/static/js/swiper2.7.6.min.js"></script>
+<script type="text/javascript" src="/static/js/index.js"></script>
+{% endblock %}

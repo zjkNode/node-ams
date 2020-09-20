@@ -1,0 +1,67 @@
+.help-content {
+    width: 100%;
+    padding-top: 30px;
+    padding-bottom: 50px;
+}
+.help-wrapper {
+    width: 1240px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    color: #333;
+    margin-top: 30px;
+    padding: 0 60px 60px;
+    box-sizing: border-box;
+}
+h1 {
+    font-size: 24px;
+    line-height: 88px;
+    text-align: center;
+}
+.help-infor {
+    font-size: 14px;
+    line-height: 30px;
+    margin-bottom: 15px;
+}
+.help-infor span {
+    color: #f27c00;
+}
+.step-caption {
+    font-size: 16px;
+    line-height: 56px;
+
+}
+.help-step-content {
+    /*display: flex;*/
+    /*justify-content: flex-start;*/
+    /*align-items: center;*/
+}
+.help-step-content li {
+    font-size: 0;
+    flex: 1;
+    border: 1px solid #eaeaea;
+    line-height: 20px;
+    text-align: center;
+    width: 150px;
+    height: 198px;
+    display: inline-block;
+    vertical-align: top;
+    padding-top: 30px;
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
+}
+.help-step-content li p {
+    font-size: 12px;
+}
+
+.help-step-content span {
+    font-size: 0;
+    width: 34px;
+    text-align: center;
+    display: inline-block;
+}
+.help-step-content span img {
+    margin-top: 94px;
+}

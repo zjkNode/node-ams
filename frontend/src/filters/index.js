@@ -1,11 +1,6 @@
-var moment = require('moment');
-
-export function formatDate(value, format){
-  if(!value){
-    return '--';
-  }
-  format = format || 'YYYY-MM-DD HH:mm:ss';
-  return moment(value).format(format);
+import util from '@/assets/js/util';
+export function dateFormat(value, format){
+  return util.dateFormat(value, format);
 }
 
 export function isNormal(value){
