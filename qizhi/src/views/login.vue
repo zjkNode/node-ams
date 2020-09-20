@@ -23,8 +23,8 @@ export default {
   data(){
     return {
       formData:{
-        pwd:'123456',
-        phone:'18200000000'
+        pwd:'',
+        phone:''
       },
       rules:{
         pwd:[{ required: true, message:''},],
