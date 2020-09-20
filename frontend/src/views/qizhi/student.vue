@@ -215,13 +215,12 @@ import {qrBuilder} from '@/assets/js/qrBuilder'
 
             },
             onQRClick(row){
-              let qrCodeUrl = 'http://192.168.18.10:8072/checkIn?name='+ row.name +'&st='+ util.encrypt(`${row.id}_${row.name}`, false);
+              let qrCodeUrl = 'http://qizhi.wxcoding.com/checkIn?name='+ row.name +'&st='+ util.encrypt(`${row.id}_${row.name}`, false);
               let opt = { //二维码配置
                 margin: 0,
                 width: 256,
                 logo:require('@/assets/img/admin.png')
               };
-              console.log(qrCodeUrl)
               qrBuilder(qrCodeUrl, opt, qrcodeImg => {
                 this.qrDialog.title = row.name;
                 this.qrDialog.qrImage = qrcodeImg;

@@ -1,5 +1,6 @@
 <template>
   <div class="page">
+    <div class="title">启智教育</div>
     <ul class="login_form">
       <li>
         <z-input ref="phone" label="手机号" type="phone" :rules="rules.phone" v-model="formData.phone"></z-input>
@@ -68,6 +69,13 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.title{
+  margin: 1rem 0;
+  font-size: 25px;
+  font-weight: 700;
+  color: #F56C6C;
+  text-align: center;
+}
 .login_form{
   background: #fff;
   padding-left:0.14rem;
