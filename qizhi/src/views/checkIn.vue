@@ -20,7 +20,7 @@ export default {
       this.st = this.$route.query.st;
       this.name = this.$route.query.name;
     }
-    // this.toCheckIn();
+    this.toCheckIn();
   },
   methods:{
     toCheckIn(){ // 去签到
