@@ -13,7 +13,7 @@
         <el-table :data="dataList" stripe v-loading="isLoading">
             <el-table-column type="index" width="60"></el-table-column>
             <el-table-column prop="name" label="姓名" min-width="100"></el-table-column>
-            <el-table-column prop="phone" label="联系电话" min-width="100"></el-table-column>
+            <el-table-column prop="phone" label="联系电话" min-width="120"></el-table-column>
             <el-table-column prop="subject" label="学科" width="200" show-overflow-tooltip></el-table-column>
             <el-table-column prop="start_time" label="开始时间" width="160" align="center">
               <template slot-scope="scope" >
