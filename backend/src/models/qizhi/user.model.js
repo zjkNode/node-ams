@@ -8,6 +8,9 @@ let validation = {
 	'name': {
 		isNotEmpty: { errorMessage: '用户名不能为空' }
 	},
+	'phone': {
+		isNotEmpty: { errorMessage: '联系方式不能为空' }
+	},
 	'pwd': {
 		isNotEmpty: { errorMessage: '密码不能为空' },
 		isLength: { options: [6], errorMessage: '密码不能小于 6 位'}

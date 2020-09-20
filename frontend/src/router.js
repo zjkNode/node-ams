@@ -41,6 +41,8 @@ var routes = [
   { title:'block 激活码', name:'pluginActive', path:'/plugin/active', view:'plugin/active'},
 
   { title:'学员管理', name:'student', path:'/qizhi/student', view:'qizhi/student'},
+  { title:'用户管理', name:'qzUser', path:'/qizhi/user', view:'qizhi/user'},
+  { title:'学习记录', name:'study', path:'/qizhi/study', view:'qizhi/study'},
 
 ];
 

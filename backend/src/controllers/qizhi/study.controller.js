@@ -114,53 +114,16 @@ exports.list = function(req, res) {
 	if(searchKey){
 		where._complex = {
 			_logic: 'or',
-			email: ['like', searchKey],
-			nickname: ['like', searchKey],
+			name: ['like', searchKey],
 			phone: ['like', searchKey],
 		};
 	}
 
-	async.auto({
-		userData: function(callback){
-			studyService.list(where, page, function(err, result){
-				return callback(err, result)
-			});
-		},
-		deps: ['userData', function(results, callback){
-			let depids = results.userData.list.map(item => item.depids.split(','));
-			depids = [...new Set([].concat(...depids))];// 去重，转为数组
-			depService.list({ id:['in', depids] }, function(err, rows){
-				return callback(err, rows);
-			});
-		}]
-	}, function(error, results){
+	studyService.list(where, page, function(error, result){
 		if(error){
 			logService.log(req, '服务器出错，获取用户列表失败', where);
-        	return res.status(error.constructor.status).json(error);
+      return res.status(error.constructor.status).json(error);
 		}
-		let curUser = req.session.user;
-		let depid = curUser.depids.slice(-1)[0];
-		for (let i = 0; i < results.userData.list.length; i++) {
-			let user = results.userData.list[i];
-			// 用户是超管
-			if(utils.isAdmin(user)){
-				user.depids = [];
-				user.roleids = [];
-				user.depName = '系统管理';
-				user.operateAble = curUser.isAdmin;
-				user.isAdmin = utils.isAdmin(user);
-				continue;
-			}
-
-			user.depids = user.depids.split(',').map(id => parseInt(id));
-			user.roleids = user.roleids.split(',').map(id => parseInt(id));
-			let deps = results.deps.filter(dep => user.depids.includes(dep.id));
-			user.depName = deps.map(dep => dep.name).join(' / ');
-			let tmpDepId = user.depids.slice(-1)[0];
-			// 当前登录用户是超管，或用户所在部门 或用户所在部门子部门时，可操作
-			user.operateAble = curUser.isAdmin || user.depids.includes(depid) || tmpDepId === depid;
-			user.isAdmin = utils.isAdmin(user);
-		}
-		return res.status(200).json({ code: 'SUCCESS', data: results.userData });
+		return res.status(200).json({ code: 'SUCCESS', data: result });
 	});
 }

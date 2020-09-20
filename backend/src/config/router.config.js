@@ -179,6 +179,17 @@ module.exports = {
               put:'qizhi.student.update',
               delete:'qizhi.student.delete'
             }
+          },
+          '/user':{
+              get:'qizhi.user.list',
+              post:'qizhi.user.add',
+              '/:id':{
+                  put:'qizhi.user.update',
+                  delete:'qizhi.user.delete'
+              }
+          },
+          '/study':{
+            get: 'qizhi.study.list'
           }
         },
         '/yz':{
