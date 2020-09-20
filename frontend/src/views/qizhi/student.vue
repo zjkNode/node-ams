@@ -216,7 +216,7 @@ import {qrBuilder} from '@/assets/js/qrBuilder'
             },
             onQRClick(row){
               // let qrCodeUrl = 'http://qizhi.wxcoding.com/checkIn?name='+ row.name +'&st='+ util.encrypt(`${row.id}_${row.name}`, false);
-              let qrCodeUrl = 'http://120.27.21.93:8050/checkIn?name='+ row.name +'&st='+ util.encrypt(`${row.id}_${row.name}`, false);
+              let qrCodeUrl = 'http://120.27.21.93:8050/checkIn?name='+ encodeURI(row.name) +'&st='+ util.encrypt(`${row.id}_${row.name}`, false);
               let opt = { //二维码配置
                 margin: 0,
                 width: 256,
