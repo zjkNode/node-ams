@@ -81,12 +81,19 @@
             initEditor(){
                 this.$refs.editor.style['height'] = (document.body.clientHeight - 400) +'px';
                 this.editor = new E(this.$refs.editorBar, this.$refs.editor);
+                this.editor.customConfig.debug = true
                 this.editor.customConfig.uploadImgServer = '/api/pro/upload';
                 this.editor.customConfig.uploadFileName = 'file';
                 this.editor.customConfig.uploadImgParams = {
                     // 如果版本 <=v3.1.0 ，属性值会自动进行 encode ，此处无需 encode
                     // 如果版本 >=v3.1.1 ，属性值不会自动 encode ，如有需要自己手动 encode
                     uuid: util.uuid()
+                };
+                this.editor.customConfig.uploadImgHooks = {
+                  customInsert:(insertImg, result) => {
+                    var url = result.file.path;
+                    insertImg(url)
+                  }
                 };
                 this.editor.customConfig.zIndex = 100;
                 this.editor.customConfig.pasteTextHandle = util.toCleanHtml;

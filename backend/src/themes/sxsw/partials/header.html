@@ -1,9 +1,9 @@
 {% block css %}
-<link rel="stylesheet" type="text/css" href="/static/css/header.css" />
+<link rel="stylesheet" type="text/css" href="{{baseUrl}}/static/css/header.css" />
 {% endblock %}
 <div class="header">
   <div class="container">
-    <a href="/"><img class="logo" src="/static/img/logo.png" alt="" /></a>
+    <a href="/"><img class="logo" src="{{baseUrl}}/static/img/logo.png" alt="" /></a>
     <div class="nav">
 			<a href="/" class="on">首页</a>
 			<a href="/about.html">关于我们</a>
@@ -14,10 +14,10 @@
 		</div>
 		<div class="right">
 			<p>
-				<img src="/static/img/ic_phone.png" alt="" />
+				<img src="{{baseUrl}}/static/img/ic_phone.png" alt="" />
 				联系电话：(+86)177-7270-8857</p>
 			<p>
-				<img src="/static/img/ic_mail.png" alt="" />
+				<img src="{{baseUrl}}/static/img/ic_mail.png" alt="" />
 				咨询邮箱：info@hzsxbio.com</p>
 		</div>
   </div>

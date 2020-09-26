@@ -6,9 +6,10 @@ var async = require('async'),
     _ = require('lodash'),
     path = require('path'),
     fs = require('fs'),
+    child_process = require('child_process'),
     logger = require('../../lib/logger.lib'),
     aliOSS = require('../../lib/ali-oss.lib'),
-    util = require('../../lib/utils.js'),
+    utils = require('../../lib/utils.js'),
     nunjucks = require('nunjucks'),
     formidable = require('formidable'),
     CONSTANTS = require('../../config/constants.config'),
@@ -30,43 +31,14 @@ exports.add = function(req,res){
 
     let product = Object.assign({}, req.body);
     proModel.auto(product);
+    updateContent(product);
     proService.add(product, function(error, resId) {
       if(error){
         logService.log(req, '服务器出错，新增产品失败');
         return res.status(error.constructor.status).json(error);
       }
         return res.status(200).json({ code: 'SUCCESS', msg:'新增产品成功'});
-      });
-
-    // async.waterfall([
-    //     function(callback){
-    //         // confid 跟随类型，且添加后不能修改，
-    //         let absoluteDir = path.join('/product', `${product.confid || ''}`, '/');
-    //         let publishPath = util.getPublishPath();
-    //         if(!util.mkdirsSync(path.join(publishPath, absoluteDir), 0777)){
-    //             return callback(new ComError('MKDIR_ERROR', '创建目录失败:'+ publishPath));
-    //         }
-    //         let content = nunjucks.render('product/template.html', product);
-    //         let fileName = util.uuid();
-    //         product.url = path.join(absoluteDir, `${fileName}.html`);
-    //         fs.writeFileSync(path.join(publishPath, product.url), content, 'utf-8');
-
-    //         return callback(null, product);
-    //     }, 
-    //     upload2TestOSS,
-    //     function(product, callback){
-    //         proService.add(product, function(err, resId) {
-    //             return callback(err, resId);
-    //         });
-    //     }
-    // ], function(error, result){
-    //     if(error){
-    //         logService.log(req, '服务器出错，新增合同失败');
-    //         return res.status(error.constructor.status).json(error);
-    //     }
-    //     logService.log(req, '服务器出错，新增合同失败');
-    //     return res.status(200).json({ code: 'SUCCESS', msg:'新增合同成功'});
-    // });
+    });
 }
 
 exports.delete = function(req,res){
@@ -93,7 +65,7 @@ exports.delete = function(req,res){
                    row.status === CONSTANTS.PRO_STATUS.UPDATE){
                     return callback(new ComError('CAN_NOT_DELETE', '线上合同，请先下架后再删除'));
                 }
-                let publishPath = util.getPublishPath();
+                let publishPath = utils.getPublishPath();
                 let filePath = path.join(publishPath, row.url);
                 fs.existsSync(filePath) && fs.unlink(filePath);
                 return callback()
@@ -130,7 +102,7 @@ exports.update = function(req,res) {
     };
     let product = Object.assign({}, req.body, map);
     proModel.auto(product);
-
+    updateContent(product);
     proService.update(product, map, function(error, row) {
       if(error){
         logService.log(req, '服务器出错，编辑产品失败');
@@ -138,27 +110,27 @@ exports.update = function(req,res) {
       }
       return res.status(200).json({ code: 'SUCCESS', msg:'编辑产品成功'});
     });
-    // async.waterfall([
-    //     function(callback){
-    //         let content = nunjucks.render('product/template.html', product);
-    //         product.url = product.url.substring(product.url.indexOf('/product/'));
-    //         fs.writeFileSync(path.join(util.getPublishPath(), product.url), content, 'utf-8');
-    //         return callback(null, product);
-    //     }, 
-    //     upload2TestOSS,
-    //     function(cid, callback){
-    //         proService.update(product, map, function(err, row) {
-    //             return callback(err, row);
-    //         });
-    //     }
-    // ], function(error){
-    //     if(error){
-    //         logService.log(req, '服务器出错，编辑合同失败');
-    //         return res.status(error.constructor.status).json(error);
-    //     }
-    //     return res.status(200).json({ code: 'SUCCESS', msg:'编辑合同成功'});
-    // });
 }
+
+function updateContent(product) {
+  let publishPath = utils.getPublishPath(),
+        rootPath = path.join(__dirname, '../../../'),
+        imgPath = path.join(publishPath, 'img', 'product', product.confid+'', '/');
+    if(!utils.mkdirsSync(imgPath, 0777)){
+        return callback(new ComError('MKDIR_ERROR', `创建目录失败:${imgPath}`));
+    }
+    var reg = new RegExp("(/temp/.*?[^\"|\)])[\)\"]", "ig");
+    while(r = reg.exec(product.content)) {
+        let imgTempPath = path.join(rootPath, r[1]);
+        if(!fs.existsSync(imgTempPath)){
+            return callback(new ComError('IMG_NOT_EXIST', `图片 ${imgTempPath} 不存在或已被删除`));
+        }
+        // copy temp files
+        child_process.spawn('cp', ['-f', imgTempPath, imgPath]); 
+    }
+    product.content = product.content.replace(/\/temp\/.*?[^\/]\//g, `/static/img/product/${product.confid}/`);
+}
+
 
 exports.list = function(req,res) {
     var where = {};
@@ -285,7 +257,7 @@ exports.online = function(req, res){
             product.url = product.buConfig.value + tmpUrl;
 
             let ossClient = new aliOSS.Client(ossConf);
-            let localFile = path.join(util.getPublishPath(), tmpUrl);
+            let localFile = path.join(utils.getPublishPath(), tmpUrl);
             ossClient.upload(tmpUrl, localFile);
             
             return callback(null, product)
@@ -294,8 +266,8 @@ exports.online = function(req, res){
             let data = {
                 url: product.url,
                 status: CONSTANTS.PRO_STATUS.ONLINE,
-                update_time: util.dateFormat(),
-                publish_time: util.dateFormat()
+                update_time: utils.dateFormat(),
+                publish_time: utils.dateFormat()
             }
             proService.update(data, where, function(err){
                 return callback(err);
@@ -365,7 +337,7 @@ exports.offline = function(req, res){
                 id: product.id,
                 url: product.url,
                 status: CONSTANTS.product_STATUS.OFFLINE,
-                update_time: util.dateFormat()
+                update_time: utils.dateFormat()
             }
             proService.update(data, where, function(err){
                 return callback(err);
@@ -397,7 +369,7 @@ exports.upload = function(req, res, next) {
           return res.status(ValidationError.status).json(new ComError('INVALID_UUID', 'uuid验证失败'));
       }
       let  actTempPath = path.join(actTempDir, fields.uuid);
-      if (!util.mkdirsSync(actTempPath, 0777)) {
+      if (!utils.mkdirsSync(actTempPath, 0777)) {
           return res.status(ComError.status).json(new ComError('MKDIR_ERROR', `创建目录失败:${actTempPath}`));
       }
       let file = files.file;
@@ -435,7 +407,7 @@ function upload2TestOSS(product, callback) {
             return callback(new ComError('OSS_CONFIG_FAILED', `请完善业务数据OSS测试环境相关配置：系统配置--${config.name}`));
         }
         let ossClient = new aliOSS.Client(ossConf);
-        let localFile = path.join(util.getPublishPath(), product.url);
+        let localFile = path.join(utils.getPublishPath(), product.url);
         ossClient.upload(product.url, localFile);
         let tmpDomain = config.value.replace(/(http(s?):\/\/)(.*?)/, '$1test-$3');
         product.url = tmpDomain + product.url;

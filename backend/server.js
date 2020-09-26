@@ -47,6 +47,7 @@ app.use(session.check(), session.init());
 // app.use(express.static(path.join(__dirname, 'temp')));
 app.use('/temp', express.static(path.join(__dirname, 'temp'))); // 活动上传图片临时目录访问路径
 app.use('/preview', express.static(path.join(__dirname, 'www/nodesystem')));
+app.use('/static', express.static(path.join(__dirname, 'www/nodesystem')));
 
 
 app.use(exceptionHandler); // 异常拦截器

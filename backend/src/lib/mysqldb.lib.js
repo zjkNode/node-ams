@@ -47,7 +47,6 @@ function _execute(sql, params, callback){
             //释放连接    
             conn.release();    
             //事件驱动回调 
-            console.log(rows)
             callback(qerr,rows,fields);
 
         }); 

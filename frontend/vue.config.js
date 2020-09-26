@@ -13,6 +13,10 @@ module.exports = {
       '/preview': {
         target: 'http://127.0.0.1:8071',
         changeOrigin: true
+      },
+      '/static': {
+        target: 'http://127.0.0.1:8071',
+        changeOrigin: true
       }
     }
   }

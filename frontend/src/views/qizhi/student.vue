@@ -55,20 +55,33 @@
         </el-pagination>
         
         <el-dialog :title='`学员 -- ${title || "新增"}`' :visible.sync="isPopVisible"  @close="onDialogClose">
-          <el-form :model="formData" :rules="rules" ref="dialogForm" @keyup.enter.native="onSubmit" label-width="80px">
+          <el-form ref="dialogForm" label-width="80px" size="small" 
+            :model="formData" 
+            :rules="rules" 
+            @keyup.enter.native="onSubmit">
             <el-form-item label="学员姓名" prop="name">
               <el-input v-model="formData.name" name="name" placeholder="请输入学员姓名"></el-input>
             </el-form-item>
             <el-form-item label="联系电话" prop="phone">
               <el-input v-model="formData.phone" name="phone" maxlength='11' placeholder="请输入联系电话"></el-input>
             </el-form-item>
+            <el-form-item label="年级" prop="class">
+              <el-select v-model="formData.class" placeholder="请选择年级">
+                <el-option
+                  v-for="item in classes"
+                  :key="item"
+                  :label="item+'年级'"
+                  :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="学科" prop="subject">
               <el-select v-model="formData.subject" multiple placeholder="请选择学科">
                 <el-option
-                  v-for="item in subjectOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.label">
+                  v-for="(value, key) in subjects"
+                  :key="key"
+                  :label="value"
+                  :value="value">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -123,7 +136,6 @@ import {qrBuilder} from '@/assets/js/qrBuilder'
                 isLoading: false,
                 isAddLoading: false,
                 keys:"",
-                rowData:{},
                 dataList: null,
                 pageSize:15,
                 pageIndex:1,
@@ -133,19 +145,21 @@ import {qrBuilder} from '@/assets/js/qrBuilder'
                   title:'',
                   qrImage:''
                 },
-                subjectOptions:[
-                  { value: 'english', label: '英语' },
-                  { value: 'math', label: '数学' },
-                  { value: 'physics', label: '物理' },
-                  { value: 'chemistry', label: '化学' },
-                  { value: 'homework', label: '作业辅导' },
-                  { value: 'weekend', label: '周未班' },
-                  { value: 'tuoguan', label: '托管班' },
-                ],
+                classes:[9,8,7,6,5,4,3,2,1],
+                subjects:{
+                  english:'英语',
+                  math:'数学',
+                  physics:'物理',
+                  chemistry:'化学',
+                  homework:'作业辅导',
+                  weekend:'周未班',
+                  tuoguan:'托管班',
+                },
                 formData: {
                   id:'',
                   name:'',
                   phone:'',
+                  class:'',
                   subject:[],
                   fee:'',
                   remark:'',
@@ -157,6 +171,9 @@ import {qrBuilder} from '@/assets/js/qrBuilder'
                     name:[{ required:true, message:'请输入学员姓名',trigger:'blur'}],
                     phone: [
                       { required:true, message:'请输入联系电话',trigger:'blur' }
+                    ],
+                    class:[
+                      {required:true, message:'请选择学科',trigger:'change' }
                     ],
                     subject:[
                       {type: 'array', required:true, message:'请选择学科',trigger:'change' }
