@@ -123,8 +123,9 @@ exports.list = function(req,res) {
                     return callback(error);
                 }
                 resList.forEach(item => {
-                    let config = rows.find(row => row.id === item.confid);
-                    item.buConfig = config || { status: CONSTANTS.CONFIG_STATUS.INVALID, name:'无效业务' }
+                    let config = rows.find(row => row.id === item.confid) || { status: CONSTANTS.CONFIG_STATUS.INVALID, name:'无效业务' };
+                    // item.buConfig = config || { status: CONSTANTS.CONFIG_STATUS.INVALID, name:'无效业务' }
+                    item.buName = config.name
                 });
                 return callback(null, resList);
             });
@@ -136,7 +137,7 @@ exports.list = function(req,res) {
         }
         return res.status(200).json({
             code:'SUCCESS',
-            data: util.buildTreeTable(result)
+            data: util.buildTree(result, 0)
         });
     });
 }

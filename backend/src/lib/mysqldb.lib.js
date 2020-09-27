@@ -347,7 +347,8 @@ function _queryFormat(query,params) {
 
     let formatQuery = query.replace(/\:(\w+)/g,function(txt,key) {
         if(params.hasOwnProperty(key)){
-            return _.escape(params[key]);
+            // return _.escape(params[key]);
+            return params[key];
         }
         return txt;
     }.bind(this));

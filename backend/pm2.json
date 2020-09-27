@@ -25,6 +25,7 @@
     "max_memory_restart": "800M",
     "error_file": "./logs/node-backend-error.log", //default to $HOME/.pm2/logs/XXXerr.log
     "out_file": "./logs/node-backend-out.log",   //default to $HOME/.pm2/logs/XXXout.log
+    "log_date_format": "YYYY-MM-DD HH:mm:ss"
     // "pid_file": "./logs/push-web.pid"
   }]
 }

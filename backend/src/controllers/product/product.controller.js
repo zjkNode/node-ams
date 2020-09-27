@@ -31,20 +31,29 @@ exports.add = function(req,res){
 
     let product = Object.assign({}, req.body);
     proModel.auto(product);
-    updateContent(product);
-    proService.add(product, function(error, resId) {
+
+    async.waterfall([
+      function(callback) {
+        updateContent(product, callback);
+      },
+      function(product, callback) {
+        proService.add(product, function(error, resId)  {
+          return callback(error, resId);
+        });
+      }
+    ], function(error,resId) {
       if(error){
         logService.log(req, '服务器出错，新增产品失败');
         return res.status(error.constructor.status).json(error);
       }
-        return res.status(200).json({ code: 'SUCCESS', msg:'新增产品成功'});
+      return res.status(200).json({ code: 'SUCCESS', msg:'新增产品成功'});
     });
 }
 
 exports.delete = function(req,res){
     req.checkParams({
         'id': {
-            isNotEmpty: { errorMessage: '合同id 不能为空'}
+            isNotEmpty: { errorMessage: '产品id 不能为空'}
         }
     });
     let vErrors = req.validationErrors();
@@ -55,33 +64,13 @@ exports.delete = function(req,res){
     let map = {
         id: parseInt(req.params.id)
     };
-    async.waterfall([
-        function(callback){
-            proService.one(map, function(err, row){
-                if(err){
-                    return callback(err);
-                }
-                if(row.status === CONSTANTS.PRO_STATUS.ONLINE ||
-                   row.status === CONSTANTS.PRO_STATUS.UPDATE){
-                    return callback(new ComError('CAN_NOT_DELETE', '线上合同，请先下架后再删除'));
-                }
-                let publishPath = utils.getPublishPath();
-                let filePath = path.join(publishPath, row.url);
-                fs.existsSync(filePath) && fs.unlink(filePath);
-                return callback()
-            });
-        },
-        function(callback){
-            proService.delete(map, function(err){
-                return callback(err);
-            });
-        }
-    ], function(error, result){
-        if(error){
-            logService.log(req, '服务器出错，删除合同内容失败', map);
-            return res.status(error.constructor.status).json(error);
-        }
-        return res.status(200).json({ code:'SUCCESS', msg:'删除合同内容成功' });
+
+    proService.delete(map, function(error){
+      if(error){
+        logService.log(req, '服务器出错，删除产品失败', map);
+        return res.status(error.constructor.status).json(error);
+      }
+      return res.status(200).json({ code:'SUCCESS', msg:'删除产品成功' });
     });
 }
 
@@ -102,8 +91,16 @@ exports.update = function(req,res) {
     };
     let product = Object.assign({}, req.body, map);
     proModel.auto(product);
-    updateContent(product);
-    proService.update(product, map, function(error, row) {
+    async.waterfall([
+      function(callback) {
+        updateContent(product, callback);
+      },
+      function(product, callback) {
+        proService.update(product,map, function(error, row) {
+          return callback(error, row);
+        });
+      }
+    ], function(error,result) {
       if(error){
         logService.log(req, '服务器出错，编辑产品失败');
         return res.status(error.constructor.status).json(error);
@@ -112,7 +109,7 @@ exports.update = function(req,res) {
     });
 }
 
-function updateContent(product) {
+function updateContent(product, callback) {
   let publishPath = utils.getPublishPath(),
         rootPath = path.join(__dirname, '../../../'),
         imgPath = path.join(publishPath, 'img', 'product', product.confid+'', '/');
@@ -129,6 +126,8 @@ function updateContent(product) {
         child_process.spawn('cp', ['-f', imgTempPath, imgPath]); 
     }
     product.content = product.content.replace(/\/temp\/.*?[^\/]\//g, `/static/img/product/${product.confid}/`);
+    product.content = product.content.replace(/\"/g, "'");
+    return callback(null, product);
 }
 
 
