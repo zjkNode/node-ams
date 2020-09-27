@@ -113,6 +113,7 @@ function updateContent(product, callback) {
   let publishPath = utils.getPublishPath(),
         rootPath = path.join(__dirname, '../../../'),
         imgPath = path.join(publishPath, 'img', 'product', product.confid+'', '/');
+    console.log('111',  publishPath, rootPath, imgPath,)
     if(!utils.mkdirsSync(imgPath, 0777)){
         return callback(new ComError('MKDIR_ERROR', `创建目录失败:${imgPath}`));
     }
@@ -120,9 +121,11 @@ function updateContent(product, callback) {
     while(r = reg.exec(product.content)) {
         let imgTempPath = path.join(rootPath, r[1]);
         if(!fs.existsSync(imgTempPath)){
+          console.log('IMG_NOT_EXIST', `图片 ${imgTempPath} 不存在或已被删除`)
             return callback(new ComError('IMG_NOT_EXIST', `图片 ${imgTempPath} 不存在或已被删除`));
         }
         // copy temp files
+        console.log('cp -f ', imgTempPath, imgPath);
         child_process.spawn('cp', ['-f', imgTempPath, imgPath]); 
     }
     product.content = product.content.replace(/\/temp\/.*?[^\/]\//g, `/static/img/product/${product.confid}/`);
