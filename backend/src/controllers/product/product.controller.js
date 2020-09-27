@@ -126,7 +126,10 @@ function updateContent(product, callback) {
         }
         // copy temp files
         console.log('cp -f ', imgTempPath, imgPath);
-        child_process.spawn('cp', ['-f', imgTempPath, imgPath]); 
+        let cp = child_process.spawn('cp', ['-f', imgTempPath, imgPath]); 
+        cp.stderr.on('data', (data) => {
+          logger.error(__filename, '拷贝 img 失败:'+ data);
+       });
     }
     product.content = product.content.replace(/\/temp\/.*?[^\/]\//g, `/static/img/product/${product.confid}/`);
     product.content = product.content.replace(/\"/g, "'");
