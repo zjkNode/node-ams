@@ -11,16 +11,10 @@
             </el-col> 
         </el-row>
         <el-row>
-            <el-table :data="dataList" stripe v-loading="isLoading">
+            <el-table :data="dataList" stripe v-loading="isLoading" row-key="id"
+              :tree-props="{children: 'children', hasChildren: 'isLeaf'}">
                 <el-table-column type="index" label="" width="60"></el-table-column>
-                <el-table-column prop="status" label="业务类型" width="100" align="center">
-                    <template slot-scope="scope" >
-                        <el-tag :type="scope.row.buConfig.status === 2 ? 'info' : ''" size="small">
-                            {{ scope.row.buConfig.name }}
-                        </el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="name" label="类型名称" :formatter="treeFormat" class-name='flat-tree'></el-table-column>
+                <el-table-column prop="name" label="类型名称" class-name='flat-tree'></el-table-column>
                 <el-table-column prop="status" label="状态" width="90" align="center">
                     <template slot-scope="scope" >
                         <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="small">
