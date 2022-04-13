@@ -23,7 +23,7 @@
     "validator": "^10.5.0"
   },
   "devDependencies": {
-    "async": "^2.6.1",
+    "async": "^3.2.2",
     "cross-env": "^5.2.0",
     "lodash": "^4.17.10",
     "lru-cache": "^4.1.3",
